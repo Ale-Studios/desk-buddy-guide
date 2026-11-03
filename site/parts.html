@@ -167,15 +167,16 @@ footer { border-top: 1.5px solid var(--line); padding: 28px 0 44px; color: var(-
 <script type="module">
 import * as THREE from "three";
 import { OrbitControls } from "./vendor/three/addons/OrbitControls.js";
-import { buildPart, makeScene, frame, renderThumbnails, loadPhotos, creditLine } from "./assets/parts3d.js";
+import { buildPart, makeScene, fitStage, frame, renderThumbnails, loadPhotos, creditLine } from "./assets/parts3d.js";
 const photos = await loadPhotos();
 
 // ---------- 3D: the live viewer inside the part dialog ----------
-const viewer = { renderer: null, scene: makeScene(), cam: new THREE.PerspectiveCamera(32, 1.6, 0.1, 5000), controls: null, model: null, on: false };
+const viewer = { renderer: null, scene: null, cam: new THREE.PerspectiveCamera(32, 1.6, 0.1, 5000), controls: null, model: null, on: false };
 function openViewer(id, host) {
   if (!viewer.renderer) {
     viewer.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     viewer.renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+    viewer.scene = makeScene(viewer.renderer);
     viewer.controls = new OrbitControls(viewer.cam, viewer.renderer.domElement);
     viewer.controls.enableDamping = true;
     viewer.controls.autoRotateSpeed = 2;
@@ -187,6 +188,7 @@ function openViewer(id, host) {
   if (viewer.model) viewer.scene.remove(viewer.model);
   viewer.model = buildPart(id);
   viewer.scene.add(viewer.model);
+  fitStage(viewer.scene, viewer.model.userData.size);
   frame(viewer.cam, viewer.model.userData.size, viewer.controls.target);
   viewer.controls.autoRotate = !matchMedia("(prefers-reduced-motion: reduce)").matches;
   viewer.controls.update();

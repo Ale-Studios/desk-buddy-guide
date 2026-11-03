@@ -3,6 +3,8 @@
 // can be shown, rotated and compared without any third-party model files.
 // Licence: CC BY-SA 4.0, part of the Desk Buddy Guide.
 import * as THREE from "three";
+import { RoomEnvironment } from "../vendor/three/addons/RoomEnvironment.js";
+import { HQ_BUILDERS } from "./parts3d-hq.js";
 
 // ---------- materials ----------
 const M = {
@@ -195,6 +197,8 @@ export const BUILDERS = {
   inmp441, ttp223, vl53l0x, hcsr04, picam3, ov2640,
   max98357a, speaker,
   tp4056, lipo, "18650": cell18650, usb5v,
+  // detailed models replace the simple ones wherever no real photo exists
+  ...HQ_BUILDERS,
 };
 
 // Returns the model for a part id, centred on the origin and resting on y = 0.
@@ -207,6 +211,7 @@ export function buildPart(id) {
   g.position.set(-c.x, -bb.min.y, -c.z);
   const wrap = new THREE.Group(); wrap.add(g);
   wrap.userData.size = bb.getSize(new THREE.Vector3());
+  wrap.traverse((o) => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
   return wrap;
 }
 
@@ -236,8 +241,8 @@ export async function renderThumbnails(root = document) {
     if (p) { img.src = p.src; img.classList.add("is-photo"); img.title = `Photo: ${p.artist} (${p.license})`; }
   }
   const r = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
-  r.setPixelRatio(1); r.setSize(480, 300, false);
-  const scene = makeScene();
+  r.setPixelRatio(2); r.setSize(480, 300, false);
+  const scene = makeScene(r);
   const cam = new THREE.PerspectiveCamera(32, 480 / 300, 0.1, 5000);
   const cache = new Map();
   for (const img of imgs) {
@@ -247,7 +252,7 @@ export async function renderThumbnails(root = document) {
       const m = buildPart(id);
       if (!m) continue;
       m.rotation.y = -0.5;
-      scene.add(m); frame(cam, m.userData.size, new THREE.Vector3());
+      scene.add(m); fitStage(scene, m.userData.size); frame(cam, m.userData.size, new THREE.Vector3());
       r.render(scene, cam); cache.set(id, r.domElement.toDataURL("image/png")); scene.remove(m);
     }
     img.src = cache.get(id);
@@ -259,9 +264,9 @@ export async function renderThumbnails(root = document) {
 export function spinner(canvas, id) {
   const r = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
   r.setPixelRatio(Math.min(devicePixelRatio, 2));
-  const scene = makeScene();
+  const scene = makeScene(r);
   const cam = new THREE.PerspectiveCamera(32, 1, 0.1, 5000);
-  const m = buildPart(id); scene.add(m);
+  const m = buildPart(id); scene.add(m); fitStage(scene, m.userData.size);
   const t = new THREE.Vector3();
   const size = () => { const w = canvas.clientWidth, h = canvas.clientHeight; r.setSize(w, h, false); cam.aspect = w / h; frame(cam, m.userData.size, t); };
   new ResizeObserver(size).observe(canvas); size();
@@ -271,12 +276,47 @@ export function spinner(canvas, id) {
 }
 
 // Lights + camera framing shared by the thumbnails and the live viewer.
-export function makeScene() {
+// A small photo studio: image-based lighting for real reflections, a soft key
+// light with shadows, a cool rim light, and an invisible floor catching shadows.
+const envCache = new WeakMap();
+export function makeScene(renderer) {
   const scene = new THREE.Scene();
-  scene.add(new THREE.HemisphereLight(0xe8f2ff, 0x202838, 1.2));
-  const key = new THREE.DirectionalLight(0xffffff, 1.8); key.position.set(0.8, 1.6, 1.1); scene.add(key);
+  if (renderer) {
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.05;
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    if (!envCache.has(renderer)) {
+      const pmrem = new THREE.PMREMGenerator(renderer);
+      envCache.set(renderer, pmrem.fromScene(new RoomEnvironment(), 0.04).texture);
+      pmrem.dispose();
+    }
+    scene.environment = envCache.get(renderer);
+  }
+  scene.add(new THREE.HemisphereLight(0xe8f2ff, 0x202838, renderer ? 0.35 : 1.2));
+  const key = new THREE.DirectionalLight(0xffffff, renderer ? 2.2 : 1.8);
+  key.position.set(0.8, 1.6, 1.1); key.castShadow = true;
+  key.shadow.mapSize.set(2048, 2048); key.shadow.radius = 6; key.shadow.bias = -0.0004;
+  scene.add(key, key.target);
   const rim = new THREE.DirectionalLight(0x9fdcff, 0.7); rim.position.set(-1.2, 0.8, -1); scene.add(rim);
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.ShadowMaterial({ opacity: 0.35 }));
+  floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; floor.name = "floor";
+  scene.add(floor);
+  scene.userData.key = key;
   return scene;
+}
+// Sizes the floor and the shadow camera to the model on stage.
+export function fitStage(scene, size) {
+  const r = Math.max(size.x, size.y, size.z);
+  const floor = scene.getObjectByName("floor");
+  if (floor) floor.scale.set(r * 6, r * 6, 1);
+  const key = scene.userData.key;
+  if (key) {
+    key.position.set(0.8 * r * 2, 1.6 * r * 2, 1.1 * r * 2);
+    key.target.position.set(0, 0, 0);
+    const c = key.shadow.camera; c.left = c.bottom = -r * 1.5; c.right = c.top = r * 1.5; c.near = 0.1; c.far = r * 10; c.updateProjectionMatrix();
+  }
 }
 export function frame(camera, size, target) {
   // fit the model's bounding sphere inside the narrower field of view
