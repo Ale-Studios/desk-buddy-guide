@@ -2,6 +2,8 @@
 
 **An open-source field guide to building your own desk companion robot — from a bare ESP32 to a fully expressive little bot.**
 
+**→ Read it online: https://alex-stark-industries.github.io/desk-buddy-guide/**
+
 A desk buddy is a small robot that lives next to your keyboard: it has a face, it looks around, it reacts to touch and sound, and — if you want — it can talk to an AI running on your own computer. This guide gathers what the maker community already knows, organises it, and lays out **several different paths** so you can pick the one that fits your budget, tools and skills.
 
 > Hardware first. Connecting the robot to a PC and to a local AI is deliberately the **last** chapter: a good robot is fun on its own.
@@ -21,7 +23,17 @@ A desk buddy is a small robot that lives next to your keyboard: it has a face, i
 | 9 | [Reference projects](docs/09-reference-projects.md) | Existing open projects and what to reuse from each |
 | 10 | [Connecting to a PC](docs/10-connect-to-pc.md) | Wi-Fi/WebSocket link and a fully local AI brain |
 
-Extras: [3D models](models/README.md) · [Video library](media/README.md) · [Example firmware](firmware/README.md) · [Glossary](docs/glossary.md)
+Extras: [Parts catalog](https://alex-stark-industries.github.io/desk-buddy-guide/parts.html) · [3D models](models/README.md) · [Video library](https://alex-stark-industries.github.io/desk-buddy-guide/videos.html) · [Photo credits](site/photos/README.md) · [Glossary](docs/glossary.md)
+
+## Repository layout
+
+| Folder | What it holds |
+|--------|---------------|
+| `docs/` | The chapters in Markdown — the source of truth |
+| `site/` | The website published to GitHub Pages (`npm run build` regenerates `site/chapters/` from `docs/`) |
+| `site/photos/` | Openly licensed component photos with credits |
+| `site/models/` | Redistributable 3D files (Stack-chan, Apache-2.0) |
+| `tools/` | Build and photo-download scripts |
 
 ## Principles
 
