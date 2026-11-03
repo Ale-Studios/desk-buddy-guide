@@ -95,6 +95,8 @@ section { padding: 72px 0; }
 /* anatomy */
 .anatomy { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
 .organ-3d { display: block; width: 100%; aspect-ratio: 16 / 9; margin-bottom: 14px; border-radius: 10px; background: radial-gradient(circle at 50% 40%, #1a2742, var(--screen) 75%); }
+img.is-photo { object-fit: contain; background: #fff; }
+.organ-3d { height: auto; object-fit: contain; }
 .organ { background: var(--panel); border: 1.5px solid var(--line); border-radius: var(--radius); padding: 22px; }
 .organ h3 { font-size: 22px; margin: 8px 0 8px; }
 .organ p { margin: 0 0 12px; color: var(--ink-soft); font-size: 15.5px; }
@@ -178,6 +180,7 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
     <a href="#paths">All paths</a>
     <a href="parts.html">Parts</a>
     <a href="models.html">3D models</a>
+    <a href="videos.html">Videos</a>
     <a href="#chapters">Chapters</a>
   </nav>
 </header>
@@ -222,21 +225,21 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
       </div>
       <div class="anatomy">
         <div class="organ">
-          <canvas class="organ-3d" data-spin="vl53l0x" aria-label="3D model of a VL53L0X distance sensor" role="img"></canvas>
+          <img class="organ-3d" data-part="vl53l0x" alt="a VL53L0X distance sensor" width="480" height="300">
           <span class="eyebrow">Senses</span>
           <h3>What it notices</h3>
           <p>Sound, touch, distance, light and, if you want, a camera.</p>
           <div class="chips"><a class="chip" href="parts.html#inmp441">INMP441 mic</a><a class="chip" href="parts.html#ttp223">TTP223 touch</a><a class="chip" href="parts.html#vl53l0x">VL53L0X</a><a class="chip" href="parts.html#picam3">camera</a></div>
         </div>
         <div class="organ">
-          <canvas class="organ-3d" data-spin="esp32s3" aria-label="3D model of an ESP32-S3 board" role="img"></canvas>
+          <img class="organ-3d" data-part="esp32s3" alt="an ESP32-S3 board" width="480" height="300">
           <span class="eyebrow">Brain</span>
           <h3>What it decides</h3>
           <p>A microcontroller runs the reflexes: moods, blinks, reactions.</p>
           <div class="chips"><a class="chip" href="parts.html#esp32s3">ESP32-S3</a><a class="chip" href="parts.html#cores3">M5Stack</a><a class="chip" href="parts.html#pi5">Raspberry Pi</a><a class="chip" href="parts.html#nano">Arduino</a></div>
         </div>
         <div class="organ">
-          <canvas class="organ-3d" data-spin="sg90" aria-label="3D model of an SG90 servo" role="img"></canvas>
+          <img class="organ-3d" data-part="sg90" alt="an SG90 servo" width="480" height="300">
           <span class="eyebrow">Expression</span>
           <h3>How it reacts</h3>
           <p>Eyes on a display, a moving neck, sounds from a small speaker.</p>
@@ -512,9 +515,8 @@ function frame(now) {
 requestAnimationFrame(frame);
 </script>
 <script type="module">
-import { spinner, renderThumbnails } from "./assets/parts3d.js";
+import { renderThumbnails } from "./assets/parts3d.js";
 renderThumbnails();
-document.querySelectorAll("canvas[data-spin]").forEach((c) => spinner(c, c.dataset.spin));
 </script>
 </body>
 </html>

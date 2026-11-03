@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Desk Buddy Video Library</title>
+<meta name="description" content="Hand-picked video tutorials for building a desk companion robot: soldering, ESP32, servos, displays, audio, batteries, 3D printing and local AI.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+:root {
+  --ground: #eef1f4; --panel: #ffffff; --panel-2: #e3e8ee; --ink: #0e1726; --ink-soft: #4a5568;
+  --line: #cfd7e1; --accent: #2f5bea; --accent-ink: #ffffff; --signal: #ffb020; --screen: #070b14; --eye: #6fe3ff;
+  --radius: 14px;
+  --display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground: #0b1020; --panel: #121a2e; --panel-2: #19233b; --ink: #e8edf6; --ink-soft: #9aa7bd;
+    --line: #26324d; --accent: #6d8dff; --accent-ink: #0b1020; --signal: #ffc04d; --screen: #03060d;
+  }
+}
+:root[data-theme="dark"] {
+  --ground: #0b1020; --panel: #121a2e; --panel-2: #19233b; --ink: #e8edf6; --ink-soft: #9aa7bd;
+  --line: #26324d; --accent: #6d8dff; --accent-ink: #0b1020; --signal: #ffc04d; --screen: #03060d;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--ground); color: var(--ink); font: 17px/1.6 var(--body); -webkit-font-smoothing: antialiased; }
+a { color: var(--accent); }
+:focus-visible { outline: 3px solid var(--signal); outline-offset: 3px; border-radius: 6px; }
+.wrap { max-width: 1180px; margin: 0 auto; padding: 0 16px; }
+h1, h2, h3 { font-family: var(--display); line-height: 1.15; text-wrap: balance; margin: 0; }
+.eyebrow { font: 600 12px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-soft); }
+.bar { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-block: 18px; }
+.brand { display: flex; align-items: center; gap: 10px; font: 800 18px var(--display); color: var(--ink); text-decoration: none; }
+.brand-mark { width: 30px; height: 22px; border-radius: 7px; background: var(--screen); display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 6px; }
+.brand-mark i { background: var(--eye); border-radius: 3px; }
+.bar nav { display: flex; gap: 18px; font-size: 15px; }
+.bar nav a { color: var(--ink-soft); text-decoration: none; }
+.bar nav a[aria-current="page"] { color: var(--ink); font-weight: 700; }
+
+.intro { padding-block: 24px 20px; display: flex; flex-direction: column; gap: 12px; }
+.intro h1 { font-size: clamp(34px, 5vw, 58px); font-weight: 800; letter-spacing: -.02em; max-width: 16em; }
+.intro p { margin: 0; color: var(--ink-soft); font-size: 18px; max-width: 44em; }
+
+.filters { display: flex; flex-wrap: wrap; gap: 8px; padding-block: 8px 4px; }
+.pill { font: 600 13px var(--mono); padding: 7px 12px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--panel); color: var(--ink); cursor: pointer; }
+.pill[aria-pressed="true"] { background: var(--ink); color: var(--ground); border-color: var(--ink); }
+
+.topic { padding-block: 34px 6px; }
+.topic-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 20px; margin-bottom: 14px; }
+.topic-head h2 { font-size: clamp(24px, 3vw, 32px); }
+.topic-head a { font-size: 14.5px; }
+.vids { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.vid { background: var(--panel); border: 1.5px solid var(--line); border-radius: var(--radius); overflow: hidden; display: flex; flex-direction: column; }
+.player { position: relative; aspect-ratio: 16 / 9; background: var(--screen); border: 0; padding: 0; cursor: pointer; display: block; width: 100%; }
+.player img { width: 100%; height: 100%; object-fit: cover; display: block; opacity: .9; transition: opacity .2s; }
+.player:hover img { opacity: 1; }
+.player .play { position: absolute; inset: 0; margin: auto; width: 62px; height: 44px; border-radius: 12px; background: rgba(7, 11, 20, .78); display: grid; place-items: center; }
+.player .play::after { content: ""; border-left: 16px solid #fff; border-top: 10px solid transparent; border-bottom: 10px solid transparent; margin-left: 4px; }
+.player iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.vid-body { padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
+.vid h3 { font: 700 16.5px/1.3 var(--display); }
+.vid .ch { font: 12.5px var(--mono); color: var(--ink-soft); display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.badge { font: 600 11px var(--mono); letter-spacing: .06em; text-transform: uppercase; padding: 2px 7px; border-radius: 5px; background: color-mix(in srgb, var(--accent) 16%, transparent); color: var(--accent); }
+.badge.official { background: color-mix(in srgb, #2b9348 20%, transparent); color: #2b9348; }
+.vid p { margin: 0; font-size: 14.5px; color: var(--ink-soft); }
+.vid .yt { margin-top: auto; padding-top: 4px; font-size: 13.5px; }
+.note { background: var(--panel); border: 1.5px solid var(--line); border-left: 5px solid var(--signal); border-radius: 12px; padding: 14px 18px; font-size: 15px; color: var(--ink-soft); margin-top: 28px; }
+footer { border-top: 1.5px solid var(--line); padding: 28px 0 44px; color: var(--ink-soft); font-size: 14px; margin-top: 48px; }
+@media (max-width: 900px) { .vids { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 600px) {
+  .vids { grid-template-columns: 1fr; }
+  .bar { flex-wrap: wrap; }
+  .bar nav { gap: 14px; font-size: 14px; overflow-x: auto; max-width: 100%; white-space: nowrap; padding-bottom: 4px; }
+}
+</style>
+</head>
+<body>
+<header class="wrap bar">
+  <a class="brand" href="index.html"><span class="brand-mark" aria-hidden="true"><i></i><i></i></span>Desk Buddy Guide</a>
+  <nav aria-label="Site">
+    <a href="index.html#finder">Find your path</a>
+    <a href="parts.html">Parts</a>
+    <a href="models.html">3D models</a>
+    <a href="videos.html" aria-current="page">Videos</a>
+    <a href="chapters/01-basics.html">Chapters</a>
+  </nav>
+</header>
+
+<main class="wrap">
+  <div class="intro">
+    <span class="eyebrow">Video library</span>
+    <h1>Watch it done before you do it.</h1>
+    <p>Hand-picked tutorials from the maker community, grouped by topic and linked to the matching chapter. Videos belong to their creators and play from YouTube's privacy-enhanced player — nothing loads until you press play.</p>
+  </div>
+  <div class="filters" id="filters" role="group" aria-label="Filter by topic"></div>
+  <div id="topics"></div>
+  <p class="note">Every video was checked to exist with the title and channel shown. Tutorials age quickly — library versions and menus change — so when a step does not match, the written chapter and the official documentation win. Know a better video? <a href="https://github.com/Alex-Stark-industries/desk-buddy-guide/issues" target="_blank" rel="noopener">Suggest it ↗</a></p>
+</main>
+
+<footer><div class="wrap">Desk Buddy Guide · text CC BY-SA 4.0 · code MIT · videos © their creators, linked and embedded via YouTube.</div></footer>
+
+<script>
+// kind: "official" = made by the project or manufacturer itself
+const TOPICS = [
+  { id: "solder", title: "Soldering", chapter: ["01-basics", "Basics"], written: ["SparkFun: how to solder", "https://learn.sparkfun.com/tutorials/how-to-solder-through-hole-soldering"], videos: [
+    { id: "QKbJxytERvg", title: "Collin's Lab: Soldering", ch: "Adafruit Industries", why: "A clear, classic introduction to soldering from Adafruit." },
+    { id: "hoc-Q2ZAJwM", title: "How To Solder Headers — A Beginner Tutorial", ch: "Erin St Blaine", why: "Short and focused on pin headers — exactly the soldering a desk buddy needs." },
+  ] },
+  { id: "bench", title: "Breadboard & multimeter", chapter: ["03-electronics", "Electronics"], videos: [
+    { id: "FBWLvgY7a6U", title: "Introduction to Breadboards and Digital Multimeters (Continuity)", ch: "Digital Logic & Programming", why: "Both tools in one video, including the continuity test." },
+    { id: "TdUK6RPdIrA", title: "How to Use a Multimeter for Beginners", ch: "Ratchets And Wrenches", why: "Voltage, resistance, continuity and current, step by step." },
+    { id: "NREtn59WPho", title: "How To Use a Breadboard — Breadboard Basics", ch: "Circuit E Makes", why: "How the rows and rails are connected inside." },
+  ] },
+  { id: "esp32", title: "ESP32 first steps", chapter: ["08-firmware", "Basic firmware"], written: ["Espressif: Arduino core for ESP32", "https://docs.espressif.com/projects/arduino-esp32/en/latest/"], videos: [
+    { id: "mBaS3YnqDaU", title: "Install the ESP32 Board in Arduino IDE in less than 1 minute", ch: "Rui Santos (Random Nerd Tutorials)", why: "The quickest way to get the toolchain ready." },
+  ] },
+  { id: "servo", title: "Servos", chapter: ["05-movement", "Movement"], videos: [
+    { id: "zxBC1ivOVfM", title: "Using Servo Motors with ESP32", ch: "DroneBot Workshop", why: "In-depth, ESP32-specific — the standard Arduino servo library does not cover it." },
+    { id: "alq-CJVAO1o", title: "Getting Started with ESP32 in Arduino IDE — Servo Motor SG90 Sweep Tutorial", ch: "Vozila i programiranje", why: "The simplest possible first servo test." },
+  ] },
+  { id: "eyes", title: "Displays & animated eyes", chapter: ["04-eyes-and-face", "Eyes & face"], videos: [
+    { id: "ibSaDEkfUOI", title: "Smoothly Animated Robot Eyes on OLED Displays with the Robo Eyes Library", ch: "FluxGarage", kind: "official", why: "What procedural eyes can do, from the author of RoboEyes." },
+    { id: "WtLWc5zzrmI", title: "Getting Started With the Free Robo Eyes Arduino Library", ch: "FluxGarage", kind: "official", why: "Install the library and get eyes on an SSD1306." },
+    { id: "k2c2zCmC_X0", title: "GC9A01 Round LCD with ESP32 & Arduino", ch: "DroneBot Workshop", why: "Wiring and driving the round eyeball display." },
+    { id: "8AvvRYcrOrE", title: "OLED Display with Arduino — 0.96-inch SSD1306 I2C Setup", ch: "Real Tech", why: "The basics of the cheapest OLED." },
+  ] },
+  { id: "audio", title: "Microphone & speaker (I²S)", chapter: ["06-senses", "Senses"], videos: [
+    { id: "m-MPBjScNRk", title: "ESP32 Sound — Working with I2S", ch: "DroneBot Workshop", why: "I²S explained, with a microphone and a player." },
+    { id: "At8PDQ3g7FQ", title: "ESP32 Audio Output with I2S DMA and the MAX98357A Class D Amplifier", ch: "atomic14", why: "The MAX98357A in depth." },
+    { id: "ckrW6VKi-0c", title: "ESP32 Voice Record and Play with INMP441 | MAX98357A", ch: "Dsn Industries", why: "The exact mic + amp pairing used in this guide." },
+  ] },
+  { id: "battery", title: "Batteries & charging", chapter: ["03-electronics", "Electronics"], videos: [
+    { id: "9dXDYr-4kTw", title: "TP4056 Wiring Guide: Charge 18650 Batteries Safely (Protected vs Unprotected)", ch: "Just Botond", why: "Explains the protected vs unprotected module difference — the key safety point." },
+    { id: "Z9_lvZtLHgA", title: "Safely Charge 18650 Batteries! TP4056 Module Tutorial", ch: "New Tec Pro", why: "Beginner wiring of a single-cell charger." },
+  ], warn: "Lithium safety matters more than any video: follow the rules in chapter 1 and never leave cells charging unattended." },
+  { id: "print", title: "3D printing & enclosures", chapter: ["07-body-and-shell", "Body & shell"], videos: [
+    { id: "zBz8qvj8MgI", title: "12 years of 3D printing advice in 30 minutes", ch: "Maker's Muse", why: "A dense, practical overview for new printer owners." },
+    { id: "6GflUXkaAe0", title: "Design a Simple Container in FreeCAD — Beginner Tutorial", ch: "Create With Tech", why: "A box with a lid — the starting shape of every robot shell." },
+  ] },
+  { id: "stackchan", title: "Stack-chan", chapter: ["09-reference-projects", "Reference projects"], written: ["Stack-chan build guide", "https://github.com/stack-chan/stack-chan"], videos: [
+    { id: "fZb_mF08xV0", title: "Stack-chan: the open communication robot for everyone", ch: "Stack-chan", kind: "official", why: "The project's own introduction (English subtitles)." },
+    { id: "BOrxkAhvjGE", title: "Stack-chan: a JavaScript-driven M5Stack-friendly Super-kawaii robot", ch: "Stack-chan", kind: "official", why: "How the robot and its JavaScript firmware work." },
+    { id: "PZ0vvUgoS6c", title: "New Arrivals: StackChan Quick Start", ch: "M5Stack", kind: "official", why: "M5Stack's ready-made StackChan kit, out of the box." },
+  ] },
+  { id: "otto", title: "Otto DIY", chapter: ["09-reference-projects", "Reference projects"], written: ["Otto DIY", "https://www.ottodiy.com/"], videos: [
+    { id: "h3jog4-qTQY", title: "Unboxing and step-by-step building of the Otto DIY Starter robot Kit", ch: "Otto DIY robot", why: "The full biped build, step by step." },
+    { id: "bzleDyvgUiw", title: "OttoDIY Build Pt.3 — Assembly", ch: "Robotics Creations", why: "A second view of the assembly." },
+  ] },
+  { id: "reachy", title: "Reachy Mini", chapter: ["09-reference-projects", "Reference projects"], written: ["Reachy Mini docs", "https://huggingface.co/docs/reachy_mini/platforms/reachy_mini/get_started"], videos: [
+    { id: "JvdBJZ-qR18", title: "Your open-source companion — Reachy Mini", ch: "Pollen Robotics", kind: "official", why: "The official introduction from its makers." },
+    { id: "Lus1HBWY2E8", title: "Reachy Mini: An Open Journey Built Together with Hugging Face, Pollen Robotics & Seeed Studio", ch: "Seeed Studio", why: "The story behind the kit." },
+    { id: "03WQk5bERzc", title: "Hugging Face made a robot kit: Unboxing the Reachy Mini", ch: "Edge Impulse", why: "What is in the box and how it comes together." },
+  ] },
+  { id: "ai", title: "Local AI brain", chapter: ["10-connect-to-pc", "Connecting to a PC"], videos: [
+    { id: "rFboArOTe20", title: "A Truly Offline AI Voice Assistant powered by Whisper, Kokoro and Ollama", ch: "Woza Tech Studio", why: "The full local voice loop from chapter 10, working." },
+    { id: "U87ywEWc1_c", title: "Run OpenAI Whisper Locally (Offline) — Fast Speech-to-Text with whisper.cpp", ch: "Null Type", why: "Local speech-to-text with whisper.cpp." },
+    { id: "xJu2DzQVmis", title: "Ollama Full Tutorial for Beginners", ch: "Automation Feed", why: "Install Ollama and run a model locally." },
+  ] },
+];
+
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const card = (v) => `
+  <article class="vid">
+    <button class="player" type="button" data-yt="${v.id}" aria-label="Play: ${esc(v.title)}">
+      <img src="https://i.ytimg.com/vi/${v.id}/hqdefault.jpg" alt="" loading="lazy" width="480" height="360"><span class="play" aria-hidden="true"></span>
+    </button>
+    <div class="vid-body">
+      <h3>${esc(v.title)}</h3>
+      <span class="ch">${esc(v.ch)}${v.kind === "official" ? ' <span class="badge official">Official</span>' : ""}</span>
+      <p>${esc(v.why)}</p>
+      <a class="yt" href="https://www.youtube.com/watch?v=${v.id}" target="_blank" rel="noopener">Watch on YouTube ↗</a>
+    </div>
+  </article>`;
+
+document.getElementById("topics").innerHTML = TOPICS.map((t) => `
+  <section class="topic" id="${t.id}" data-topic="${t.id}">
+    <div class="topic-head">
+      <h2>${esc(t.title)}</h2>
+      <span style="display:flex;gap:16px;flex-wrap:wrap">
+        <a href="chapters/${t.chapter[0]}.html">Chapter: ${esc(t.chapter[1])} →</a>
+        ${t.written ? `<a href="${t.written[1]}" target="_blank" rel="noopener">${esc(t.written[0])} ↗</a>` : ""}
+      </span>
+    </div>
+    ${t.warn ? `<p class="note" style="margin:0 0 14px">${esc(t.warn)}</p>` : ""}
+    <div class="vids">${t.videos.map(card).join("")}</div>
+  </section>`).join("");
+
+// click-to-load: the YouTube player (privacy-enhanced domain) only loads on demand
+document.getElementById("topics").addEventListener("click", (e) => {
+  const b = e.target.closest(".player[data-yt]");
+  if (!b) return;
+  const f = document.createElement("iframe");
+  f.src = `https://www.youtube-nocookie.com/embed/${b.dataset.yt}?autoplay=1&rel=0`;
+  f.title = b.getAttribute("aria-label");
+  f.allow = "autoplay; encrypted-media; picture-in-picture; fullscreen";
+  f.allowFullscreen = true;
+  b.replaceChildren(f); b.removeAttribute("data-yt"); b.style.cursor = "default";
+});
+
+// topic filter
+const filters = document.getElementById("filters");
+[["all", "All topics"], ...TOPICS.map((t) => [t.id, t.title])].forEach(([id, label], i) => {
+  const b = document.createElement("button");
+  b.type = "button"; b.className = "pill"; b.textContent = label; b.setAttribute("aria-pressed", String(i === 0));
+  b.addEventListener("click", () => {
+    filters.querySelectorAll(".pill").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+    document.querySelectorAll(".topic").forEach((s) => { s.hidden = id !== "all" && s.dataset.topic !== id; });
+  });
+  filters.appendChild(b);
+});
+</script>
+</body>
+</html>

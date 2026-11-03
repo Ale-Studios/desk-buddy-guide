@@ -38,7 +38,7 @@ const CHAPTER_PARTS = {
 const partStrip = (file) => {
   const list = CHAPTER_PARTS[file];
   if (!list) return "";
-  return `<section class="part-strip" aria-label="Parts in this chapter"><span class="eyebrow">Parts in this chapter · open one to rotate it in 3D</span>
+  return `<section class="part-strip" aria-label="Parts in this chapter"><span class="eyebrow">Parts in this chapter · open one for photos, specs and wiring</span>
       <div class="part-row">${list.map(([id, name]) => `<a href="../parts.html#${id}"><img data-part="${id}" alt="3D model of the ${esc(name)}" width="480" height="300"><span>${esc(name)}</span></a>`).join("")}</div></section>`;
 };
 
@@ -121,6 +121,7 @@ function page(i, md) {
     <a href="../index.html#finder">Find your path</a>
     <a href="../parts.html">Parts</a>
     <a href="../models.html">3D models</a>
+    <a href="../videos.html">Videos</a>
     <a href="01-basics.html"${i >= 0 ? ' aria-current="page"' : ""}>Chapters</a>
   </nav>
 </header>

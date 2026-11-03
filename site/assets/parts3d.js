@@ -210,16 +210,38 @@ export function buildPart(id) {
   return wrap;
 }
 
-// Fills every <img data-part="id"> on the page with a rendered thumbnail.
-export function renderThumbnails(root = document) {
+// Real, openly licensed photos (Wikimedia Commons) take priority over the 3D
+// models. credits.json is written by tools/fetch-photos.py from the Commons API.
+const PHOTO_DIR = new URL("../photos/", import.meta.url);
+let photosPromise = null;
+export function loadPhotos() {
+  if (!photosPromise) {
+    photosPromise = fetch(new URL("credits.json", PHOTO_DIR))
+      .then((r) => (r.ok ? r.json() : []))
+      .catch(() => [])
+      .then((list) => new Map(list.map((p) => [p.id, { ...p, src: new URL(`${p.id}.jpg`, PHOTO_DIR).href }])));
+  }
+  return photosPromise;
+}
+export const creditLine = (p) =>
+  `Photo: ${p.artist || "unknown"} · <a href="${p.page}" target="_blank" rel="noopener">${p.license}</a> · Wikimedia Commons`;
+
+// Fills every <img data-part="id"> with the part's photo, or a rendered 3D view.
+export async function renderThumbnails(root = document) {
   const imgs = [...root.querySelectorAll("img[data-part]")];
   if (!imgs.length) return;
+  const photos = await loadPhotos();
+  for (const img of imgs) {
+    const p = photos.get(img.dataset.part);
+    if (p) { img.src = p.src; img.classList.add("is-photo"); img.title = `Photo: ${p.artist} (${p.license})`; }
+  }
   const r = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
   r.setPixelRatio(1); r.setSize(480, 300, false);
   const scene = makeScene();
   const cam = new THREE.PerspectiveCamera(32, 480 / 300, 0.1, 5000);
   const cache = new Map();
   for (const img of imgs) {
+    if (img.classList.contains("is-photo")) continue;
     const id = img.dataset.part;
     if (!cache.has(id)) {
       const m = buildPart(id);

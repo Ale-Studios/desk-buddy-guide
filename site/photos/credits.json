@@ -1,0 +1,137 @@
+[
+  {
+    "id": "esp32",
+    "file": "File:ESP32 Dev Board.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:ESP32_Dev_Board.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "artist": "Edwiyanto",
+    "note": "A typical ESP32 development board"
+  },
+  {
+    "id": "esp32s3",
+    "file": "File:ESP32-S3 on paper.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:ESP32-S3_on_paper.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "artist": "VectorVoyager",
+    "note": "An ESP32-S3 development board"
+  },
+  {
+    "id": "pizero",
+    "file": "File:Raspberry Pi Zero 2 W -- 2024 -- 0012.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Raspberry_Pi_Zero_2_W_--_2024_--_0012.jpg",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+    "artist": "Anil Öztas",
+    "note": null
+  },
+  {
+    "id": "pi5",
+    "file": "File:Raspberry Pi 5.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Raspberry_Pi_5.jpg",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+    "artist": "SimonWaldherr",
+    "note": null
+  },
+  {
+    "id": "nano",
+    "file": "File:Arduino Nano on table.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Arduino_Nano_on_table.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "artist": "MegaMegaAndOmega",
+    "note": null
+  },
+  {
+    "id": "sg90",
+    "file": "File:Tower Pro SG90 micro servo motor.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Tower_Pro_SG90_micro_servo_motor.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "artist": "Suyash Dwivedi",
+    "note": null
+  },
+  {
+    "id": "tb6612",
+    "file": "File:TB6612FNG.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:TB6612FNG.jpg",
+    "license": "CC0",
+    "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "artist": "Krishnav25",
+    "note": null
+  },
+  {
+    "id": "hcsr04",
+    "file": "File:HC SR04 Ultrasonic Module.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:HC_SR04_Ultrasonic_Module.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "artist": "Suyash Dwivedi",
+    "note": null
+  },
+  {
+    "id": "ov2640",
+    "file": "File:ESP32-CAM.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:ESP32-CAM.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "artist": "Nowforever",
+    "note": "ESP32-CAM board with its OV2640 camera"
+  },
+  {
+    "id": "speaker",
+    "file": "File:SparkFun speaker---05w-8-ohm 16280234761 o.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:SparkFun_speaker---05w-8-ohm_16280234761_o.jpg",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "artist": "SparkFun Electronics",
+    "note": "A small 0.5 W 8 Ω speaker"
+  },
+  {
+    "id": "tp4056",
+    "file": "File:TP4056 board P1089956.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:TP4056_board_P1089956.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "artist": "-stk",
+    "note": null
+  },
+  {
+    "id": "18650",
+    "file": "File:18650 and 21700 lithium ion battery cell.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:18650_and_21700_lithium_ion_battery_cell.jpg",
+    "license": "CC0",
+    "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "artist": "Sevenethics",
+    "note": "An 18650 cell next to a larger 21700"
+  },
+  {
+    "id": "lipo",
+    "file": "File:Nokia Lithium Polymer battery, BP-6M-6023.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Nokia_Lithium_Polymer_battery,_BP-6M-6023.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "artist": "Raimond Spekking",
+    "note": "A single-cell lithium-polymer battery"
+  },
+  {
+    "id": "picam3",
+    "file": "File:Raspberry Pi Camera Module v2 with ribbon.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Raspberry_Pi_Camera_Module_v2_with_ribbon.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "artist": "the Raspberry Pi Foundation",
+    "note": "Shown: Camera Module v2 (same size and connector as v3)"
+  },
+  {
+    "id": "matrix",
+    "file": "File:LED Matrix - Dual Color - Medium (10295081466).jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:LED_Matrix_-_Dual_Color_-_Medium_(10295081466).jpg",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "artist": "SparkFun Electronics from Boulder, USA",
+    "note": "A bare 8×8 LED matrix (the MAX7219 module adds a driver board behind it)"
+  }
+]

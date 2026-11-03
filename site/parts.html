@@ -84,6 +84,11 @@ select { font: 15px var(--body); padding: 9px 12px; border-radius: 10px; border:
 /* detail drawer */
 .thumb { display: block; margin: -6px -6px 4px; border-radius: 10px; background: radial-gradient(circle at 50% 40%, #1a2742, var(--screen) 75%); aspect-ratio: 16 / 10; overflow: hidden; }
 .thumb img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.thumb.photo { background: #fff; }
+.thumb.photo img { object-fit: contain; }
+.photo-fig { margin: 0; display: flex; flex-direction: column; gap: 8px; }
+.photo-fig img { width: 100%; max-height: 320px; object-fit: contain; background: #fff; border-radius: 14px; }
+.photo-fig figcaption, .model-note { font-size: 13px; color: var(--ink-soft); margin: 0; }
 .viewer { position: relative; height: 280px; border-radius: 14px; overflow: hidden; background: radial-gradient(circle at 50% 40%, #1a2742, var(--screen) 75%); }
 .viewer canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; cursor: grab; }
 .viewer span { position: absolute; z-index: 1; font: 12px var(--mono); color: #cfe9ff; pointer-events: none; }
@@ -125,6 +130,7 @@ footer { border-top: 1.5px solid var(--line); padding: 28px 0 44px; color: var(-
     <a href="index.html#finder">Find your path</a>
     <a href="parts.html" aria-current="page">Parts</a>
     <a href="models.html">3D models</a>
+    <a href="videos.html">Videos</a>
     <a href="index.html#chapters">Chapters</a>
   </nav>
 </header>
@@ -161,28 +167,8 @@ footer { border-top: 1.5px solid var(--line); padding: 28px 0 44px; color: var(-
 <script type="module">
 import * as THREE from "three";
 import { OrbitControls } from "./vendor/three/addons/OrbitControls.js";
-import { buildPart, makeScene, frame } from "./assets/parts3d.js";
-
-// ---------- 3D: one shared renderer makes every card's thumbnail ----------
-const thumbs = new Map();
-const thumbRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
-thumbRenderer.setPixelRatio(1);
-thumbRenderer.setSize(480, 300, false);
-const thumbScene = makeScene();
-const thumbCam = new THREE.PerspectiveCamera(32, 480 / 300, 0.1, 5000);
-function thumbFor(id) {
-  if (thumbs.has(id)) return thumbs.get(id);
-  const m = buildPart(id);
-  if (!m) return "";
-  m.rotation.y = -0.5;
-  thumbScene.add(m);
-  frame(thumbCam, m.userData.size, new THREE.Vector3());
-  thumbRenderer.render(thumbScene, thumbCam);
-  const url = thumbRenderer.domElement.toDataURL("image/png");
-  thumbScene.remove(m);
-  thumbs.set(id, url);
-  return url;
-}
+import { buildPart, makeScene, frame, renderThumbnails, loadPhotos, creditLine } from "./assets/parts3d.js";
+const photos = await loadPhotos();
 
 // ---------- 3D: the live viewer inside the part dialog ----------
 const viewer = { renderer: null, scene: makeScene(), cam: new THREE.PerspectiveCamera(32, 1.6, 0.1, 5000), controls: null, model: null, on: false };
@@ -387,12 +373,13 @@ function render() {
   const grid = document.getElementById("grid");
   grid.innerHTML = list.length ? list.map((p) => `
     <button class="card" type="button" data-id="${p.id}" data-cat="${p.cat}">
-      <span class="thumb"><img src="${thumbFor(p.id)}" alt="3D model of the ${esc(p.name)}" width="480" height="300" loading="lazy"></span>
+      <span class="thumb${photos.has(p.id) ? " photo" : ""}"><img data-part="${p.id}" alt="${photos.has(p.id) ? "Photo" : "3D model"} of the ${esc(p.name)}" width="480" height="300"></span>
       <span class="card-top"><span class="cat">${CATS[p.cat]}</span><span class="price">${priceText(p.p)}</span></span>
       <h3>${esc(p.name)}</h3>
       <p>${esc(p.what)}</p>
       <span class="tags">${p.paths.map((k) => `<span class="tag path">${k}</span>`).join("")}${p.iface.slice(0, 3).map((i) => `<span class="tag">${i}</span>`).join("")}</span>
     </button>`).join("") : `<p class="empty">No part matches. Try another word or clear a filter.</p>`;
+  renderThumbnails(grid);
 }
 
 const dlg = document.getElementById("dlg");
@@ -407,7 +394,8 @@ function openPart(id) {
   document.getElementById("dlg-body").innerHTML = `
     <div class="dlg-head"><div><span class="eyebrow">${CATS[p.cat]}</span><h2 id="d-name">${esc(p.name)}</h2></div>
       <button class="close" type="button" aria-label="Close" data-close>×</button></div>
-    <div class="viewer" id="viewer"><span class="v-size"></span><span class="v-hint">drag to rotate · scroll to zoom</span></div>
+    ${photos.has(p.id) ? `<figure class="photo-fig"><img src="${photos.get(p.id).src}" alt="Photo of the ${esc(p.name)}"><figcaption>${photos.get(p.id).note ? esc(photos.get(p.id).note) + " · " : ""}${creditLine(photos.get(p.id))}</figcaption></figure>`
+      : `<div class="viewer" id="viewer"><span class="v-size"></span><span class="v-hint">drag to rotate · scroll to zoom</span></div><p class="model-note">3D model drawn for this guide — no openly licensed photo of this part is available yet.</p>`}
     <p style="margin:0">${esc(p.what)}</p>
     <dl class="specs">${Object.entries(specs).map(([k, v]) => `<dt>${k.replace(/_/g, " ")}</dt><dd>${esc(v)}</dd>`).join("")}
       <dt>Used in</dt><dd>${p.paths.map((k) => `Path ${k} · ${PATHN[k]}`).join("<br>")}</dd></dl>
@@ -416,7 +404,7 @@ function openPart(id) {
     ${p.wiring ? `<div><span class="eyebrow">Typical wiring (example pins)</span><div class="pins" style="margin-top:8px">${esc(p.wiring)}</div></div>` : ""}
     ${p.links ? `<div class="links">${p.links.map(([t, u]) => `<a href="${u}" target="_blank" rel="noopener">${t} ↗</a>`).join("")}</div>` : ""}`;
   dlg.showModal();
-  openViewer(p.id, document.getElementById("viewer"));
+  if (!photos.has(p.id)) openViewer(p.id, document.getElementById("viewer"));
 }
 // parts.html#sg90 opens that part directly (links from the chapters)
 addEventListener("hashchange", () => openPart(location.hash.slice(1)));
