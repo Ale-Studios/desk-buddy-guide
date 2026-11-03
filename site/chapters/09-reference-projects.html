@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reference projects · Desk Buddy Guide</title>
+<meta name="description" content="You do not have to invent everything. These open projects have solved most of the hard problems already — study them, borrow their ideas, and respect their licences. Summaries here">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="../assets/guide.css">
+</head>
+<body>
+<header class="wrap bar">
+  <a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true"><i></i><i></i></span>Desk Buddy Guide</a>
+  <nav aria-label="Site">
+    <a href="../index.html#finder">Find your path</a>
+    <a href="../parts.html">Parts</a>
+    <a href="../models.html">3D models</a>
+    <a href="01-basics.html" aria-current="page">Chapters</a>
+  </nav>
+</header>
+<div class="wrap layout">
+  <nav class="toc-left" aria-label="Chapters">
+    <details open><summary>Chapters</summary>
+    <ol>
+      <li><a href="01-basics.html"><span>01</span>Basics</a></li>
+      <li><a href="02-choose-your-path.html"><span>02</span>Choose your path</a></li>
+      <li><a href="03-electronics.html"><span>03</span>Electronics</a></li>
+      <li><a href="04-eyes-and-face.html"><span>04</span>Eyes &amp; face</a></li>
+      <li><a href="05-movement.html"><span>05</span>Movement</a></li>
+      <li><a href="06-senses.html"><span>06</span>Senses</a></li>
+      <li><a href="07-body-and-shell.html"><span>07</span>Body &amp; shell</a></li>
+      <li><a href="08-firmware.html"><span>08</span>Basic firmware</a></li>
+      <li><a href="09-reference-projects.html" aria-current="page"><span>09</span>Reference projects</a></li>
+      <li><a href="10-connect-to-pc.html"><span>10</span>Connecting to a PC</a></li>
+    </ol>
+    </details>
+  </nav>
+  <article>
+    <header class="chapter-head">
+      <span class="eyebrow">Chapter 09 of 10</span>
+      <h1>Reference projects</h1>
+      <div class="meta"><span>3 min read</span><span>Updated November 2026</span></div>
+    </header>
+    <div class="prose">
+<p>You do not have to invent everything. These open projects have solved most of the hard problems already — study them, borrow their ideas, and respect their licences. Summaries here are our own words; follow the links for the originals.</p>
+<h2 id="at-a-glance">At a glance<a class="anchor" href="#at-a-glance" aria-label="Link to this section">#</a></h2>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Project</th>
+<th>Path</th>
+<th>Brain</th>
+<th>Licence</th>
+<th>Best thing to learn from it</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Stack-chan</strong></td>
+<td>B</td>
+<td>M5Stack Core2 / CoreS3</td>
+<td>Apache-2.0</td>
+<td>A complete, polished desk buddy: face, neck, case, firmware</td>
+</tr>
+<tr>
+<td><strong>Reachy Mini</strong></td>
+<td>F</td>
+<td>Your PC (Lite) or on-board Raspberry Pi CM4 (Wireless)</td>
+<td>SDK Apache-2.0; hardware design CC BY-SA-NC</td>
+<td>Expressive head motion and a clean Python SDK</td>
+</tr>
+<tr>
+<td><strong>Otto DIY</strong></td>
+<td>D</td>
+<td>Arduino Nano / ESP32</td>
+<td>Resources CC BY-SA 4.0; library GPL-3.0</td>
+<td>Walking with four servos, education material</td>
+</tr>
+<tr>
+<td><strong>RoboEyes</strong></td>
+<td>A, D, E</td>
+<td>Any Arduino-compatible board + OLED</td>
+<td>GPL-3.0</td>
+<td>Ready-made, characterful animated eyes</td>
+</tr>
+<tr>
+<td><strong>wire-pod</strong></td>
+<td>—</td>
+<td>Anki / DDL Vector robot</td>
+<td>MIT</td>
+<td>Replacing a shut-down cloud with a local server</td>
+</tr>
+</tbody></table>
+</div>
+<h2 id="stack-chan">Stack-chan<a class="anchor" href="#stack-chan" aria-label="Link to this section">#</a></h2>
+<p>A palm-sized, open-source companion robot built around an M5Stack controller, with a drawn face and a two-servo neck.</p>
+<ul>
+<li><strong>Hardware:</strong> the standard build uses M5Stack&#39;s &quot;Chan&quot; CoreS3 kit; M5Stack Core2 and CoreS3 are supported, and a self-built version with SG90 servos is possible from the sources.</li>
+<li><strong>Case:</strong> 3D-printable shells for SG90, SCS0009 and RS30X servos, battery backpacks and community remixes, as STEP and STL with Fusion 360 sources. You can inspect the SG90 parts in this guide&#39;s <a href="../models.html">3D viewer</a>.</li>
+<li><strong>Firmware:</strong> written in JavaScript/TypeScript on the Moddable SDK. It can be flashed from a <strong>web installer</strong> without installing any toolchain, and a WebAssembly simulator runs add-on &quot;MODs&quot; in the browser.</li>
+<li><strong>Community:</strong> very active (around 1.8k GitHub stars and 2,000+ commits at the time of writing).</li>
+<li><strong>Links:</strong> <a href="https://github.com/stack-chan/stack-chan" target="_blank" rel="noopener">stack-chan/stack-chan ↗</a> · <a href="https://github.com/stack-chan/stack-chan/tree/develop/case" target="_blank" rel="noopener">case files ↗</a> · <a href="https://github.com/m5stack/StackChan" target="_blank" rel="noopener">M5Stack edition ↗</a></li>
+</ul>
+<h2 id="reachy-mini">Reachy Mini<a class="anchor" href="#reachy-mini" aria-label="Link to this section">#</a></h2>
+<p>An open-hardware expressive head from Pollen Robotics (part of Hugging Face).</p>
+<ul>
+<li><strong>Two versions:</strong> <em>Lite</em> plugs into your computer over USB and uses it as the brain; <em>Wireless</em> carries a Raspberry Pi CM4, a battery, Wi-Fi and an IMU.</li>
+<li><strong>Assembly</strong> takes about two to three hours.</li>
+<li><strong>Software:</strong> Python and JavaScript (WebRTC) SDKs, plus a simulator.</li>
+<li><strong>Licence:</strong> the SDK is Apache-2.0; the hardware design files are Creative Commons <strong>BY-SA-NC</strong>, so they cannot be used commercially.</li>
+<li><strong>Links:</strong> <a href="https://github.com/pollen-robotics/reachy_mini" target="_blank" rel="noopener">pollen-robotics/reachy_mini ↗</a> · <a href="https://huggingface.co/docs/reachy_mini/platforms/reachy_mini/get_started" target="_blank" rel="noopener">getting started ↗</a></li>
+</ul>
+<h2 id="otto-diy">Otto DIY<a class="anchor" href="#otto-diy" aria-label="Link to this section">#</a></h2>
+<p>The best-known open-source walking robot for education: a printed body, four to six micro servos and an ultrasonic sensor for &quot;eyes&quot;.</p>
+<ul>
+<li><strong>Licence:</strong> Otto&#39;s resources are CC BY-SA 4.0 (credit Otto DIY, share remixes alike); the Arduino library is GPL-3.0.</li>
+<li><strong>Links:</strong> <a href="https://www.ottodiy.com/" target="_blank" rel="noopener">ottodiy.com ↗</a> · <a href="https://github.com/OttoDIY/OttoDIYLib" target="_blank" rel="noopener">OttoDIYLib ↗</a></li>
+</ul>
+<h2 id="roboeyes">RoboEyes<a class="anchor" href="#roboeyes" aria-label="Link to this section">#</a></h2>
+<p>An Arduino library by FluxGarage that draws animated robot eyes on monochrome OLEDs: moods, auto-blink, idle glances and short animations. A fast way to give paths A, D and E a face before writing your own.</p>
+<ul>
+<li><strong>Licence:</strong> GPL-3.0 — firmware that includes it must be GPL too.</li>
+<li><strong>Links:</strong> <a href="https://github.com/FluxGarage/RoboEyes" target="_blank" rel="noopener">FluxGarage/RoboEyes ↗</a> · <a href="https://www.youtube.com/watch?v=WtLWc5zzrmI" target="_blank" rel="noopener">getting-started video ↗</a></li>
+</ul>
+<h2 id="wire-pod">wire-pod<a class="anchor" href="#wire-pod" aria-label="Link to this section">#</a></h2>
+<p>A community server that replaces the cloud service of Anki/DDL&#39;s Vector robot, so the robot keeps understanding voice commands without a subscription. Only useful if you already own a Vector — but a great case study in chapter 10&#39;s &quot;local brain&quot; idea.</p>
+<ul>
+<li><strong>Links:</strong> <a href="https://github.com/kercre123/wire-pod" target="_blank" rel="noopener">kercre123/wire-pod ↗</a></li>
+</ul>
+<h2 id="sources">Sources<a class="anchor" href="#sources" aria-label="Link to this section">#</a></h2>
+<ul>
+<li>Stack-chan: <a href="https://github.com/stack-chan/stack-chan" target="_blank" rel="noopener">https://github.com/stack-chan/stack-chan ↗</a></li>
+<li>Reachy Mini: <a href="https://github.com/pollen-robotics/reachy_mini" target="_blank" rel="noopener">https://github.com/pollen-robotics/reachy_mini ↗</a></li>
+<li>Otto DIY library and licences: <a href="https://github.com/OttoDIY/OttoDIYLib" target="_blank" rel="noopener">https://github.com/OttoDIY/OttoDIYLib ↗</a></li>
+<li>RoboEyes: <a href="https://github.com/FluxGarage/RoboEyes" target="_blank" rel="noopener">https://github.com/FluxGarage/RoboEyes ↗</a></li>
+</ul>
+
+    </div>
+    <nav class="pager" aria-label="Previous and next chapter">
+      <a class="prev" href="08-firmware.html"><small>← Previous</small><b>Basic firmware</b></a>
+      <a class="next" href="10-connect-to-pc.html"><small>Next →</small><b>Connecting to a PC</b></a>
+    </nav>
+    <p class="edit">Spotted a mistake or a dead link? <a href="https://github.com/Alex-Stark-industries/desk-buddy-guide/edit/main/docs/09-reference-projects.md" target="_blank" rel="noopener">Edit this chapter on GitHub ↗</a></p>
+  </article>
+  <aside class="toc-right" aria-label="On this page">
+    <span class="eyebrow">On this page</span>
+    <ul>
+      <li><a href="#at-a-glance">At a glance</a></li>
+      <li><a href="#stack-chan">Stack-chan</a></li>
+      <li><a href="#reachy-mini">Reachy Mini</a></li>
+      <li><a href="#otto-diy">Otto DIY</a></li>
+      <li><a href="#roboeyes">RoboEyes</a></li>
+      <li><a href="#wire-pod">wire-pod</a></li>
+      <li><a href="#sources">Sources</a></li>
+    </ul>
+  </aside>
+</div>
+<footer><div class="wrap">Desk Buddy Guide · text CC BY-SA 4.0 · code MIT · third-party projects are linked under their own licences.</div></footer>
+<script>
+// on phones the chapter list starts collapsed so the text comes first
+if (matchMedia("(max-width: 800px)").matches) document.querySelector(".toc-left details").removeAttribute("open");
+// highlight the section being read in the right-hand table of contents
+const links = [...document.querySelectorAll(".toc-right a")];
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach((e) => { if (e.isIntersecting) links.forEach((a) => a.classList.toggle("active", a.getAttribute("href") === "#" + e.target.id)); });
+}, { rootMargin: "0px 0px -70% 0px" });
+document.querySelectorAll(".prose h2").forEach((h) => obs.observe(h));
+</script>
+</body>
+</html>

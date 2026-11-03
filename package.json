@@ -1,0 +1,11 @@
+{
+  "name": "desk-buddy-guide",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node tools/build-chapters.mjs"
+  },
+  "devDependencies": {
+    "marked": "14.1.4"
+  }
+}

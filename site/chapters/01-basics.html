@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Basics · Desk Buddy Guide</title>
+<meta name="description" content="A desk buddy is a small, characterful robot that lives next to your keyboard. It has a face, it looks around, it reacts when you touch it or talk to it — and it never needs a cloud">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="../assets/guide.css">
+</head>
+<body>
+<header class="wrap bar">
+  <a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true"><i></i><i></i></span>Desk Buddy Guide</a>
+  <nav aria-label="Site">
+    <a href="../index.html#finder">Find your path</a>
+    <a href="../parts.html">Parts</a>
+    <a href="../models.html">3D models</a>
+    <a href="01-basics.html" aria-current="page">Chapters</a>
+  </nav>
+</header>
+<div class="wrap layout">
+  <nav class="toc-left" aria-label="Chapters">
+    <details open><summary>Chapters</summary>
+    <ol>
+      <li><a href="01-basics.html" aria-current="page"><span>01</span>Basics</a></li>
+      <li><a href="02-choose-your-path.html"><span>02</span>Choose your path</a></li>
+      <li><a href="03-electronics.html"><span>03</span>Electronics</a></li>
+      <li><a href="04-eyes-and-face.html"><span>04</span>Eyes &amp; face</a></li>
+      <li><a href="05-movement.html"><span>05</span>Movement</a></li>
+      <li><a href="06-senses.html"><span>06</span>Senses</a></li>
+      <li><a href="07-body-and-shell.html"><span>07</span>Body &amp; shell</a></li>
+      <li><a href="08-firmware.html"><span>08</span>Basic firmware</a></li>
+      <li><a href="09-reference-projects.html"><span>09</span>Reference projects</a></li>
+      <li><a href="10-connect-to-pc.html"><span>10</span>Connecting to a PC</a></li>
+    </ol>
+    </details>
+  </nav>
+  <article>
+    <header class="chapter-head">
+      <span class="eyebrow">Chapter 01 of 10</span>
+      <h1>Basics</h1>
+      <div class="meta"><span>3 min read</span><span>Updated November 2026</span></div>
+    </header>
+    <div class="prose">
+<p>A desk buddy is a small, characterful robot that lives next to your keyboard. It has a face, it looks around, it reacts when you touch it or talk to it — and it never needs a cloud account to do any of that.</p>
+<h2 id="anatomy-of-a-desk-buddy">Anatomy of a desk buddy<a class="anchor" href="#anatomy-of-a-desk-buddy" aria-label="Link to this section">#</a></h2>
+<p>Almost every design, from a €30 ESP32 build to a €500 kit, is made of the same four blocks:</p>
+<pre><code> SENSES             BRAIN                EXPRESSION
+ microphone,  ───▶  microcontroller ───▶ face   (display)
+ touch, distance,   (ESP32, Pi, …)       voice  (speaker)
+ light, camera            │              motion (servos / motors)
+                          │
+                   POWER (USB or battery)
+</code></pre>
+<ul>
+<li><strong>Senses</strong> turn the world into numbers: a sound level, a touch, a distance in millimetres.</li>
+<li><strong>The brain</strong> is a small computer that runs a loop: read the senses, decide a mood, update the face and motors.</li>
+<li><strong>Expression</strong> is what you see and hear: eyes on a screen, a nodding neck, beeps and voice.</li>
+<li><strong>Power</strong> keeps everything alive — and is where most beginner problems start (chapter 3).</li>
+</ul>
+<p>The <em>personality</em> lives in the rules that connect senses to expression: blink every few seconds, glance toward a sound, close the eyes when the room goes dark, look happy when someone pats its head.</p>
+<h2 id="what-you-will-learn">What you will learn<a class="anchor" href="#what-you-will-learn" aria-label="Link to this section">#</a></h2>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Skill</th>
+<th>Where</th>
+<th>Why it matters</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Reading a pinout and wiring on a breadboard</td>
+<td>Chapters 3, 6</td>
+<td>Every module connects the same few ways (I²C, SPI, I²S, PWM)</td>
+</tr>
+<tr>
+<td>Soldering header pins</td>
+<td>Chapter 1, 3</td>
+<td>Most modules ship with loose pins</td>
+</tr>
+<tr>
+<td>Powering servos safely</td>
+<td>Chapters 3, 5</td>
+<td>The #1 cause of random resets</td>
+</tr>
+<tr>
+<td>Animating eyes</td>
+<td>Chapter 4</td>
+<td>Where the character comes from</td>
+</tr>
+<tr>
+<td>Designing or printing a shell</td>
+<td>Chapter 7</td>
+<td>Turns a prototype into an object</td>
+</tr>
+<tr>
+<td>Writing a behaviour loop</td>
+<td>Chapter 8</td>
+<td>Makes the robot feel alive</td>
+</tr>
+</tbody></table>
+</div>
+<h2 id="tools">Tools<a class="anchor" href="#tools" aria-label="Link to this section">#</a></h2>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>Needed?</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>USB cable + computer</td>
+<td>Required</td>
+<td>Flashing firmware. Use a cable that carries <strong>data</strong>, not a charge-only one.</td>
+</tr>
+<tr>
+<td>Breadboard + jumper wires</td>
+<td>Required</td>
+<td>Prototype every circuit before soldering it.</td>
+</tr>
+<tr>
+<td>Soldering iron, temperature-controlled (~60 W)</td>
+<td>Strongly recommended</td>
+<td>A fine conical or chisel tip; around 330–360 °C for lead-free solder.</td>
+</tr>
+<tr>
+<td>Multimeter</td>
+<td>Strongly recommended</td>
+<td>Check voltages, continuity and shorts before powering anything.</td>
+</tr>
+<tr>
+<td>Flush cutters, tweezers, small screwdrivers</td>
+<td>Recommended</td>
+<td></td>
+</tr>
+<tr>
+<td>Helping hands or a PCB holder</td>
+<td>Nice to have</td>
+<td>Keeps modules still while soldering.</td>
+</tr>
+<tr>
+<td>3D printer</td>
+<td>Optional</td>
+<td>Print services, kits or cardboard work too (chapter 7).</td>
+</tr>
+<tr>
+<td>Hot glue gun</td>
+<td>Optional</td>
+<td>Fast prototyping of enclosures and cable strain relief.</td>
+</tr>
+</tbody></table>
+</div>
+<blockquote class="tip"><p><span class="label">Tip</span>buy two of every cheap module (displays, sensors, servos). One will arrive dead or get damaged while you learn, and a spare saves a week of waiting.</p>
+</blockquote>
+<h2 id="safety">Safety<a class="anchor" href="#safety" aria-label="Link to this section">#</a></h2>
+<blockquote class="warn"><p><span class="label">Safety</span>lithium batteries (LiPo pouches, 18650 cells) store a lot of energy. A short circuit, a puncture or charging without protection can make them swell, smoke or catch fire.</p>
+</blockquote>
+<ul>
+<li>Use <strong>protected cells</strong>, or a charger board with a protection circuit. Many cheap TP4056 charger boards only charge; the versions with an extra protection chip also guard against over-discharge and short circuits.</li>
+<li><strong>Never leave lithium batteries charging unattended</strong>, and never charge a swollen or damaged cell.</li>
+<li><strong>Servos draw far more current when they stall</strong> than when they move freely. Power them from their own 5 V rail and connect all grounds together (chapter 3).</li>
+<li><strong>Unplug power before changing wiring.</strong> Most dead modules die from a wire moved while powered.</li>
+<li>Solder in a ventilated room, keep the iron in its stand, and wash your hands after handling leaded solder.</li>
+</ul>
+<h2 id="before-you-buy-anything">Before you buy anything<a class="anchor" href="#before-you-buy-anything" aria-label="Link to this section">#</a></h2>
+<ol>
+<li>Read <a href="02-choose-your-path.html">chapter 2</a> and pick <strong>one</strong> path.</li>
+<li>Buy that path&#39;s parts plus spares of the cheap ones.</li>
+<li>Follow the chapters in order: power and wiring first, face second, movement third.</li>
+</ol>
+<h2 id="further-reading">Further reading<a class="anchor" href="#further-reading" aria-label="Link to this section">#</a></h2>
+<ul>
+<li>Adafruit Learn — the best free library of beginner-friendly electronics guides: <a href="https://learn.adafruit.com/" target="_blank" rel="noopener">https://learn.adafruit.com/ ↗</a></li>
+<li>Arduino documentation — getting started and language reference: <a href="https://docs.arduino.cc/" target="_blank" rel="noopener">https://docs.arduino.cc/ ↗</a></li>
+</ul>
+
+    </div>
+    <nav class="pager" aria-label="Previous and next chapter">
+      
+      <a class="next" href="02-choose-your-path.html"><small>Next →</small><b>Choose your path</b></a>
+    </nav>
+    <p class="edit">Spotted a mistake or a dead link? <a href="https://github.com/Alex-Stark-industries/desk-buddy-guide/edit/main/docs/01-basics.md" target="_blank" rel="noopener">Edit this chapter on GitHub ↗</a></p>
+  </article>
+  <aside class="toc-right" aria-label="On this page">
+    <span class="eyebrow">On this page</span>
+    <ul>
+      <li><a href="#anatomy-of-a-desk-buddy">Anatomy of a desk buddy</a></li>
+      <li><a href="#what-you-will-learn">What you will learn</a></li>
+      <li><a href="#tools">Tools</a></li>
+      <li><a href="#safety">Safety</a></li>
+      <li><a href="#before-you-buy-anything">Before you buy anything</a></li>
+      <li><a href="#further-reading">Further reading</a></li>
+    </ul>
+  </aside>
+</div>
+<footer><div class="wrap">Desk Buddy Guide · text CC BY-SA 4.0 · code MIT · third-party projects are linked under their own licences.</div></footer>
+<script>
+// on phones the chapter list starts collapsed so the text comes first
+if (matchMedia("(max-width: 800px)").matches) document.querySelector(".toc-left details").removeAttribute("open");
+// highlight the section being read in the right-hand table of contents
+const links = [...document.querySelectorAll(".toc-right a")];
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach((e) => { if (e.isIntersecting) links.forEach((a) => a.classList.toggle("active", a.getAttribute("href") === "#" + e.target.id)); });
+}, { rootMargin: "0px 0px -70% 0px" });
+document.querySelectorAll(".prose h2").forEach((h) => obs.observe(h));
+</script>
+</body>
+</html>

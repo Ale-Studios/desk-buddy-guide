@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Body &amp; shell · Desk Buddy Guide</title>
+<meta name="description" content="The shell turns a tangle of modules into an object with a personality. It also protects the electronics, hides the wires and decides how the robot feels in your hand.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="../assets/guide.css">
+</head>
+<body>
+<header class="wrap bar">
+  <a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true"><i></i><i></i></span>Desk Buddy Guide</a>
+  <nav aria-label="Site">
+    <a href="../index.html#finder">Find your path</a>
+    <a href="../parts.html">Parts</a>
+    <a href="../models.html">3D models</a>
+    <a href="01-basics.html" aria-current="page">Chapters</a>
+  </nav>
+</header>
+<div class="wrap layout">
+  <nav class="toc-left" aria-label="Chapters">
+    <details open><summary>Chapters</summary>
+    <ol>
+      <li><a href="01-basics.html"><span>01</span>Basics</a></li>
+      <li><a href="02-choose-your-path.html"><span>02</span>Choose your path</a></li>
+      <li><a href="03-electronics.html"><span>03</span>Electronics</a></li>
+      <li><a href="04-eyes-and-face.html"><span>04</span>Eyes &amp; face</a></li>
+      <li><a href="05-movement.html"><span>05</span>Movement</a></li>
+      <li><a href="06-senses.html"><span>06</span>Senses</a></li>
+      <li><a href="07-body-and-shell.html" aria-current="page"><span>07</span>Body &amp; shell</a></li>
+      <li><a href="08-firmware.html"><span>08</span>Basic firmware</a></li>
+      <li><a href="09-reference-projects.html"><span>09</span>Reference projects</a></li>
+      <li><a href="10-connect-to-pc.html"><span>10</span>Connecting to a PC</a></li>
+    </ol>
+    </details>
+  </nav>
+  <article>
+    <header class="chapter-head">
+      <span class="eyebrow">Chapter 07 of 10</span>
+      <h1>Body &amp; shell</h1>
+      <div class="meta"><span>3 min read</span><span>Updated November 2026</span></div>
+    </header>
+    <div class="prose">
+<p>The shell turns a tangle of modules into an object with a personality. It also protects the electronics, hides the wires and decides how the robot <em>feels</em> in your hand.</p>
+<h2 id="choosing-a-method">Choosing a method<a class="anchor" href="#choosing-a-method" aria-label="Link to this section">#</a></h2>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Cost</th>
+<th>Strengths</th>
+<th>Limits</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>3D printing (PLA / PETG)</strong></td>
+<td>Low with your own printer</td>
+<td>Precise, repeatable, easy to share as files</td>
+<td>Needs a printer or a service</td>
+</tr>
+<tr>
+<td><strong>Online print service</strong></td>
+<td>Medium</td>
+<td>No printer needed, wide material choice</td>
+<td>Waiting time and shipping</td>
+</tr>
+<tr>
+<td><strong>Cardboard / foam board</strong></td>
+<td>Almost free</td>
+<td>The fastest way to test proportions</td>
+<td>Fragile, short-lived</td>
+</tr>
+<tr>
+<td><strong>Wood / plywood</strong></td>
+<td>Low</td>
+<td>Warm look, very sturdy</td>
+<td>Needs tools, less detail</td>
+</tr>
+<tr>
+<td><strong>Ready-made kit</strong></td>
+<td>Medium–high</td>
+<td>Designed to fit perfectly</td>
+<td>Less unique</td>
+</tr>
+</tbody></table>
+</div>
+<blockquote class="tip"><p><span class="label">Tip</span>build a cardboard mock-up first. Ten minutes with a box cutter tells you whether the head is the right size for the display before you spend hours printing.</p>
+</blockquote>
+<h2 id="start-from-an-open-design">Start from an open design<a class="anchor" href="#start-from-an-open-design" aria-label="Link to this section">#</a></h2>
+<p>You rarely have to start from zero. These shells are published openly:</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Design</th>
+<th>Licence</th>
+<th>Can I redistribute or remix it?</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="https://github.com/stack-chan/stack-chan/tree/develop/case" target="_blank" rel="noopener">Stack-chan cases ↗</a> — SG90, SCS0009, RS30X servo versions, battery backpacks, community remixes (STEP, STL, Fusion 360)</td>
+<td>Apache-2.0</td>
+<td>Yes, with the licence notice and credit</td>
+</tr>
+<tr>
+<td><a href="https://www.ottodiy.com/" target="_blank" rel="noopener">Otto DIY ↗</a> biped body</td>
+<td>CC BY-SA 4.0</td>
+<td>Yes, with credit to Otto DIY; remixes stay CC BY-SA</td>
+</tr>
+<tr>
+<td><a href="https://github.com/pollen-robotics/reachy_mini" target="_blank" rel="noopener">Reachy Mini ↗</a></td>
+<td>CC BY-SA-NC</td>
+<td>Personal and non-commercial use only</td>
+</tr>
+</tbody></table>
+</div>
+<p>Inspect the Stack-chan SG90 parts in the <a href="../models.html">3D viewer</a> — rotate them, check their size in millimetres and download the STL files.</p>
+<blockquote><p><span class="label">Note</span>models on sites like Printables and Thingiverse each carry their own licence. Read it before you remix, sell prints or include the files in another project.</p>
+</blockquote>
+<h2 id="design-rules-that-save-reprints">Design rules that save reprints<a class="anchor" href="#design-rules-that-save-reprints" aria-label="Link to this section">#</a></h2>
+<ul>
+<li><strong>Design around the display first.</strong> The screen sets the size of the head; everything else fits around it.</li>
+<li><strong>Keep the USB port reachable</strong> — you will reflash the firmware many times.</li>
+<li><strong>Make it openable.</strong> Use screws into heat-set inserts, or magnets; snap fits wear out.</li>
+<li><strong>Leave clearance.</strong> About 0.2–0.3 mm per side for parts that slide together; check with a small test print.</li>
+<li><strong>Ventilate</strong> near voltage regulators and the board.</li>
+<li><strong>Route cables through the neck</strong> with enough slack for the full pan and tilt range.</li>
+<li><strong>Give the speaker a sealed chamber</strong> and the microphone a small hole facing forward.</li>
+<li><strong>Mount servos with their own screws and brackets</strong>, not glue.</li>
+</ul>
+<h2 id="printing-tips">Printing tips<a class="anchor" href="#printing-tips" aria-label="Link to this section">#</a></h2>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Starting point</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Material</td>
+<td>PLA for most parts, PETG for brackets and anything warm</td>
+<td>PLA is easy; PETG is tougher and handles heat better</td>
+</tr>
+<tr>
+<td>Layer height</td>
+<td>0.2 mm (0.12–0.16 mm for visible faces)</td>
+<td>Balance between speed and finish</td>
+</tr>
+<tr>
+<td>Walls</td>
+<td>3 perimeters</td>
+<td>Strength for screw holes and brackets</td>
+</tr>
+<tr>
+<td>Infill</td>
+<td>15–25 %</td>
+<td>Enough for small robot parts</td>
+</tr>
+<tr>
+<td>Orientation</td>
+<td>Largest flat face on the bed; screw holes vertical</td>
+<td>Fewer supports, stronger holes</td>
+</tr>
+</tbody></table>
+</div>
+<h2 id="free-tools">Free tools<a class="anchor" href="#free-tools" aria-label="Link to this section">#</a></h2>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Job</th>
+<th>Tools</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Mechanical design</td>
+<td><a href="https://www.freecad.org/" target="_blank" rel="noopener">FreeCAD ↗</a>, Onshape (free plan), Tinkercad (beginners)</td>
+</tr>
+<tr>
+<td>Organic shapes and characters</td>
+<td><a href="https://www.blender.org/" target="_blank" rel="noopener">Blender ↗</a></td>
+</tr>
+<tr>
+<td>Slicing</td>
+<td>PrusaSlicer, Cura, OrcaSlicer</td>
+</tr>
+<tr>
+<td>PCB and component 3D models</td>
+<td><a href="https://www.kicad.org/" target="_blank" rel="noopener">KiCad ↗</a></td>
+</tr>
+</tbody></table>
+</div>
+<h2 id="sources">Sources<a class="anchor" href="#sources" aria-label="Link to this section">#</a></h2>
+<ul>
+<li>Stack-chan case files and licence: <a href="https://github.com/stack-chan/stack-chan" target="_blank" rel="noopener">https://github.com/stack-chan/stack-chan ↗</a></li>
+<li>Otto DIY licence: <a href="https://github.com/OttoDIY/OttoDIYLib" target="_blank" rel="noopener">https://github.com/OttoDIY/OttoDIYLib ↗</a></li>
+<li>Reachy Mini hardware licence: <a href="https://github.com/pollen-robotics/reachy_mini" target="_blank" rel="noopener">https://github.com/pollen-robotics/reachy_mini ↗</a></li>
+</ul>
+
+    </div>
+    <nav class="pager" aria-label="Previous and next chapter">
+      <a class="prev" href="06-senses.html"><small>← Previous</small><b>Senses</b></a>
+      <a class="next" href="08-firmware.html"><small>Next →</small><b>Basic firmware</b></a>
+    </nav>
+    <p class="edit">Spotted a mistake or a dead link? <a href="https://github.com/Alex-Stark-industries/desk-buddy-guide/edit/main/docs/07-body-and-shell.md" target="_blank" rel="noopener">Edit this chapter on GitHub ↗</a></p>
+  </article>
+  <aside class="toc-right" aria-label="On this page">
+    <span class="eyebrow">On this page</span>
+    <ul>
+      <li><a href="#choosing-a-method">Choosing a method</a></li>
+      <li><a href="#start-from-an-open-design">Start from an open design</a></li>
+      <li><a href="#design-rules-that-save-reprints">Design rules that save reprints</a></li>
+      <li><a href="#printing-tips">Printing tips</a></li>
+      <li><a href="#free-tools">Free tools</a></li>
+      <li><a href="#sources">Sources</a></li>
+    </ul>
+  </aside>
+</div>
+<footer><div class="wrap">Desk Buddy Guide · text CC BY-SA 4.0 · code MIT · third-party projects are linked under their own licences.</div></footer>
+<script>
+// on phones the chapter list starts collapsed so the text comes first
+if (matchMedia("(max-width: 800px)").matches) document.querySelector(".toc-left details").removeAttribute("open");
+// highlight the section being read in the right-hand table of contents
+const links = [...document.querySelectorAll(".toc-right a")];
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach((e) => { if (e.isIntersecting) links.forEach((a) => a.classList.toggle("active", a.getAttribute("href") === "#" + e.target.id)); });
+}, { rootMargin: "0px 0px -70% 0px" });
+document.querySelectorAll(".prose h2").forEach((h) => obs.observe(h));
+</script>
+</body>
+</html>

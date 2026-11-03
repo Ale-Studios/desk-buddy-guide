@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Connecting to a PC · Desk Buddy Guide</title>
+<meta name="description" content="A microcontroller cannot run a language model. The pattern every serious project uses is the same: the robot is the body, your computer is the brain. And with today&amp;#39;s open-sour">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="../assets/guide.css">
+</head>
+<body>
+<header class="wrap bar">
+  <a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true"><i></i><i></i></span>Desk Buddy Guide</a>
+  <nav aria-label="Site">
+    <a href="../index.html#finder">Find your path</a>
+    <a href="../parts.html">Parts</a>
+    <a href="../models.html">3D models</a>
+    <a href="01-basics.html" aria-current="page">Chapters</a>
+  </nav>
+</header>
+<div class="wrap layout">
+  <nav class="toc-left" aria-label="Chapters">
+    <details open><summary>Chapters</summary>
+    <ol>
+      <li><a href="01-basics.html"><span>01</span>Basics</a></li>
+      <li><a href="02-choose-your-path.html"><span>02</span>Choose your path</a></li>
+      <li><a href="03-electronics.html"><span>03</span>Electronics</a></li>
+      <li><a href="04-eyes-and-face.html"><span>04</span>Eyes &amp; face</a></li>
+      <li><a href="05-movement.html"><span>05</span>Movement</a></li>
+      <li><a href="06-senses.html"><span>06</span>Senses</a></li>
+      <li><a href="07-body-and-shell.html"><span>07</span>Body &amp; shell</a></li>
+      <li><a href="08-firmware.html"><span>08</span>Basic firmware</a></li>
+      <li><a href="09-reference-projects.html"><span>09</span>Reference projects</a></li>
+      <li><a href="10-connect-to-pc.html" aria-current="page"><span>10</span>Connecting to a PC</a></li>
+    </ol>
+    </details>
+  </nav>
+  <article>
+    <header class="chapter-head">
+      <span class="eyebrow">Chapter 10 of 10</span>
+      <h1>Connecting to a PC</h1>
+      <div class="meta"><span>3 min read</span><span>Updated November 2026</span></div>
+    </header>
+    <div class="prose">
+<p>A microcontroller cannot run a language model. The pattern every serious project uses is the same: <strong>the robot is the body, your computer is the brain.</strong> And with today&#39;s open-source tools, that brain can run entirely on your own machine — free, private, with no cloud account and no API key.</p>
+<h2 id="architecture">Architecture<a class="anchor" href="#architecture" aria-label="Link to this section">#</a></h2>
+<pre><code>ROBOT (ESP32)                          COMPUTER on the same network
+                                       ┌──────────────────────────────┐
+microphone ── audio frames ──────────▶ │ wake word   (optional)        │
+                                       │ speech-to-text  e.g. whisper  │
+                                       │ language model  e.g. Ollama   │
+                                       │ text-to-speech  e.g. Kokoro   │
+speaker   ◀── audio ─────────────────  │                               │
+face/servos ◀── {&quot;face&quot;:&quot;happy&quot;} ────  │ behaviour / tool logic        │
+                                       └──────────────────────────────┘
+</code></pre>
+<p>The robot stays responsive (blinking, looking around) on its own; the computer only handles the slow, heavy parts.</p>
+<h2 id="step-1-pick-a-link">Step 1 — pick a link<a class="anchor" href="#step-1-pick-a-link" aria-label="Link to this section">#</a></h2>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Link</th>
+<th>Pros</th>
+<th>Cons</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>WebSocket over Wi-Fi</strong></td>
+<td>Wireless, two-way, carries both JSON and audio</td>
+<td>Slightly more code</td>
+</tr>
+<tr>
+<td><strong>MQTT</strong></td>
+<td>Great for several devices, many tools</td>
+<td>Needs a broker running</td>
+</tr>
+<tr>
+<td><strong>USB serial</strong></td>
+<td>Simplest, no network setup</td>
+<td>Robot is tethered</td>
+</tr>
+</tbody></table>
+</div>
+<h2 id="step-2-define-a-small-protocol">Step 2 — define a small protocol<a class="anchor" href="#step-2-define-a-small-protocol" aria-label="Link to this section">#</a></h2>
+<p>Keep it human-readable. Commands from computer to robot:</p>
+<pre><code class="language-json">{ &quot;face&quot;: &quot;happy&quot; }
+{ &quot;look&quot;: [12, -4] }
+{ &quot;nod&quot;: 2 }
+{ &quot;say&quot;: &quot;audio-start&quot;, &quot;rate&quot;: 16000 }
+</code></pre>
+<p>Events from robot to computer:</p>
+<pre><code class="language-json">{ &quot;event&quot;: &quot;touch&quot; }
+{ &quot;event&quot;: &quot;near&quot;, &quot;mm&quot;: 180 }
+{ &quot;event&quot;: &quot;audio&quot;, &quot;rate&quot;: 16000 }
+</code></pre>
+<p>Audio travels as raw 16-bit PCM frames (16 kHz mono is enough for speech) in binary WebSocket messages.</p>
+<h2 id="step-3-the-computer-side">Step 3 — the computer side<a class="anchor" href="#step-3-the-computer-side" aria-label="Link to this section">#</a></h2>
+<p>A small Python or Node.js server that:</p>
+<ol>
+<li>Receives audio from the robot and detects when you stop speaking.</li>
+<li>Transcribes it with a speech-to-text model.</li>
+<li>Sends the text to a local language model.</li>
+<li>Turns the reply into speech and streams it back, together with a face command.</li>
+</ol>
+<h2 id="free-local-building-blocks">Free local building blocks<a class="anchor" href="#free-local-building-blocks" aria-label="Link to this section">#</a></h2>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Role</th>
+<th>Project</th>
+<th>Licence</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Speech-to-text</td>
+<td><a href="https://github.com/ggml-org/whisper.cpp" target="_blank" rel="noopener">whisper.cpp ↗</a></td>
+<td>MIT</td>
+<td>Runs on CPU or GPU (CUDA, Vulkan, Metal…). Models: tiny 75 MiB, base 142 MiB, small 466 MiB, medium 1.5 GiB, large 2.9 GiB.</td>
+</tr>
+<tr>
+<td>Language model</td>
+<td><a href="https://github.com/ollama/ollama" target="_blank" rel="noopener">Ollama ↗</a></td>
+<td>See repository</td>
+<td>Runs open models locally. Its OpenAI-compatible API lives at <code>http://localhost:11434/v1/</code>; clients need an API-key field but any placeholder works locally.</td>
+</tr>
+<tr>
+<td>Text-to-speech</td>
+<td><a href="https://huggingface.co/hexgrad/Kokoro-82M" target="_blank" rel="noopener">Kokoro-82M ↗</a></td>
+<td>Apache-2.0</td>
+<td>Small, natural-sounding voices.</td>
+</tr>
+<tr>
+<td>Text-to-speech</td>
+<td><a href="https://github.com/OHF-Voice/piper1-gpl" target="_blank" rel="noopener">Piper ↗</a></td>
+<td>GPL-3.0</td>
+<td>Fast; the original <code>rhasspy/piper</code> repository was archived in October 2025 and development continues here.</td>
+</tr>
+<tr>
+<td>Wake word</td>
+<td><a href="https://github.com/dscripka/openWakeWord" target="_blank" rel="noopener">openWakeWord ↗</a></td>
+<td>Code Apache-2.0; pre-trained models CC BY-NC-SA 4.0</td>
+<td>Runs on a PC or Pi, not on microcontrollers. The included models are <strong>non-commercial</strong>.</td>
+</tr>
+</tbody></table>
+</div>
+<blockquote><p><span class="label">Note</span>check every licence before you sell a robot or a product built on these tools. Open source does not always mean &quot;free for commercial use&quot; — openWakeWord&#39;s pre-trained models are the clearest example.</p>
+</blockquote>
+<h2 id="step-4-hide-the-latency">Step 4 — hide the latency<a class="anchor" href="#step-4-hide-the-latency" aria-label="Link to this section">#</a></h2>
+<p>On an ordinary PC the full loop (listen → transcribe → think → speak) takes from one to several seconds. The robot should never look frozen during that time:</p>
+<ul>
+<li>switch to the <strong>thinking</strong> face the moment you stop speaking;</li>
+<li>keep small idle movements going;</li>
+<li>start speaking the first sentence as soon as it is ready instead of waiting for the full reply.</li>
+</ul>
+<h2 id="step-5-privacy-and-safety">Step 5 — privacy and safety<a class="anchor" href="#step-5-privacy-and-safety" aria-label="Link to this section">#</a></h2>
+<ul>
+<li>Bind the server to your <strong>local network only</strong>; never expose it to the internet.</li>
+<li>Keep a physical way to mute the microphone (a switch, or covering the touch pad).</li>
+<li>Log nothing you would not want stored.</li>
+</ul>
+<h2 id="sources">Sources<a class="anchor" href="#sources" aria-label="Link to this section">#</a></h2>
+<ul>
+<li>whisper.cpp licence, backends and model sizes: <a href="https://github.com/ggml-org/whisper.cpp" target="_blank" rel="noopener">https://github.com/ggml-org/whisper.cpp ↗</a></li>
+<li>Piper archive notice and new home: <a href="https://github.com/rhasspy/piper" target="_blank" rel="noopener">https://github.com/rhasspy/piper ↗</a> · <a href="https://github.com/OHF-Voice/piper1-gpl" target="_blank" rel="noopener">https://github.com/OHF-Voice/piper1-gpl ↗</a></li>
+<li>Ollama OpenAI-compatible API: <a href="https://docs.ollama.com/api/openai-compatibility" target="_blank" rel="noopener">https://docs.ollama.com/api/openai-compatibility ↗</a></li>
+<li>Kokoro-82M (Apache-2.0): <a href="https://huggingface.co/hexgrad/Kokoro-82M" target="_blank" rel="noopener">https://huggingface.co/hexgrad/Kokoro-82M ↗</a></li>
+<li>openWakeWord licences and hardware notes: <a href="https://github.com/dscripka/openWakeWord" target="_blank" rel="noopener">https://github.com/dscripka/openWakeWord ↗</a></li>
+</ul>
+
+    </div>
+    <nav class="pager" aria-label="Previous and next chapter">
+      <a class="prev" href="09-reference-projects.html"><small>← Previous</small><b>Reference projects</b></a>
+      <a class="next" href="../index.html#finder"><small>Done? →</small><b>Pick your build path</b></a>
+    </nav>
+    <p class="edit">Spotted a mistake or a dead link? <a href="https://github.com/Alex-Stark-industries/desk-buddy-guide/edit/main/docs/10-connect-to-pc.md" target="_blank" rel="noopener">Edit this chapter on GitHub ↗</a></p>
+  </article>
+  <aside class="toc-right" aria-label="On this page">
+    <span class="eyebrow">On this page</span>
+    <ul>
+      <li><a href="#architecture">Architecture</a></li>
+      <li><a href="#step-1-pick-a-link">Step 1 — pick a link</a></li>
+      <li><a href="#step-2-define-a-small-protocol">Step 2 — define a small protocol</a></li>
+      <li><a href="#step-3-the-computer-side">Step 3 — the computer side</a></li>
+      <li><a href="#free-local-building-blocks">Free local building blocks</a></li>
+      <li><a href="#step-4-hide-the-latency">Step 4 — hide the latency</a></li>
+      <li><a href="#step-5-privacy-and-safety">Step 5 — privacy and safety</a></li>
+      <li><a href="#sources">Sources</a></li>
+    </ul>
+  </aside>
+</div>
+<footer><div class="wrap">Desk Buddy Guide · text CC BY-SA 4.0 · code MIT · third-party projects are linked under their own licences.</div></footer>
+<script>
+// on phones the chapter list starts collapsed so the text comes first
+if (matchMedia("(max-width: 800px)").matches) document.querySelector(".toc-left details").removeAttribute("open");
+// highlight the section being read in the right-hand table of contents
+const links = [...document.querySelectorAll(".toc-right a")];
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach((e) => { if (e.isIntersecting) links.forEach((a) => a.classList.toggle("active", a.getAttribute("href") === "#" + e.target.id)); });
+}, { rootMargin: "0px 0px -70% 0px" });
+document.querySelectorAll(".prose h2").forEach((h) => obs.observe(h));
+</script>
+</body>
+</html>

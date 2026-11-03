@@ -35,7 +35,7 @@ a { color: var(--accent); }
 h1, h2, h3 { font-family: var(--display); line-height: 1.1; text-wrap: balance; margin: 0; }
 .eyebrow { font: 600 12px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-soft); }
 
-.bar { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 18px 0; }
+.bar { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-block: 18px; }
 .brand { display: flex; align-items: center; gap: 10px; font: 800 18px var(--display); color: var(--ink); text-decoration: none; }
 .brand-mark { width: 30px; height: 22px; border-radius: 7px; background: var(--screen); display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 6px; }
 .brand-mark i { background: var(--eye); border-radius: 3px; }
@@ -43,7 +43,7 @@ h1, h2, h3 { font-family: var(--display); line-height: 1.1; text-wrap: balance; 
 .bar nav a { color: var(--ink-soft); text-decoration: none; }
 .bar nav a[aria-current="page"] { color: var(--ink); font-weight: 700; }
 
-.intro { padding: 28px 0 24px; display: flex; flex-direction: column; gap: 12px; max-width: 46em; }
+.intro { padding-block: 28px 24px; display: flex; flex-direction: column; gap: 12px; max-width: 46em; }
 .intro h1 { font-size: clamp(36px, 5vw, 60px); font-weight: 800; letter-spacing: -.02em; }
 .intro p { margin: 0; color: var(--ink-soft); font-size: 18px; }
 
@@ -59,7 +59,7 @@ select { font: 15px var(--body); padding: 9px 12px; border-radius: 10px; border:
 .count { font: 13px var(--mono); color: var(--ink-soft); margin-left: auto; font-variant-numeric: tabular-nums; }
 
 /* grid */
-.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; padding: 24px 0 64px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; padding-block: 24px 64px; }
 .card { background: var(--panel); border: 1.5px solid var(--line); border-radius: var(--radius); padding: 18px; display: flex; flex-direction: column; gap: 10px; text-align: left; font: inherit; color: inherit; cursor: pointer; transition: border-color .2s, transform .2s; }
 .card:hover { border-color: var(--accent); transform: translateY(-2px); }
 .card-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
@@ -100,7 +100,8 @@ dialog::backdrop { background: rgba(7, 11, 20, .55); }
 
 footer { border-top: 1.5px solid var(--line); padding: 28px 0 44px; color: var(--ink-soft); font-size: 14px; }
 @media (max-width: 720px) {
-  .bar nav { display: none; }
+  .bar { flex-wrap: wrap; }
+  .bar nav { gap: 14px; font-size: 14px; overflow-x: auto; max-width: 100%; white-space: nowrap; padding-bottom: 4px; }
   .row .lbl { min-width: 100%; }
   .pc { grid-template-columns: 1fr; }
   .specs { grid-template-columns: 1fr; }
@@ -203,12 +204,12 @@ const PARTS = [
 
   { id: "sg90", cat: "motion", name: "SG90 micro servo", p: [1.5, 4], paths: ["A", "B", "D"], iface: ["PWM"],
     what: "The standard tiny servo for necks and legs.",
-    specs: { Torque: "≈1.8 kg·cm", Voltage: "4.8–6 V", Chapter: "5 · Movement" },
+    specs: { Torque: "≈1.2 kg·cm at 4.8 V (vendors quote up to 1.8)", Voltage: "4.8–6 V", Stall_current: "300–750 mA — plan for 0.75 A", Chapter: "5 · Movement" },
     pros: ["Cheap", "Everywhere", "Stack-chan case available"], cons: ["Plastic gears", "Buzzes"],
     wiring: "Servo wire   ->  where\nBrown (GND)  ->  GND (shared)\nRed (+)      ->  5 V servo rail\nOrange (sig) ->  any PWM GPIO" },
   { id: "mg90s", cat: "motion", name: "MG90S micro servo", p: [3, 6], paths: ["A", "D"], iface: ["PWM"],
     what: "Same size as SG90 with metal gears — survives curious fingers.",
-    specs: { Torque: "≈2.2 kg·cm", Voltage: "4.8–6 V", Chapter: "5 · Movement" },
+    specs: { Size: "Same as SG90, drop-in", Voltage: "4.8–6 V", Chapter: "5 · Movement" },
     pros: ["Metal gears", "Drop-in for SG90"], cons: ["Slightly heavier"] },
   { id: "scs0009", cat: "motion", name: "Serial bus servo (SCS0009)", p: [8, 15], paths: ["B"], iface: ["UART"],
     what: "Daisy-chained smart servos with position feedback.",
@@ -220,11 +221,18 @@ const PARTS = [
     pros: ["Compact", "Many gear ratios"], cons: ["Needs a motor driver"] },
   { id: "drv8833", cat: "motion", name: "DRV8833 motor driver", p: [2, 5], paths: ["E"], iface: ["PWM"],
     what: "Drives two small DC motors forward and backward.",
-    specs: { Current: "≈1.2 A per channel", Voltage: "2.7–10.8 V", Chapter: "5 · Movement" },
-    pros: ["Small", "Cheap"], cons: ["Not for big motors"] },
+    specs: { Channels: "2 DC motors", Chapter: "5 · Movement" },
+    pros: ["Small", "Cheap"], cons: ["Not for big motors"],
+    links: [["TI datasheet", "https://www.ti.com/lit/ds/symlink/drv8833.pdf"]] },
+  { id: "tb6612", cat: "motion", name: "TB6612FNG motor driver", p: [3, 7], paths: ["E"], iface: ["PWM"],
+    what: "A sturdier dual motor driver with a separate logic supply.",
+    specs: { Motor_supply: "2.2–13.5 V", Logic: "2.7–5.5 V", Current: "1.2 A continuous / 3.2 A peak per channel", Chapter: "5 · Movement" },
+    pros: ["More current headroom", "Well documented"], cons: ["STBY must be driven high or motors never turn"],
+    links: [["SparkFun hookup guide", "https://learn.sparkfun.com/tutorials/tb6612fng-hookup-guide/all"]] },
   { id: "pca9685", cat: "motion", name: "PCA9685 servo driver", p: [3, 8], paths: ["C", "D"], iface: ["I2C"],
     what: "16 servo channels over two wires.",
-    specs: { Channels: "16 PWM", Chapter: "5 · Movement" },
+    specs: { Channels: "16 × 12-bit PWM", Chaining: "up to 62 boards on one I²C bus", Chapter: "5 · Movement" },
+    links: [["Adafruit guide", "https://learn.adafruit.com/16-channel-pwm-servo-driver"]],
     pros: ["Frees your board's pins", "Great with Raspberry Pi"], cons: ["Needs its own servo power"] },
 
   { id: "inmp441", cat: "sense", name: "INMP441 I²S microphone", p: [2, 5], paths: ["A", "C", "E"], iface: ["I2S"],
@@ -238,12 +246,14 @@ const PARTS = [
     pros: ["Works through thin plastic", "Dirt cheap"], cons: ["One touch point each"] },
   { id: "vl53l0x", cat: "sense", name: "VL53L0X distance sensor", p: [3, 8], paths: ["A", "E"], iface: ["I2C"],
     what: "A laser time-of-flight sensor: knows when your hand is near.",
-    specs: { Range: "up to ≈2 m", Chapter: "6 · Senses" },
+    specs: { Range: "≈50 mm – 1.2 m (up to 2 m in long-range mode)", Accuracy: "3–12 %", Chapter: "6 · Senses" },
+    links: [["Adafruit guide", "https://learn.adafruit.com/adafruit-vl53l0x-micro-lidar-distance-sensor-breakout"]],
     pros: ["Accurate", "Tiny"], cons: ["Narrow field of view"] },
   { id: "hcsr04", cat: "sense", name: "HC-SR04 ultrasonic", p: [1, 4], paths: ["D"], iface: ["GPIO"],
     what: "The classic \"eyes\" on Otto-style bipeds.",
     specs: { Range: "2–400 cm", Voltage: "5 V", Chapter: "6 · Senses" },
-    pros: ["Cheap", "Looks like eyes"], cons: ["5 V echo needs a divider on 3.3 V boards"] },
+    pros: ["Cheap", "Looks like eyes"], cons: ["5 V echo needs a divider on 3.3 V boards"],
+    links: [["Adafruit guide", "https://learn.adafruit.com/ultrasonic-sonar-distance-sensors/overview"]] },
   { id: "picam3", cat: "sense", name: "Raspberry Pi Camera Module 3", p: [25, 35], paths: ["C"], iface: ["CSI"],
     what: "A real autofocus camera for face tracking and vision.",
     specs: { Sensor: "12 MP, autofocus", Chapter: "6 · Senses" },
@@ -255,7 +265,8 @@ const PARTS = [
 
   { id: "max98357a", cat: "audio", name: "MAX98357A I²S amplifier", p: [2, 6], paths: ["A", "C", "E"], iface: ["I2S"],
     what: "Turns digital audio into speaker sound — no analog wiring.",
-    specs: { Power: "≈3 W into 4 Ω", Voltage: "2.5–5.5 V", Chapter: "6 · Senses" },
+    specs: { Power: "3.2 W into 4 Ω / 1.8 W into 8 Ω at 5 V", Voltage: "2.7–5.5 V", Gain: "9 dB default (3–15 dB)", Chapter: "6 · Senses" },
+    links: [["Adafruit guide", "https://learn.adafruit.com/adafruit-max98357-i2s-class-d-mono-amp"]],
     pros: ["Simple", "Clean sound"], cons: ["Mono"],
     wiring: "Amp   ->  ESP32-S3\nVIN   ->  5 V\nGND   ->  GND\nBCLK  ->  GPIO 15\nLRC   ->  GPIO 16\nDIN   ->  GPIO 7" },
   { id: "speaker", cat: "audio", name: "Speaker 28–40 mm", p: [1, 4], paths: ["A", "C", "E"], iface: ["analog"],

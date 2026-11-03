@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Senses · Desk Buddy Guide</title>
+<meta name="description" content="Senses are what make a robot react instead of just play an animation. You do not need many: a touch pad and a distance sensor already give a desk buddy plenty to respond to.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="../assets/guide.css">
+</head>
+<body>
+<header class="wrap bar">
+  <a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true"><i></i><i></i></span>Desk Buddy Guide</a>
+  <nav aria-label="Site">
+    <a href="../index.html#finder">Find your path</a>
+    <a href="../parts.html">Parts</a>
+    <a href="../models.html">3D models</a>
+    <a href="01-basics.html" aria-current="page">Chapters</a>
+  </nav>
+</header>
+<div class="wrap layout">
+  <nav class="toc-left" aria-label="Chapters">
+    <details open><summary>Chapters</summary>
+    <ol>
+      <li><a href="01-basics.html"><span>01</span>Basics</a></li>
+      <li><a href="02-choose-your-path.html"><span>02</span>Choose your path</a></li>
+      <li><a href="03-electronics.html"><span>03</span>Electronics</a></li>
+      <li><a href="04-eyes-and-face.html"><span>04</span>Eyes &amp; face</a></li>
+      <li><a href="05-movement.html"><span>05</span>Movement</a></li>
+      <li><a href="06-senses.html" aria-current="page"><span>06</span>Senses</a></li>
+      <li><a href="07-body-and-shell.html"><span>07</span>Body &amp; shell</a></li>
+      <li><a href="08-firmware.html"><span>08</span>Basic firmware</a></li>
+      <li><a href="09-reference-projects.html"><span>09</span>Reference projects</a></li>
+      <li><a href="10-connect-to-pc.html"><span>10</span>Connecting to a PC</a></li>
+    </ol>
+    </details>
+  </nav>
+  <article>
+    <header class="chapter-head">
+      <span class="eyebrow">Chapter 06 of 10</span>
+      <h1>Senses</h1>
+      <div class="meta"><span>3 min read</span><span>Updated November 2026</span></div>
+    </header>
+    <div class="prose">
+<p>Senses are what make a robot <em>react</em> instead of just play an animation. You do not need many: a touch pad and a distance sensor already give a desk buddy plenty to respond to.</p>
+<h2 id="overview">Overview<a class="anchor" href="#overview" aria-label="Link to this section">#</a></h2>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Sense</th>
+<th>Part</th>
+<th>Interface</th>
+<th>What the robot can do with it</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Hearing</td>
+<td>INMP441 I²S MEMS microphone</td>
+<td>I²S</td>
+<td>React to claps and loud sounds; capture voice (chapter 10)</td>
+</tr>
+<tr>
+<td>Voice</td>
+<td>MAX98357A I²S amplifier + small speaker</td>
+<td>I²S</td>
+<td>Beeps, sounds, speech</td>
+</tr>
+<tr>
+<td>Touch</td>
+<td>TTP223 capacitive pad</td>
+<td>Digital pin</td>
+<td>&quot;Pat its head&quot; — works through thin plastic</td>
+</tr>
+<tr>
+<td>Distance</td>
+<td>VL53L0X laser time-of-flight</td>
+<td>I²C</td>
+<td>Notice your hand or face approaching</td>
+</tr>
+<tr>
+<td>Distance (budget)</td>
+<td>HC-SR04 ultrasonic</td>
+<td>Two digital pins</td>
+<td>The classic &quot;eyes&quot; on biped robots</td>
+</tr>
+<tr>
+<td>Edges</td>
+<td>IR reflectance sensors</td>
+<td>Digital / analog</td>
+<td>Stop a wheeled robot from driving off the desk</td>
+</tr>
+<tr>
+<td>Light</td>
+<td>Photoresistor (LDR) or BH1750</td>
+<td>Analog / I²C</td>
+<td>Get sleepy when the room goes dark</td>
+</tr>
+<tr>
+<td>Motion</td>
+<td>MPU6050 IMU</td>
+<td>I²C</td>
+<td>Notice being picked up, shaken or tilted</td>
+</tr>
+<tr>
+<td>Sight</td>
+<td>OV2640 (ESP32-CAM) or Pi Camera Module 3</td>
+<td>DVP / CSI</td>
+<td>Face tracking and vision</td>
+</tr>
+</tbody></table>
+</div>
+<h2 id="distance-sensors-compared">Distance sensors compared<a class="anchor" href="#distance-sensors-compared" aria-label="Link to this section">#</a></h2>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th></th>
+<th>VL53L0X</th>
+<th>HC-SR04</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Principle</td>
+<td>Infrared laser time-of-flight</td>
+<td>Ultrasonic echo</td>
+</tr>
+<tr>
+<td>Range</td>
+<td>About 50 mm – 1.2 m by default; 1.5–2 m in long-range mode on white, reflective targets</td>
+<td>2 cm – 400 cm; 10–250 cm gives the best results</td>
+</tr>
+<tr>
+<td>Supply</td>
+<td>Chip runs at 2.8 V; Adafruit&#39;s breakout takes 3–5 V with level shifting</td>
+<td>5 V only</td>
+</tr>
+<tr>
+<td>Logic</td>
+<td>3.3 V safe on breakouts</td>
+<td>Echo outputs 5 V — needs a divider on 3.3 V boards</td>
+</tr>
+<tr>
+<td>Accuracy</td>
+<td>Typically 3–12 %</td>
+<td>Good for &quot;something is near&quot;</td>
+</tr>
+<tr>
+<td>Look</td>
+<td>A tiny chip</td>
+<td>Two big &quot;eyes&quot; — great on bipeds</td>
+</tr>
+</tbody></table>
+</div>
+<h2 id="audio-out-max98357a">Audio out: MAX98357A<a class="anchor" href="#audio-out-max98357a" aria-label="Link to this section">#</a></h2>
+<p>The MAX98357A takes digital I²S audio straight from the board and drives a speaker — no analog wiring, no extra DAC.</p>
+<ul>
+<li>Supply <strong>2.7–5.5 V</strong>; about <strong>3.2 W into 4 Ω</strong> or <strong>1.8 W into 8 Ω</strong> at 5 V.</li>
+<li>Default gain <strong>9 dB</strong>, adjustable to 3, 6, 12 or 15 dB with a resistor on the GAIN pin.</li>
+<li>The <strong>SD</strong> pin shuts the amplifier down or selects the channel; by default it plays a mono mix of left and right.</li>
+<li>Accepts sample rates from 8 to 96 kHz and needs <strong>no MCLK</strong> — only BCLK, LRC and DIN.</li>
+<li>I²S inputs accept 3.3 V or 5 V logic.</li>
+</ul>
+<blockquote class="tip"><p><span class="label">Tip</span>give the speaker a closed box (even a printed cup). A bare speaker sounds thin because the front and back waves cancel each other.</p>
+</blockquote>
+<h2 id="audio-in-inmp441">Audio in: INMP441<a class="anchor" href="#audio-in-inmp441" aria-label="Link to this section">#</a></h2>
+<p>A digital MEMS microphone with an I²S output, powered from 3.3 V. Its <strong>L/R</strong> pin selects which I²S channel it talks on — tie it to ground for the left channel.</p>
+<ul>
+<li>Mount it <strong>away from the speaker and the servos</strong>, facing the person.</li>
+<li>Keep its wires short and away from servo power lines; motors inject noise.</li>
+</ul>
+<h2 id="cameras">Cameras<a class="anchor" href="#cameras" aria-label="Link to this section">#</a></h2>
+<ul>
+<li><strong>ESP32 + OV2640:</strong> good for streaming pictures to a computer; too little processing power for serious on-board vision.</li>
+<li><strong>Raspberry Pi + Camera Module 3:</strong> real computer vision on board (face detection, tracking) with Python libraries.</li>
+<li>Either way, heavy vision is best done on a PC (chapter 10).</li>
+</ul>
+<h2 id="sources">Sources<a class="anchor" href="#sources" aria-label="Link to this section">#</a></h2>
+<ul>
+<li>VL53L0X range, voltage and accuracy — Adafruit: <a href="https://learn.adafruit.com/adafruit-vl53l0x-micro-lidar-distance-sensor-breakout" target="_blank" rel="noopener">https://learn.adafruit.com/adafruit-vl53l0x-micro-lidar-distance-sensor-breakout ↗</a></li>
+<li>HC-SR04 range and logic levels — Adafruit: <a href="https://learn.adafruit.com/ultrasonic-sonar-distance-sensors/overview" target="_blank" rel="noopener">https://learn.adafruit.com/ultrasonic-sonar-distance-sensors/overview ↗</a></li>
+<li>MAX98357A specifications — Adafruit: <a href="https://learn.adafruit.com/adafruit-max98357-i2s-class-d-mono-amp" target="_blank" rel="noopener">https://learn.adafruit.com/adafruit-max98357-i2s-class-d-mono-amp ↗</a></li>
+</ul>
+
+    </div>
+    <nav class="pager" aria-label="Previous and next chapter">
+      <a class="prev" href="05-movement.html"><small>← Previous</small><b>Movement</b></a>
+      <a class="next" href="07-body-and-shell.html"><small>Next →</small><b>Body &amp; shell</b></a>
+    </nav>
+    <p class="edit">Spotted a mistake or a dead link? <a href="https://github.com/Alex-Stark-industries/desk-buddy-guide/edit/main/docs/06-senses.md" target="_blank" rel="noopener">Edit this chapter on GitHub ↗</a></p>
+  </article>
+  <aside class="toc-right" aria-label="On this page">
+    <span class="eyebrow">On this page</span>
+    <ul>
+      <li><a href="#overview">Overview</a></li>
+      <li><a href="#distance-sensors-compared">Distance sensors compared</a></li>
+      <li><a href="#audio-out-max98357a">Audio out: MAX98357A</a></li>
+      <li><a href="#audio-in-inmp441">Audio in: INMP441</a></li>
+      <li><a href="#cameras">Cameras</a></li>
+      <li><a href="#sources">Sources</a></li>
+    </ul>
+  </aside>
+</div>
+<footer><div class="wrap">Desk Buddy Guide · text CC BY-SA 4.0 · code MIT · third-party projects are linked under their own licences.</div></footer>
+<script>
+// on phones the chapter list starts collapsed so the text comes first
+if (matchMedia("(max-width: 800px)").matches) document.querySelector(".toc-left details").removeAttribute("open");
+// highlight the section being read in the right-hand table of contents
+const links = [...document.querySelectorAll(".toc-right a")];
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach((e) => { if (e.isIntersecting) links.forEach((a) => a.classList.toggle("active", a.getAttribute("href") === "#" + e.target.id)); });
+}, { rootMargin: "0px 0px -70% 0px" });
+document.querySelectorAll(".prose h2").forEach((h) => obs.observe(h));
+</script>
+</body>
+</html>

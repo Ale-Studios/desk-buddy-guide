@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Choose your path · Desk Buddy Guide</title>
+<meta name="description" content="Six ways to build a desk buddy. All of them can later be connected to a PC (chapter 10).">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="../assets/guide.css">
+</head>
+<body>
+<header class="wrap bar">
+  <a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true"><i></i><i></i></span>Desk Buddy Guide</a>
+  <nav aria-label="Site">
+    <a href="../index.html#finder">Find your path</a>
+    <a href="../parts.html">Parts</a>
+    <a href="../models.html">3D models</a>
+    <a href="01-basics.html" aria-current="page">Chapters</a>
+  </nav>
+</header>
+<div class="wrap layout">
+  <nav class="toc-left" aria-label="Chapters">
+    <details open><summary>Chapters</summary>
+    <ol>
+      <li><a href="01-basics.html"><span>01</span>Basics</a></li>
+      <li><a href="02-choose-your-path.html" aria-current="page"><span>02</span>Choose your path</a></li>
+      <li><a href="03-electronics.html"><span>03</span>Electronics</a></li>
+      <li><a href="04-eyes-and-face.html"><span>04</span>Eyes &amp; face</a></li>
+      <li><a href="05-movement.html"><span>05</span>Movement</a></li>
+      <li><a href="06-senses.html"><span>06</span>Senses</a></li>
+      <li><a href="07-body-and-shell.html"><span>07</span>Body &amp; shell</a></li>
+      <li><a href="08-firmware.html"><span>08</span>Basic firmware</a></li>
+      <li><a href="09-reference-projects.html"><span>09</span>Reference projects</a></li>
+      <li><a href="10-connect-to-pc.html"><span>10</span>Connecting to a PC</a></li>
+    </ol>
+    </details>
+  </nav>
+  <article>
+    <header class="chapter-head">
+      <span class="eyebrow">Chapter 02 of 10</span>
+      <h1>Choose your path</h1>
+      <div class="meta"><span>2 min read</span><span>Updated November 2026</span></div>
+    </header>
+    <div class="prose">
+<p>Six ways to build a desk buddy. All of them can later be connected to a PC (chapter 10).</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Path</th>
+<th>Brain</th>
+<th>Typical cost*</th>
+<th>Difficulty</th>
+<th>Build time</th>
+<th>Best for</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>A. Minimal ESP32</strong></td>
+<td>ESP32 / ESP32-S3</td>
+<td>€30–50</td>
+<td>★★☆☆☆</td>
+<td>1–2 weekends</td>
+<td>First build, learning the basics</td>
+</tr>
+<tr>
+<td><strong>B. M5Stack kit (Stack-chan style)</strong></td>
+<td>M5Stack CoreS3</td>
+<td>€70–110</td>
+<td>★☆☆☆☆</td>
+<td>1 day</td>
+<td>Fast, polished result with little soldering</td>
+</tr>
+<tr>
+<td><strong>C. Raspberry Pi bot</strong></td>
+<td>Pi Zero 2 W / Pi 5</td>
+<td>€80–150</td>
+<td>★★★☆☆</td>
+<td>2–4 weekends</td>
+<td>Camera, vision, running more on board</td>
+</tr>
+<tr>
+<td><strong>D. Biped (Otto style)</strong></td>
+<td>Arduino Nano / ESP32</td>
+<td>€30–60</td>
+<td>★★☆☆☆</td>
+<td>1–2 weekends</td>
+<td>Walking and dancing, education</td>
+</tr>
+<tr>
+<td><strong>E. Wheeled buddy</strong></td>
+<td>ESP32 + motor driver</td>
+<td>€40–80</td>
+<td>★★★☆☆</td>
+<td>2–3 weekends</td>
+<td>Roaming the desk</td>
+</tr>
+<tr>
+<td><strong>F. Premium kit (Reachy Mini)</strong></td>
+<td>Your PC / on-board computer</td>
+<td>€300–500</td>
+<td>★★☆☆☆</td>
+<td>1 day</td>
+<td>Expressive head, Python SDK</td>
+</tr>
+</tbody></table>
+</div>
+<p>* Rough estimates (November 2026), excluding tools and 3D printing. Always compare suppliers.</p>
+<h2 id="shopping-lists">Shopping lists<a class="anchor" href="#shopping-lists" aria-label="Link to this section">#</a></h2>
+<h3 id="a-minimal-esp32">A. Minimal ESP32<a class="anchor" href="#a-minimal-esp32" aria-label="Link to this section">#</a></h3>
+<ul>
+<li>ESP32-S3 dev board</li>
+<li>1.28&quot; round GC9A01 TFT <strong>or</strong> 0.96&quot; SSD1306 OLED</li>
+<li>2 × SG90 / MG90S micro servos (pan + tilt)</li>
+<li>TTP223 touch pad · INMP441 I²S mic · MAX98357A I²S amp + 28–40 mm speaker</li>
+<li>5 V 2 A USB supply (or TP4056 + protected LiPo for wireless)</li>
+</ul>
+<h3 id="b-m5stack-kit">B. M5Stack kit<a class="anchor" href="#b-m5stack-kit" aria-label="Link to this section">#</a></h3>
+<ul>
+<li>M5Stack CoreS3 (display, mic, speaker, camera built in) + 2 servos</li>
+<li>Open case files from Stack-chan (chapter 9)</li>
+</ul>
+<h3 id="c-raspberry-pi-bot">C. Raspberry Pi bot<a class="anchor" href="#c-raspberry-pi-bot" aria-label="Link to this section">#</a></h3>
+<ul>
+<li>Pi Zero 2 W (light) or Pi 5 (powerful) · Pi Camera Module 3</li>
+<li>USB or I²S mic · I²S amp + speaker · 2&quot; ST7789 TFT</li>
+<li>PCA9685 servo driver + 2–3 servos · 5 V 3–5 A supply</li>
+</ul>
+<h3 id="d-biped">D. Biped<a class="anchor" href="#d-biped" aria-label="Link to this section">#</a></h3>
+<ul>
+<li>Arduino Nano (or ESP32) · 4–6 SG90 servos · HC-SR04 ultrasonic &quot;eyes&quot; · buzzer</li>
+<li>4 × AA or 2S Li-ion pack · printed Otto-style body (chapter 9)</li>
+</ul>
+<h3 id="e-wheeled">E. Wheeled<a class="anchor" href="#e-wheeled" aria-label="Link to this section">#</a></h3>
+<ul>
+<li>ESP32 · 2 × N20 gear motors + wheels + caster · DRV8833 or TB6612 driver</li>
+<li>VL53L0X distance sensor + downward IR sensors (so it never drives off the desk)</li>
+<li>OLED face · 2S battery</li>
+</ul>
+<h3 id="f-premium-kit">F. Premium kit<a class="anchor" href="#f-premium-kit" aria-label="Link to this section">#</a></h3>
+<ul>
+<li>Reachy Mini (Lite or Wireless) — assemble, then program with its Python SDK.</li>
+</ul>
+<h2 id="how-to-decide">How to decide<a class="anchor" href="#how-to-decide" aria-label="Link to this section">#</a></h2>
+<ul>
+<li><strong>Never soldered?</strong> → B, then A.</li>
+<li><strong>Want a camera and computer vision?</strong> → C or F.</li>
+<li><strong>Want it to move around?</strong> → D or E.</li>
+<li><strong>Tight budget?</strong> → A or D.</li>
+</ul>
+
+    </div>
+    <nav class="pager" aria-label="Previous and next chapter">
+      <a class="prev" href="01-basics.html"><small>← Previous</small><b>Basics</b></a>
+      <a class="next" href="03-electronics.html"><small>Next →</small><b>Electronics</b></a>
+    </nav>
+    <p class="edit">Spotted a mistake or a dead link? <a href="https://github.com/Alex-Stark-industries/desk-buddy-guide/edit/main/docs/02-choose-your-path.md" target="_blank" rel="noopener">Edit this chapter on GitHub ↗</a></p>
+  </article>
+  <aside class="toc-right" aria-label="On this page">
+    <span class="eyebrow">On this page</span>
+    <ul>
+      <li><a href="#shopping-lists">Shopping lists</a></li>
+      <li><a href="#how-to-decide">How to decide</a></li>
+    </ul>
+  </aside>
+</div>
+<footer><div class="wrap">Desk Buddy Guide · text CC BY-SA 4.0 · code MIT · third-party projects are linked under their own licences.</div></footer>
+<script>
+// on phones the chapter list starts collapsed so the text comes first
+if (matchMedia("(max-width: 800px)").matches) document.querySelector(".toc-left details").removeAttribute("open");
+// highlight the section being read in the right-hand table of contents
+const links = [...document.querySelectorAll(".toc-right a")];
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach((e) => { if (e.isIntersecting) links.forEach((a) => a.classList.toggle("active", a.getAttribute("href") === "#" + e.target.id)); });
+}, { rootMargin: "0px 0px -70% 0px" });
+document.querySelectorAll(".prose h2").forEach((h) => obs.observe(h));
+</script>
+</body>
+</html>

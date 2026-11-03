@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Basic firmware · Desk Buddy Guide</title>
+<meta name="description" content="Before any AI, a desk buddy should already feel alive: blinking, glancing around, reacting to touch. That is all firmware — a loop that reads the senses and drives the expression.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="../assets/guide.css">
+</head>
+<body>
+<header class="wrap bar">
+  <a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true"><i></i><i></i></span>Desk Buddy Guide</a>
+  <nav aria-label="Site">
+    <a href="../index.html#finder">Find your path</a>
+    <a href="../parts.html">Parts</a>
+    <a href="../models.html">3D models</a>
+    <a href="01-basics.html" aria-current="page">Chapters</a>
+  </nav>
+</header>
+<div class="wrap layout">
+  <nav class="toc-left" aria-label="Chapters">
+    <details open><summary>Chapters</summary>
+    <ol>
+      <li><a href="01-basics.html"><span>01</span>Basics</a></li>
+      <li><a href="02-choose-your-path.html"><span>02</span>Choose your path</a></li>
+      <li><a href="03-electronics.html"><span>03</span>Electronics</a></li>
+      <li><a href="04-eyes-and-face.html"><span>04</span>Eyes &amp; face</a></li>
+      <li><a href="05-movement.html"><span>05</span>Movement</a></li>
+      <li><a href="06-senses.html"><span>06</span>Senses</a></li>
+      <li><a href="07-body-and-shell.html"><span>07</span>Body &amp; shell</a></li>
+      <li><a href="08-firmware.html" aria-current="page"><span>08</span>Basic firmware</a></li>
+      <li><a href="09-reference-projects.html"><span>09</span>Reference projects</a></li>
+      <li><a href="10-connect-to-pc.html"><span>10</span>Connecting to a PC</a></li>
+    </ol>
+    </details>
+  </nav>
+  <article>
+    <header class="chapter-head">
+      <span class="eyebrow">Chapter 08 of 10</span>
+      <h1>Basic firmware</h1>
+      <div class="meta"><span>3 min read</span><span>Updated November 2026</span></div>
+    </header>
+    <div class="prose">
+<p>Before any AI, a desk buddy should already feel alive: blinking, glancing around, reacting to touch. That is all firmware — a loop that reads the senses and drives the expression.</p>
+<h2 id="choosing-a-toolchain">Choosing a toolchain<a class="anchor" href="#choosing-a-toolchain" aria-label="Link to this section">#</a></h2>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Toolchain</th>
+<th>Boards</th>
+<th>Language</th>
+<th>Good for</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Arduino IDE 2</strong></td>
+<td>ESP32, Arduino</td>
+<td>C++</td>
+<td>The easiest start; most examples online use it</td>
+</tr>
+<tr>
+<td><strong>PlatformIO</strong> (VS Code)</td>
+<td>ESP32, Arduino, many more</td>
+<td>C++</td>
+<td>Bigger projects, library management, reproducible builds</td>
+</tr>
+<tr>
+<td><strong>ESP-IDF</strong></td>
+<td>ESP32 family</td>
+<td>C / C++</td>
+<td>Espressif&#39;s official framework; most control, steeper curve</td>
+</tr>
+<tr>
+<td><strong>MicroPython</strong></td>
+<td>ESP32, RP2040</td>
+<td>Python</td>
+<td>Quick experiments from a live prompt</td>
+</tr>
+<tr>
+<td><strong>Moddable SDK</strong></td>
+<td>M5Stack, ESP32</td>
+<td>JavaScript</td>
+<td>What Stack-chan uses; can be flashed from a web installer</td>
+</tr>
+<tr>
+<td><strong>Python on Linux</strong></td>
+<td>Raspberry Pi</td>
+<td>Python</td>
+<td>Camera and vision libraries</td>
+</tr>
+</tbody></table>
+</div>
+<blockquote class="tip"><p><span class="label">Tip</span>start with the Arduino IDE and the official Espressif board package, then move to PlatformIO once your project has more than a couple of files.</p>
+</blockquote>
+<h2 id="recommended-libraries">Recommended libraries<a class="anchor" href="#recommended-libraries" aria-label="Link to this section">#</a></h2>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Job</th>
+<th>Library</th>
+<th>Licence</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Servos on ESP32</td>
+<td><a href="https://github.com/madhephaestus/ESP32Servo" target="_blank" rel="noopener">ESP32Servo ↗</a></td>
+<td>LGPL-2.1</td>
+</tr>
+<tr>
+<td>Colour TFTs (GC9A01, ST7789)</td>
+<td><a href="https://github.com/Bodmer/TFT_eSPI" target="_blank" rel="noopener">TFT_eSPI ↗</a> or <a href="https://github.com/lovyan03/LovyanGFX" target="_blank" rel="noopener">LovyanGFX ↗</a></td>
+<td>FreeBSD / MIT / BSD mix</td>
+</tr>
+<tr>
+<td>Animated OLED eyes</td>
+<td><a href="https://github.com/FluxGarage/RoboEyes" target="_blank" rel="noopener">RoboEyes ↗</a></td>
+<td>GPL-3.0</td>
+</tr>
+<tr>
+<td>Many servos</td>
+<td>Adafruit PWM Servo Driver (PCA9685)</td>
+<td>BSD</td>
+</tr>
+</tbody></table>
+</div>
+<p>Check licences before you distribute firmware: GPL code (RoboEyes) makes your firmware GPL; LGPL code (ESP32Servo) comes with relinking obligations when you ship binaries.</p>
+<h2 id="structure-a-behaviour-loop">Structure: a behaviour loop<a class="anchor" href="#structure-a-behaviour-loop" aria-label="Link to this section">#</a></h2>
+<p>Avoid long <code>delay()</code> calls — they freeze the eyes while the robot waits. Instead, run a fast loop and let each part update a little every frame:</p>
+<pre><code class="language-cpp">void loop() {
+  uint32_t now = millis();
+
+  readSenses(now);      // touch, distance, sound level
+  updateMood(now);      // happy if touched, curious if near, sleepy if dark
+  updateEyes(now);      // blink timer, glance toward the stimulus
+  updateServos(now);    // ease each servo toward its target angle
+  drawFrame();          // push one frame to the display (~30 fps)
+}
+</code></pre>
+<h3 id="a-mood-state-machine">A mood state machine<a class="anchor" href="#a-mood-state-machine" aria-label="Link to this section">#</a></h3>
+<pre><code>          touch                        nothing for 60 s
+ IDLE ───────────▶ HAPPY ──(3 s)──▶ IDLE ─────────────────▶ SLEEPY
+  │  ▲                                ▲                        │
+  │  └──────── hand moves away ───────┤                        │
+  └── hand within 20 cm ──▶ CURIOUS ──┘     touch / loud sound │
+                                            ◀───────────────────┘
+</code></pre>
+<p>Each state only decides <strong>targets</strong> (eye shape, gaze, head angle). The update functions move smoothly toward them, so switching moods never looks jerky.</p>
+<h2 id="milestones">Milestones<a class="anchor" href="#milestones" aria-label="Link to this section">#</a></h2>
+<p>Work through these in order — each one builds on the last and is a small success on its own.</p>
+<ol>
+<li><strong>Blink an LED.</strong> Proves the board, cable and toolchain work.</li>
+<li><strong>Draw two eyes</strong> on the display and make them blink at random intervals.</li>
+<li><strong>Sweep a servo smoothly</strong> with easing, within safe limits.</li>
+<li><strong>Touch → happy face + a small nod.</strong></li>
+<li><strong>Distance sensor → the eyes follow your hand.</strong></li>
+<li><strong>Play a sound</strong> on the speaker.</li>
+<li><strong>Combine everything</strong> into the mood state machine above.</li>
+</ol>
+<h2 id="debugging-checklist">Debugging checklist<a class="anchor" href="#debugging-checklist" aria-label="Link to this section">#</a></h2>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Usual cause</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Board resets when a servo moves</td>
+<td>Brown-out: servos on the board&#39;s supply (chapter 3)</td>
+</tr>
+<tr>
+<td>Board won&#39;t boot with a module attached</td>
+<td>A strapping pin is being pulled (chapter 3)</td>
+</tr>
+<tr>
+<td>Display stays black</td>
+<td>Wrong pins in the library config, or wrong I²C address</td>
+</tr>
+<tr>
+<td>Analog reading stuck while Wi-Fi is on</td>
+<td>Sensor on an ADC2 pin (classic ESP32)</td>
+</tr>
+<tr>
+<td>Motors never turn (TB6612FNG)</td>
+<td>STBY left low</td>
+</tr>
+<tr>
+<td>Upload fails</td>
+<td>Charge-only USB cable, or the board needs BOOT held while connecting</td>
+</tr>
+</tbody></table>
+</div>
+<h2 id="getting-started-links">Getting started links<a class="anchor" href="#getting-started-links" aria-label="Link to this section">#</a></h2>
+<ul>
+<li>Arduino core for ESP32 — Espressif: <a href="https://docs.espressif.com/projects/arduino-esp32/en/latest/" target="_blank" rel="noopener">https://docs.espressif.com/projects/arduino-esp32/en/latest/ ↗</a></li>
+<li>PlatformIO: <a href="https://platformio.org/" target="_blank" rel="noopener">https://platformio.org/ ↗</a></li>
+<li>MicroPython for ESP32: <a href="https://micropython.org/download/?port=esp32" target="_blank" rel="noopener">https://micropython.org/download/?port=esp32 ↗</a></li>
+<li>ESP-IDF get started — Espressif: <a href="https://docs.espressif.com/projects/esp-idf/en/stable/esp32/get-started/" target="_blank" rel="noopener">https://docs.espressif.com/projects/esp-idf/en/stable/esp32/get-started/ ↗</a></li>
+<li>Stack-chan web installer and simulator: <a href="https://github.com/stack-chan/stack-chan" target="_blank" rel="noopener">https://github.com/stack-chan/stack-chan ↗</a></li>
+</ul>
+
+    </div>
+    <nav class="pager" aria-label="Previous and next chapter">
+      <a class="prev" href="07-body-and-shell.html"><small>← Previous</small><b>Body &amp; shell</b></a>
+      <a class="next" href="09-reference-projects.html"><small>Next →</small><b>Reference projects</b></a>
+    </nav>
+    <p class="edit">Spotted a mistake or a dead link? <a href="https://github.com/Alex-Stark-industries/desk-buddy-guide/edit/main/docs/08-firmware.md" target="_blank" rel="noopener">Edit this chapter on GitHub ↗</a></p>
+  </article>
+  <aside class="toc-right" aria-label="On this page">
+    <span class="eyebrow">On this page</span>
+    <ul>
+      <li><a href="#choosing-a-toolchain">Choosing a toolchain</a></li>
+      <li><a href="#recommended-libraries">Recommended libraries</a></li>
+      <li><a href="#structure-a-behaviour-loop">Structure: a behaviour loop</a></li>
+      <li><a href="#milestones">Milestones</a></li>
+      <li><a href="#debugging-checklist">Debugging checklist</a></li>
+      <li><a href="#getting-started-links">Getting started links</a></li>
+    </ul>
+  </aside>
+</div>
+<footer><div class="wrap">Desk Buddy Guide · text CC BY-SA 4.0 · code MIT · third-party projects are linked under their own licences.</div></footer>
+<script>
+// on phones the chapter list starts collapsed so the text comes first
+if (matchMedia("(max-width: 800px)").matches) document.querySelector(".toc-left details").removeAttribute("open");
+// highlight the section being read in the right-hand table of contents
+const links = [...document.querySelectorAll(".toc-right a")];
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach((e) => { if (e.isIntersecting) links.forEach((a) => a.classList.toggle("active", a.getAttribute("href") === "#" + e.target.id)); });
+}, { rootMargin: "0px 0px -70% 0px" });
+document.querySelectorAll(".prose h2").forEach((h) => obs.observe(h));
+</script>
+</body>
+</html>

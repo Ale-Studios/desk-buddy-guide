@@ -34,7 +34,7 @@ a { color: var(--accent); }
 .wrap { max-width: 1180px; margin: 0 auto; padding: 0 16px; }
 h1, h2, h3 { font-family: var(--display); line-height: 1.1; text-wrap: balance; margin: 0; }
 .eyebrow { font: 600 12px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-soft); }
-.bar { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 18px 0; }
+.bar { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-block: 18px; }
 .brand { display: flex; align-items: center; gap: 10px; font: 800 18px var(--display); color: var(--ink); text-decoration: none; }
 .brand-mark { width: 30px; height: 22px; border-radius: 7px; background: var(--screen); display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 6px; }
 .brand-mark i { background: var(--eye); border-radius: 3px; }
@@ -42,7 +42,7 @@ h1, h2, h3 { font-family: var(--display); line-height: 1.1; text-wrap: balance; 
 .bar nav a { color: var(--ink-soft); text-decoration: none; }
 .bar nav a[aria-current="page"] { color: var(--ink); font-weight: 700; }
 
-.intro { padding: 24px 0 24px; display: flex; flex-direction: column; gap: 12px; max-width: 46em; }
+.intro { padding-block: 24px 24px; display: flex; flex-direction: column; gap: 12px; max-width: 46em; }
 .intro h1 { font-size: clamp(34px, 5vw, 58px); font-weight: 800; letter-spacing: -.02em; }
 .intro p { margin: 0; color: var(--ink-soft); font-size: 18px; }
 
@@ -74,7 +74,7 @@ h1, h2, h3 { font-family: var(--display); line-height: 1.1; text-wrap: balance; 
 .btn.ghost { background: transparent; color: var(--accent); }
 .credit { font-size: 13.5px; color: var(--ink-soft); margin: 0; }
 
-.more { padding: 8px 0 64px; }
+.more { padding-block: 8px 64px; }
 .more h2 { font-size: clamp(26px, 3.4vw, 38px); margin-bottom: 14px; }
 .ext { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
 .ext a { background: var(--panel); border: 1.5px solid var(--line); border-radius: var(--radius); padding: 16px 18px; text-decoration: none; color: var(--ink); display: flex; flex-direction: column; gap: 6px; }
@@ -87,7 +87,8 @@ footer { border-top: 1.5px solid var(--line); padding: 28px 0 44px; color: var(-
   .studio { grid-template-columns: 1fr; }
   .stage { min-height: 420px; order: -1; }
   .ext { grid-template-columns: 1fr; }
-  .bar nav { display: none; }
+  .bar { flex-wrap: wrap; }
+  .bar nav { gap: 14px; font-size: 14px; overflow-x: auto; max-width: 100%; white-space: nowrap; padding-bottom: 4px; }
 }
 </style>
 <script type="importmap">{ "imports": { "three": "./vendor/three/three.module.js" } }</script>

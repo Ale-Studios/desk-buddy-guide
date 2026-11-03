@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Electronics · Desk Buddy Guide</title>
+<meta name="description" content="Every desk buddy needs a brain, clean power and a few wires done right. This chapter covers all three; get them right and the rest of the build is fun instead of frustrating.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="../assets/guide.css">
+</head>
+<body>
+<header class="wrap bar">
+  <a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true"><i></i><i></i></span>Desk Buddy Guide</a>
+  <nav aria-label="Site">
+    <a href="../index.html#finder">Find your path</a>
+    <a href="../parts.html">Parts</a>
+    <a href="../models.html">3D models</a>
+    <a href="01-basics.html" aria-current="page">Chapters</a>
+  </nav>
+</header>
+<div class="wrap layout">
+  <nav class="toc-left" aria-label="Chapters">
+    <details open><summary>Chapters</summary>
+    <ol>
+      <li><a href="01-basics.html"><span>01</span>Basics</a></li>
+      <li><a href="02-choose-your-path.html"><span>02</span>Choose your path</a></li>
+      <li><a href="03-electronics.html" aria-current="page"><span>03</span>Electronics</a></li>
+      <li><a href="04-eyes-and-face.html"><span>04</span>Eyes &amp; face</a></li>
+      <li><a href="05-movement.html"><span>05</span>Movement</a></li>
+      <li><a href="06-senses.html"><span>06</span>Senses</a></li>
+      <li><a href="07-body-and-shell.html"><span>07</span>Body &amp; shell</a></li>
+      <li><a href="08-firmware.html"><span>08</span>Basic firmware</a></li>
+      <li><a href="09-reference-projects.html"><span>09</span>Reference projects</a></li>
+      <li><a href="10-connect-to-pc.html"><span>10</span>Connecting to a PC</a></li>
+    </ol>
+    </details>
+  </nav>
+  <article>
+    <header class="chapter-head">
+      <span class="eyebrow">Chapter 03 of 10</span>
+      <h1>Electronics</h1>
+      <div class="meta"><span>4 min read</span><span>Updated November 2026</span></div>
+    </header>
+    <div class="prose">
+<p>Every desk buddy needs a brain, clean power and a few wires done right. This chapter covers all three; get them right and the rest of the build is fun instead of frustrating.</p>
+<h2 id="choosing-the-board">Choosing the board<a class="anchor" href="#choosing-the-board" aria-label="Link to this section">#</a></h2>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Board</th>
+<th>Strengths</th>
+<th>Limits</th>
+<th>Best for</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>ESP32 (classic)</strong></td>
+<td>Cheap, Wi-Fi + Bluetooth, huge community</td>
+<td>Less RAM for colour screens and audio</td>
+<td>Paths D, E</td>
+</tr>
+<tr>
+<td><strong>ESP32-S3</strong></td>
+<td>More RAM (PSRAM on many boards), native USB, good for audio + displays</td>
+<td>Slightly pricier</td>
+<td>Path A — the recommended default</td>
+</tr>
+<tr>
+<td><strong>M5Stack CoreS3</strong></td>
+<td>Screen, mics, speaker, camera and battery in one case</td>
+<td>Fixed layout, higher cost</td>
+<td>Path B</td>
+</tr>
+<tr>
+<td><strong>Raspberry Pi Zero 2 W</strong></td>
+<td>Full Linux, camera connector</td>
+<td>Boot time, needs a solid 5 V supply</td>
+<td>Path C (light)</td>
+</tr>
+<tr>
+<td><strong>Raspberry Pi 5</strong></td>
+<td>Desktop-class performance</td>
+<td>Cost, heat, 5 V 5 A supply</td>
+<td>Path C (heavy vision)</td>
+</tr>
+<tr>
+<td><strong>Arduino Nano</strong></td>
+<td>Simplest possible, 5 V logic suits hobby servos</td>
+<td>No Wi-Fi, very little memory</td>
+<td>Path D</td>
+</tr>
+</tbody></table>
+</div>
+<p><strong>Rule of thumb:</strong> a microcontroller (ESP32) for reflexes — blinking, moving, reacting in milliseconds — and a Pi or a PC for heavy thinking (vision, speech, language models).</p>
+<h2 id="logic-levels-3-3-v-vs-5-v">Logic levels: 3.3 V vs 5 V<a class="anchor" href="#logic-levels-3-3-v-vs-5-v" aria-label="Link to this section">#</a></h2>
+<p>ESP32 and Raspberry Pi pins work at <strong>3.3 V</strong> and are not 5 V tolerant. Arduino Nano and Uno work at <strong>5 V</strong>.</p>
+<blockquote class="warn"><p><span class="label">Warning</span>a 5 V signal into a 3.3 V pin can damage the board. The classic example is the HC-SR04 ultrasonic sensor: it must run from 5 V and its <strong>Echo</strong> pin outputs 5 V. On a 3.3 V board, put a voltage divider on Echo (Adafruit&#39;s example uses two 10 kΩ resistors). The <strong>Trig</strong> input accepts 3 V or 5 V.</p>
+</blockquote>
+<p>Most breakout boards sold by Adafruit, SparkFun and similar include level shifting and a regulator, so they accept 3–5 V — but always check the product page.</p>
+<h2 id="esp32-pin-pitfalls">ESP32 pin pitfalls<a class="anchor" href="#esp32-pin-pitfalls" aria-label="Link to this section">#</a></h2>
+<ul>
+<li><strong>Strapping pins</strong> are read at boot to choose the boot mode. Pulling one the wrong way with a sensor or servo can stop the board from starting.<ul>
+<li><strong>ESP32-S3:</strong> GPIO 0, 3, 45 and 46 are strapping pins. On boards with octal flash or PSRAM (e.g. ESP32-S3R8), GPIO 33–37 are taken by the memory, and GPIO 26–32 are normally used for flash/PSRAM — leave them all free.</li>
+<li><strong>Classic ESP32:</strong> check the &quot;Boot configurations&quot; section of the ESP32 datasheet for your module before using GPIO 0, 2, 5, 12 or 15.</li>
+</ul>
+</li>
+<li><strong>ADC2 is shared with Wi-Fi.</strong> On the classic ESP32, analog readings on ADC2 pins compete with the Wi-Fi driver. Put analog sensors (light sensor, potentiometer) on <strong>ADC1</strong> pins if your robot uses Wi-Fi.</li>
+<li><strong>Input-only pins</strong> (GPIO 34–39 on the classic ESP32) cannot drive servos or LEDs.</li>
+</ul>
+<h2 id="power">Power<a class="anchor" href="#power" aria-label="Link to this section">#</a></h2>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Use when</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>USB 5 V, 2–3 A</td>
+<td>The robot stays on the desk</td>
+<td>Simplest and safest. Start here.</td>
+</tr>
+<tr>
+<td>1S LiPo + charger with protection + 5 V boost</td>
+<td>Small wireless robot</td>
+<td>Check the boost converter&#39;s current covers the servos&#39; peaks.</td>
+</tr>
+<tr>
+<td>18650 cell(s) in a holder</td>
+<td>More capacity</td>
+<td>Use protected cells only.</td>
+</tr>
+<tr>
+<td>2S Li-ion (7.4 V) + buck converter to 5–6 V</td>
+<td>Motors and several servos</td>
+<td>Needs a balance charger.</td>
+</tr>
+</tbody></table>
+</div>
+<h3 id="powering-servos-without-resets">Powering servos without resets<a class="anchor" href="#powering-servos-without-resets" aria-label="Link to this section">#</a></h3>
+<p>When a servo starts or stalls it pulls a burst of current. If that comes from the same supply as the microcontroller, the voltage dips and the board <strong>browns out</strong> — it resets at random.</p>
+<ol>
+<li>Give the servos their <strong>own 5 V rail</strong> (a separate USB supply or a regulator rated for the peak).</li>
+<li>Add a <strong>large capacitor</strong> across that rail near the servos (470–1000 µF, observe polarity).</li>
+<li><strong>Connect all grounds together</strong> — board, servo supply, sensors. Signals need a shared reference.</li>
+<li>With more than two servos, use a driver board such as the PCA9685 (chapter 5).</li>
+</ol>
+<h2 id="the-four-buses-you-will-meet">The four buses you will meet<a class="anchor" href="#the-four-buses-you-will-meet" aria-label="Link to this section">#</a></h2>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Bus</th>
+<th>Wires</th>
+<th>Typical parts</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>I²C</strong></td>
+<td>SDA, SCL (+ power)</td>
+<td>SSD1306 OLED, PCA9685, VL53L0X</td>
+<td>Many devices on two wires, each with an address. PCA9685 boards can chain up to 62 on one bus.</td>
+</tr>
+<tr>
+<td><strong>SPI</strong></td>
+<td>SCK, MOSI, CS, DC (+ RST)</td>
+<td>GC9A01, ST7789 colour TFTs</td>
+<td>Fast enough for smooth colour animation.</td>
+</tr>
+<tr>
+<td><strong>I²S</strong></td>
+<td>BCLK, WS/LRC, DATA</td>
+<td>INMP441 mic, MAX98357A amp</td>
+<td>Digital audio — far less noise than analog wiring.</td>
+</tr>
+<tr>
+<td><strong>PWM</strong></td>
+<td>One signal wire</td>
+<td>Servos</td>
+<td>50 Hz pulses; the pulse width sets the angle.</td>
+</tr>
+</tbody></table>
+</div>
+<h2 id="breadboard-perfboard-pcb">Breadboard → perfboard → PCB<a class="anchor" href="#breadboard-perfboard-pcb" aria-label="Link to this section">#</a></h2>
+<ol>
+<li><strong>Breadboard:</strong> wire everything, test each part on its own, then together. Photograph the working layout.</li>
+<li><strong>Perfboard / protoboard:</strong> solder the same circuit permanently. Keep servo power wires short and thick.</li>
+<li><strong>Custom PCB (optional):</strong> design it in the free <a href="https://www.kicad.org/" target="_blank" rel="noopener">KiCad ↗</a> and order it from any PCB manufacturer. Cleaner, smaller and repeatable.</li>
+</ol>
+<h2 id="sources">Sources<a class="anchor" href="#sources" aria-label="Link to this section">#</a></h2>
+<ul>
+<li>HC-SR04 voltage and Echo divider — Adafruit: <a href="https://learn.adafruit.com/ultrasonic-sonar-distance-sensors/overview" target="_blank" rel="noopener">https://learn.adafruit.com/ultrasonic-sonar-distance-sensors/overview ↗</a></li>
+<li>ESP32 GPIO and strapping pins — Espressif ESP-IDF: <a href="https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/peripherals/gpio.html" target="_blank" rel="noopener">https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/peripherals/gpio.html ↗</a></li>
+<li>ESP32-S3 strapping and flash/PSRAM pins — Espressif ESP-IDF: <a href="https://docs.espressif.com/projects/esp-idf/en/stable/esp32s3/api-reference/peripherals/gpio.html" target="_blank" rel="noopener">https://docs.espressif.com/projects/esp-idf/en/stable/esp32s3/api-reference/peripherals/gpio.html ↗</a></li>
+<li>ADC2 shared with Wi-Fi — Espressif ESP-IDF: <a href="https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/peripherals/adc/adc_oneshot.html" target="_blank" rel="noopener">https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/peripherals/adc/adc_oneshot.html ↗</a></li>
+<li>PCA9685 chaining — Adafruit: <a href="https://learn.adafruit.com/16-channel-pwm-servo-driver" target="_blank" rel="noopener">https://learn.adafruit.com/16-channel-pwm-servo-driver ↗</a></li>
+</ul>
+
+    </div>
+    <nav class="pager" aria-label="Previous and next chapter">
+      <a class="prev" href="02-choose-your-path.html"><small>← Previous</small><b>Choose your path</b></a>
+      <a class="next" href="04-eyes-and-face.html"><small>Next →</small><b>Eyes &amp; face</b></a>
+    </nav>
+    <p class="edit">Spotted a mistake or a dead link? <a href="https://github.com/Alex-Stark-industries/desk-buddy-guide/edit/main/docs/03-electronics.md" target="_blank" rel="noopener">Edit this chapter on GitHub ↗</a></p>
+  </article>
+  <aside class="toc-right" aria-label="On this page">
+    <span class="eyebrow">On this page</span>
+    <ul>
+      <li><a href="#choosing-the-board">Choosing the board</a></li>
+      <li><a href="#logic-levels-3-3-v-vs-5-v">Logic levels: 3.3 V vs 5 V</a></li>
+      <li><a href="#esp32-pin-pitfalls">ESP32 pin pitfalls</a></li>
+      <li><a href="#power">Power</a></li>
+      <li><a href="#the-four-buses-you-will-meet">The four buses you will meet</a></li>
+      <li><a href="#breadboard-perfboard-pcb">Breadboard → perfboard → PCB</a></li>
+      <li><a href="#sources">Sources</a></li>
+    </ul>
+  </aside>
+</div>
+<footer><div class="wrap">Desk Buddy Guide · text CC BY-SA 4.0 · code MIT · third-party projects are linked under their own licences.</div></footer>
+<script>
+// on phones the chapter list starts collapsed so the text comes first
+if (matchMedia("(max-width: 800px)").matches) document.querySelector(".toc-left details").removeAttribute("open");
+// highlight the section being read in the right-hand table of contents
+const links = [...document.querySelectorAll(".toc-right a")];
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach((e) => { if (e.isIntersecting) links.forEach((a) => a.classList.toggle("active", a.getAttribute("href") === "#" + e.target.id)); });
+}, { rootMargin: "0px 0px -70% 0px" });
+document.querySelectorAll(".prose h2").forEach((h) => obs.observe(h));
+</script>
+</body>
+</html>

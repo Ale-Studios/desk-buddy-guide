@@ -1,23 +1,28 @@
 # 3D models
 
-3D models for designing your own shell. Manufacturers and projects publish models under their own terms, so this page **links** to the sources instead of copying files.
+Printable bodies and component models for designing your own desk buddy. Every entry states its licence. Files are **copied into this repository only when their licence allows redistribution**; everything else is linked to its original source.
 
-## Robot bodies (ready to print)
+## Included in this repository
 
-| Model | Formats | Licence | Link |
-|-------|---------|---------|------|
-| Stack-chan cases (SG90, SCS0009, RS30X servos, backpack, community variants) | STEP, STL, Fusion 360 | Apache-2.0 | [stack-chan/case](https://github.com/stack-chan/stack-chan/tree/develop/case) |
+| Model | Files | Licence | Location |
+|-------|-------|---------|----------|
+| Stack-chan case for SG90 servos — shell, feet, front and back brackets, 400 mAh battery backpack | STL (unmodified) | Apache-2.0, © Stack-chan contributors | [`site/models/stack-chan-sg90/`](../site/models/stack-chan-sg90/) — viewable in the site's 3D viewer |
+
+## Linked (not redistributed here)
+
+| Model | Formats | Licence | Source |
+|-------|---------|---------|--------|
+| All Stack-chan cases (SCS0009, RS30X, backpacks, community remixes) | STEP, STL, Fusion 360 | Apache-2.0 | [stack-chan/case](https://github.com/stack-chan/stack-chan/tree/develop/case) |
 | Otto DIY biped body | STL | CC BY-SA 4.0 | [ottodiy.com](https://www.ottodiy.com/) |
-| Reachy Mini | CAD | Creative Commons BY-SA-NC (non-commercial) | [pollen-robotics/reachy_mini](https://github.com/pollen-robotics/reachy_mini) |
+| Reachy Mini | CAD | CC BY-SA-NC (non-commercial) | [pollen-robotics/reachy_mini](https://github.com/pollen-robotics/reachy_mini) |
 
-## Components
+## Component models
 
-| Component | Where to look | Licence |
-|-----------|---------------|---------|
-| Generic parts (pin headers, connectors, chip packages) | [KiCad 3D library](https://www.kicad.org/libraries/download/) | CC BY-SA 4.0 with a usage exception ([details](https://www.kicad.org/libraries/license/)) |
-| SG90 micro servo | Inside the Stack-chan `case_SG90` folder (above) | Apache-2.0 |
-| ESP32-S3-DevKitC-1 | [Espressif user guide](https://docs.espressif.com/projects/esp-dev-kits/en/latest/esp32s3/esp32-s3-devkitc-1/user_guide.html) (dimensions) | Espressif terms |
-| M5Stack CoreS3 | [M5Stack docs](https://docs.m5stack.com/en/core/CoreS3) | M5Stack terms |
-| Raspberry Pi boards | [Raspberry Pi documentation](https://www.raspberrypi.com/documentation/computers/raspberry-pi.html) (mechanical drawings) | Raspberry Pi terms |
+Accurate models of boards and modules are useful for designing mounts and checking clearances.
 
-_To do: official STEP files for displays, sensors, audio modules, motors and drivers (Adafruit, SparkFun and manufacturer pages). Contributions welcome — always include the licence._
+| Source | What you will find | Licence |
+|--------|--------------------|---------|
+| [KiCad 3D library](https://gitlab.com/kicad/libraries/kicad-packages3D) (moved from GitHub to GitLab) | Connectors, pin headers, chip packages and some modules, as STEP/WRL | See the KiCad library licence: https://www.kicad.org/libraries/license/ |
+| Manufacturer documentation (Espressif, M5Stack, Raspberry Pi) | Dimensions and mechanical drawings | Each manufacturer's terms |
+
+We have not yet found free, redistributable STEP models for common hobby modules (SG90 servo, ESP32 dev boards, SSD1306 and GC9A01 displays). Original models made for this guide will be added here under CC BY-SA 4.0. Contributions are welcome — always include the licence.
