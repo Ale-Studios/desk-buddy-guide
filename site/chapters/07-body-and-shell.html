@@ -9,6 +9,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;600&display=swap">
 <link rel="stylesheet" href="../assets/guide.css">
+<script type="importmap">{ "imports": { "three": "../vendor/three/three.module.js" } }</script>
 </head>
 <body>
 <header class="wrap bar">
@@ -43,6 +44,7 @@
       <h1>Body &amp; shell</h1>
       <div class="meta"><span>3 min read</span><span>Updated November 2026</span></div>
     </header>
+    
     <div class="prose">
 <p>The shell turns a tangle of modules into an object with a personality. It also protects the electronics, hides the wires and decides how the robot <em>feels</em> in your hand.</p>
 <h2 id="choosing-a-method">Choosing a method<a class="anchor" href="#choosing-a-method" aria-label="Link to this section">#</a></h2>
@@ -228,6 +230,10 @@ const obs = new IntersectionObserver((entries) => {
   entries.forEach((e) => { if (e.isIntersecting) links.forEach((a) => a.classList.toggle("active", a.getAttribute("href") === "#" + e.target.id)); });
 }, { rootMargin: "0px 0px -70% 0px" });
 document.querySelectorAll(".prose h2").forEach((h) => obs.observe(h));
+</script>
+<script type="module">
+import { renderThumbnails } from "../assets/parts3d.js";
+renderThumbnails();
 </script>
 </body>
 </html>

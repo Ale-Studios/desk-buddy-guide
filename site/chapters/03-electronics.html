@@ -9,6 +9,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;600&display=swap">
 <link rel="stylesheet" href="../assets/guide.css">
+<script type="importmap">{ "imports": { "three": "../vendor/three/three.module.js" } }</script>
 </head>
 <body>
 <header class="wrap bar">
@@ -43,6 +44,8 @@
       <h1>Electronics</h1>
       <div class="meta"><span>4 min read</span><span>Updated November 2026</span></div>
     </header>
+    <section class="part-strip" aria-label="Parts in this chapter"><span class="eyebrow">Parts in this chapter · open one to rotate it in 3D</span>
+      <div class="part-row"><a href="../parts.html#esp32"><img data-part="esp32" alt="3D model of the ESP32" width="480" height="300"><span>ESP32</span></a><a href="../parts.html#esp32s3"><img data-part="esp32s3" alt="3D model of the ESP32-S3" width="480" height="300"><span>ESP32-S3</span></a><a href="../parts.html#cores3"><img data-part="cores3" alt="3D model of the M5Stack CoreS3" width="480" height="300"><span>M5Stack CoreS3</span></a><a href="../parts.html#pizero"><img data-part="pizero" alt="3D model of the Pi Zero 2 W" width="480" height="300"><span>Pi Zero 2 W</span></a><a href="../parts.html#pi5"><img data-part="pi5" alt="3D model of the Raspberry Pi 5" width="480" height="300"><span>Raspberry Pi 5</span></a><a href="../parts.html#nano"><img data-part="nano" alt="3D model of the Arduino Nano" width="480" height="300"><span>Arduino Nano</span></a><a href="../parts.html#usb5v"><img data-part="usb5v" alt="3D model of the 5 V USB supply" width="480" height="300"><span>5 V USB supply</span></a><a href="../parts.html#tp4056"><img data-part="tp4056" alt="3D model of the TP4056 charger" width="480" height="300"><span>TP4056 charger</span></a><a href="../parts.html#lipo"><img data-part="lipo" alt="3D model of the 1S LiPo" width="480" height="300"><span>1S LiPo</span></a><a href="../parts.html#18650"><img data-part="18650" alt="3D model of the 18650 cell" width="480" height="300"><span>18650 cell</span></a></div></section>
     <div class="prose">
 <p>Every desk buddy needs a brain, clean power and a few wires done right. This chapter covers all three; get them right and the rest of the build is fun instead of frustrating.</p>
 <h2 id="choosing-the-board">Choosing the board<a class="anchor" href="#choosing-the-board" aria-label="Link to this section">#</a></h2>
@@ -229,6 +232,10 @@ const obs = new IntersectionObserver((entries) => {
   entries.forEach((e) => { if (e.isIntersecting) links.forEach((a) => a.classList.toggle("active", a.getAttribute("href") === "#" + e.target.id)); });
 }, { rootMargin: "0px 0px -70% 0px" });
 document.querySelectorAll(".prose h2").forEach((h) => obs.observe(h));
+</script>
+<script type="module">
+import { renderThumbnails } from "../assets/parts3d.js";
+renderThumbnails();
 </script>
 </body>
 </html>

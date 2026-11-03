@@ -25,6 +25,23 @@ const CHAPTERS = [
   ["10-connect-to-pc", "Connecting to a PC"],
 ];
 
+// Parts shown as 3D thumbnails at the top of each chapter (ids from site/assets/parts3d.js)
+const CHAPTER_PARTS = {
+  "02-choose-your-path": [["esp32s3", "ESP32-S3"], ["cores3", "M5Stack CoreS3"], ["pizero", "Pi Zero 2 W"], ["nano", "Arduino Nano"], ["n20", "N20 motor"]],
+  "03-electronics": [["esp32", "ESP32"], ["esp32s3", "ESP32-S3"], ["cores3", "M5Stack CoreS3"], ["pizero", "Pi Zero 2 W"], ["pi5", "Raspberry Pi 5"], ["nano", "Arduino Nano"], ["usb5v", "5 V USB supply"], ["tp4056", "TP4056 charger"], ["lipo", "1S LiPo"], ["18650", "18650 cell"]],
+  "04-eyes-and-face": [["ssd1306", "SSD1306 OLED"], ["gc9a01", "GC9A01 round TFT"], ["st7789", "ST7789 TFT"], ["matrix", "LED matrix"], ["cores3", "M5Stack CoreS3"]],
+  "05-movement": [["sg90", "SG90"], ["mg90s", "MG90S"], ["scs0009", "SCS0009"], ["n20", "N20 motor"], ["pca9685", "PCA9685"], ["tb6612", "TB6612FNG"], ["drv8833", "DRV8833"]],
+  "06-senses": [["inmp441", "INMP441 mic"], ["max98357a", "MAX98357A amp"], ["speaker", "Speaker"], ["ttp223", "TTP223 touch"], ["vl53l0x", "VL53L0X"], ["hcsr04", "HC-SR04"], ["picam3", "Pi Camera 3"], ["ov2640", "OV2640"]],
+  "08-firmware": [["esp32s3", "ESP32-S3"], ["nano", "Arduino Nano"], ["cores3", "M5Stack CoreS3"]],
+  "10-connect-to-pc": [["esp32s3", "ESP32-S3"], ["inmp441", "INMP441 mic"], ["max98357a", "MAX98357A amp"]],
+};
+const partStrip = (file) => {
+  const list = CHAPTER_PARTS[file];
+  if (!list) return "";
+  return `<section class="part-strip" aria-label="Parts in this chapter"><span class="eyebrow">Parts in this chapter · open one to rotate it in 3D</span>
+      <div class="part-row">${list.map(([id, name]) => `<a href="../parts.html#${id}"><img data-part="${id}" alt="3D model of the ${esc(name)}" width="480" height="300"><span>${esc(name)}</span></a>`).join("")}</div></section>`;
+};
+
 const esc = (s) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 const slug = (s) => s.toLowerCase().replace(/<[^>]+>/g, "").replace(/&[a-z]+;/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 
@@ -95,6 +112,7 @@ function page(i, md) {
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;600&display=swap">
 <link rel="stylesheet" href="../assets/guide.css">
+<script type="importmap">{ "imports": { "three": "../vendor/three/three.module.js" } }</script>
 </head>
 <body>
 <header class="wrap bar">
@@ -120,6 +138,7 @@ ${CHAPTERS.map(([f, t], j) => `      <li><a href="${f}.html"${j === i ? ' aria-c
       <h1>${esc(title)}</h1>
       <div class="meta"><span>${mins} min read</span><span>Updated November 2026</span></div>
     </header>
+    ${partStrip(file)}
     <div class="prose">
 ${html}
     </div>
@@ -146,6 +165,10 @@ const obs = new IntersectionObserver((entries) => {
   entries.forEach((e) => { if (e.isIntersecting) links.forEach((a) => a.classList.toggle("active", a.getAttribute("href") === "#" + e.target.id)); });
 }, { rootMargin: "0px 0px -70% 0px" });
 document.querySelectorAll(".prose h2").forEach((h) => obs.observe(h));
+</script>
+<script type="module">
+import { renderThumbnails } from "../assets/parts3d.js";
+renderThumbnails();
 </script>
 </body>
 </html>

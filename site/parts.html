@@ -82,6 +82,13 @@ select { font: 15px var(--body); padding: 9px 12px; border-radius: 10px; border:
 .card[data-cat="power"] { border-top-color: #d9a400; }
 
 /* detail drawer */
+.thumb { display: block; margin: -6px -6px 4px; border-radius: 10px; background: radial-gradient(circle at 50% 40%, #1a2742, var(--screen) 75%); aspect-ratio: 16 / 10; overflow: hidden; }
+.thumb img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.viewer { position: relative; height: 280px; border-radius: 14px; overflow: hidden; background: radial-gradient(circle at 50% 40%, #1a2742, var(--screen) 75%); }
+.viewer canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; cursor: grab; }
+.viewer span { position: absolute; z-index: 1; font: 12px var(--mono); color: #cfe9ff; pointer-events: none; }
+.v-size { left: 12px; bottom: 10px; background: rgba(7, 11, 20, .7); padding: 4px 8px; border-radius: 6px; }
+.v-hint { right: 12px; bottom: 12px; opacity: .65; }
 dialog { border: 0; padding: 0; max-width: 620px; width: calc(100% - 32px); border-radius: 18px; background: var(--panel); color: var(--ink); box-shadow: 0 40px 80px -20px rgba(0,0,0,.45); }
 dialog::backdrop { background: rgba(7, 11, 20, .55); }
 .dlg { padding: 26px; display: flex; flex-direction: column; gap: 16px; }
@@ -109,6 +116,7 @@ footer { border-top: 1.5px solid var(--line); padding: 28px 0 44px; color: var(-
 }
 @media (prefers-reduced-motion: reduce) { .card { transition: none; } }
 </style>
+<script type="importmap">{ "imports": { "three": "./vendor/three/three.module.js" } }</script>
 </head>
 <body>
 <header class="wrap bar">
@@ -150,7 +158,59 @@ footer { border-top: 1.5px solid var(--line); padding: 28px 0 44px; color: var(-
 
 <footer><div class="wrap">Desk Buddy Guide · text CC BY-SA 4.0 · code MIT · prices are estimates, not offers.</div></footer>
 
-<script>
+<script type="module">
+import * as THREE from "three";
+import { OrbitControls } from "./vendor/three/addons/OrbitControls.js";
+import { buildPart, makeScene, frame } from "./assets/parts3d.js";
+
+// ---------- 3D: one shared renderer makes every card's thumbnail ----------
+const thumbs = new Map();
+const thumbRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
+thumbRenderer.setPixelRatio(1);
+thumbRenderer.setSize(480, 300, false);
+const thumbScene = makeScene();
+const thumbCam = new THREE.PerspectiveCamera(32, 480 / 300, 0.1, 5000);
+function thumbFor(id) {
+  if (thumbs.has(id)) return thumbs.get(id);
+  const m = buildPart(id);
+  if (!m) return "";
+  m.rotation.y = -0.5;
+  thumbScene.add(m);
+  frame(thumbCam, m.userData.size, new THREE.Vector3());
+  thumbRenderer.render(thumbScene, thumbCam);
+  const url = thumbRenderer.domElement.toDataURL("image/png");
+  thumbScene.remove(m);
+  thumbs.set(id, url);
+  return url;
+}
+
+// ---------- 3D: the live viewer inside the part dialog ----------
+const viewer = { renderer: null, scene: makeScene(), cam: new THREE.PerspectiveCamera(32, 1.6, 0.1, 5000), controls: null, model: null, on: false };
+function openViewer(id, host) {
+  if (!viewer.renderer) {
+    viewer.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    viewer.renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+    viewer.controls = new OrbitControls(viewer.cam, viewer.renderer.domElement);
+    viewer.controls.enableDamping = true;
+    viewer.controls.autoRotateSpeed = 2;
+  }
+  host.appendChild(viewer.renderer.domElement);
+  const w = host.clientWidth, h = host.clientHeight;
+  viewer.renderer.setSize(w, h, false);
+  viewer.cam.aspect = w / h;
+  if (viewer.model) viewer.scene.remove(viewer.model);
+  viewer.model = buildPart(id);
+  viewer.scene.add(viewer.model);
+  frame(viewer.cam, viewer.model.userData.size, viewer.controls.target);
+  viewer.controls.autoRotate = !matchMedia("(prefers-reduced-motion: reduce)").matches;
+  viewer.controls.update();
+  const s = viewer.model.userData.size;
+  host.querySelector(".v-size").textContent = `≈ ${s.x.toFixed(0)} × ${s.z.toFixed(0)} × ${s.y.toFixed(0)} mm`;
+  viewer.on = true;
+  viewer.renderer.setAnimationLoop(() => { viewer.controls.update(); viewer.renderer.render(viewer.scene, viewer.cam); });
+}
+function closeViewer() { if (viewer.renderer) viewer.renderer.setAnimationLoop(null); viewer.on = false; }
+
 const CATS = { brain: "Brain", display: "Display", motion: "Movement", sense: "Senses", audio: "Audio", power: "Power" };
 const PATHN = { A: "Minimal ESP32", B: "M5Stack kit", C: "Raspberry Pi", D: "Biped", E: "Wheeled", F: "Premium kit" };
 
@@ -327,6 +387,7 @@ function render() {
   const grid = document.getElementById("grid");
   grid.innerHTML = list.length ? list.map((p) => `
     <button class="card" type="button" data-id="${p.id}" data-cat="${p.cat}">
+      <span class="thumb"><img src="${thumbFor(p.id)}" alt="3D model of the ${esc(p.name)}" width="480" height="300" loading="lazy"></span>
       <span class="card-top"><span class="cat">${CATS[p.cat]}</span><span class="price">${priceText(p.p)}</span></span>
       <h3>${esc(p.name)}</h3>
       <p>${esc(p.what)}</p>
@@ -337,12 +398,16 @@ function render() {
 const dlg = document.getElementById("dlg");
 document.getElementById("grid").addEventListener("click", (e) => {
   const card = e.target.closest(".card");
-  if (!card) return;
-  const p = PARTS.find((x) => x.id === card.dataset.id);
+  if (card) openPart(card.dataset.id);
+});
+function openPart(id) {
+  const p = PARTS.find((x) => x.id === id);
+  if (!p) return;
   const specs = { Category: CATS[p.cat], Price: priceText(p.p) + " per unit", Interface: p.iface.join(", "), ...p.specs };
   document.getElementById("dlg-body").innerHTML = `
     <div class="dlg-head"><div><span class="eyebrow">${CATS[p.cat]}</span><h2 id="d-name">${esc(p.name)}</h2></div>
       <button class="close" type="button" aria-label="Close" data-close>×</button></div>
+    <div class="viewer" id="viewer"><span class="v-size"></span><span class="v-hint">drag to rotate · scroll to zoom</span></div>
     <p style="margin:0">${esc(p.what)}</p>
     <dl class="specs">${Object.entries(specs).map(([k, v]) => `<dt>${k.replace(/_/g, " ")}</dt><dd>${esc(v)}</dd>`).join("")}
       <dt>Used in</dt><dd>${p.paths.map((k) => `Path ${k} · ${PATHN[k]}`).join("<br>")}</dd></dl>
@@ -351,8 +416,13 @@ document.getElementById("grid").addEventListener("click", (e) => {
     ${p.wiring ? `<div><span class="eyebrow">Typical wiring (example pins)</span><div class="pins" style="margin-top:8px">${esc(p.wiring)}</div></div>` : ""}
     ${p.links ? `<div class="links">${p.links.map(([t, u]) => `<a href="${u}" target="_blank" rel="noopener">${t} ↗</a>`).join("")}</div>` : ""}`;
   dlg.showModal();
-});
+  openViewer(p.id, document.getElementById("viewer"));
+}
+// parts.html#sg90 opens that part directly (links from the chapters)
+addEventListener("hashchange", () => openPart(location.hash.slice(1)));
+if (location.hash) setTimeout(() => openPart(decodeURIComponent(location.hash.slice(1))), 0);
 dlg.addEventListener("click", (e) => { if (e.target === dlg || e.target.closest("[data-close]")) dlg.close(); });
+dlg.addEventListener("close", closeViewer);
 
 document.getElementById("q").addEventListener("input", (e) => { state.q = e.target.value; render(); });
 document.getElementById("sort").addEventListener("change", (e) => { state.sort = e.target.value; render(); });

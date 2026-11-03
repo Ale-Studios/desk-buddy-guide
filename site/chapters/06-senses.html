@@ -9,6 +9,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;600&display=swap">
 <link rel="stylesheet" href="../assets/guide.css">
+<script type="importmap">{ "imports": { "three": "../vendor/three/three.module.js" } }</script>
 </head>
 <body>
 <header class="wrap bar">
@@ -43,6 +44,8 @@
       <h1>Senses</h1>
       <div class="meta"><span>3 min read</span><span>Updated November 2026</span></div>
     </header>
+    <section class="part-strip" aria-label="Parts in this chapter"><span class="eyebrow">Parts in this chapter · open one to rotate it in 3D</span>
+      <div class="part-row"><a href="../parts.html#inmp441"><img data-part="inmp441" alt="3D model of the INMP441 mic" width="480" height="300"><span>INMP441 mic</span></a><a href="../parts.html#max98357a"><img data-part="max98357a" alt="3D model of the MAX98357A amp" width="480" height="300"><span>MAX98357A amp</span></a><a href="../parts.html#speaker"><img data-part="speaker" alt="3D model of the Speaker" width="480" height="300"><span>Speaker</span></a><a href="../parts.html#ttp223"><img data-part="ttp223" alt="3D model of the TTP223 touch" width="480" height="300"><span>TTP223 touch</span></a><a href="../parts.html#vl53l0x"><img data-part="vl53l0x" alt="3D model of the VL53L0X" width="480" height="300"><span>VL53L0X</span></a><a href="../parts.html#hcsr04"><img data-part="hcsr04" alt="3D model of the HC-SR04" width="480" height="300"><span>HC-SR04</span></a><a href="../parts.html#picam3"><img data-part="picam3" alt="3D model of the Pi Camera 3" width="480" height="300"><span>Pi Camera 3</span></a><a href="../parts.html#ov2640"><img data-part="ov2640" alt="3D model of the OV2640" width="480" height="300"><span>OV2640</span></a></div></section>
     <div class="prose">
 <p>Senses are what make a robot <em>react</em> instead of just play an animation. You do not need many: a touch pad and a distance sensor already give a desk buddy plenty to respond to.</p>
 <h2 id="overview">Overview<a class="anchor" href="#overview" aria-label="Link to this section">#</a></h2>
@@ -211,6 +214,10 @@ const obs = new IntersectionObserver((entries) => {
   entries.forEach((e) => { if (e.isIntersecting) links.forEach((a) => a.classList.toggle("active", a.getAttribute("href") === "#" + e.target.id)); });
 }, { rootMargin: "0px 0px -70% 0px" });
 document.querySelectorAll(".prose h2").forEach((h) => obs.observe(h));
+</script>
+<script type="module">
+import { renderThumbnails } from "../assets/parts3d.js";
+renderThumbnails();
 </script>
 </body>
 </html>

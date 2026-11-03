@@ -9,6 +9,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;600&display=swap">
 <link rel="stylesheet" href="../assets/guide.css">
+<script type="importmap">{ "imports": { "three": "../vendor/three/three.module.js" } }</script>
 </head>
 <body>
 <header class="wrap bar">
@@ -43,6 +44,8 @@
       <h1>Movement</h1>
       <div class="meta"><span>3 min read</span><span>Updated November 2026</span></div>
     </header>
+    <section class="part-strip" aria-label="Parts in this chapter"><span class="eyebrow">Parts in this chapter · open one to rotate it in 3D</span>
+      <div class="part-row"><a href="../parts.html#sg90"><img data-part="sg90" alt="3D model of the SG90" width="480" height="300"><span>SG90</span></a><a href="../parts.html#mg90s"><img data-part="mg90s" alt="3D model of the MG90S" width="480" height="300"><span>MG90S</span></a><a href="../parts.html#scs0009"><img data-part="scs0009" alt="3D model of the SCS0009" width="480" height="300"><span>SCS0009</span></a><a href="../parts.html#n20"><img data-part="n20" alt="3D model of the N20 motor" width="480" height="300"><span>N20 motor</span></a><a href="../parts.html#pca9685"><img data-part="pca9685" alt="3D model of the PCA9685" width="480" height="300"><span>PCA9685</span></a><a href="../parts.html#tb6612"><img data-part="tb6612" alt="3D model of the TB6612FNG" width="480" height="300"><span>TB6612FNG</span></a><a href="../parts.html#drv8833"><img data-part="drv8833" alt="3D model of the DRV8833" width="480" height="300"><span>DRV8833</span></a></div></section>
     <div class="prose">
 <p>A little motion goes a long way. A head that turns toward you and nods once does more for a robot&#39;s personality than any number of motors — as long as the movement is smooth and quiet.</p>
 <h2 id="actuators">Actuators<a class="anchor" href="#actuators" aria-label="Link to this section">#</a></h2>
@@ -194,6 +197,10 @@ const obs = new IntersectionObserver((entries) => {
   entries.forEach((e) => { if (e.isIntersecting) links.forEach((a) => a.classList.toggle("active", a.getAttribute("href") === "#" + e.target.id)); });
 }, { rootMargin: "0px 0px -70% 0px" });
 document.querySelectorAll(".prose h2").forEach((h) => obs.observe(h));
+</script>
+<script type="module">
+import { renderThumbnails } from "../assets/parts3d.js";
+renderThumbnails();
 </script>
 </body>
 </html>

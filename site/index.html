@@ -94,11 +94,12 @@ section { padding: 72px 0; }
 
 /* anatomy */
 .anatomy { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.organ-3d { display: block; width: 100%; aspect-ratio: 16 / 9; margin-bottom: 14px; border-radius: 10px; background: radial-gradient(circle at 50% 40%, #1a2742, var(--screen) 75%); }
 .organ { background: var(--panel); border: 1.5px solid var(--line); border-radius: var(--radius); padding: 22px; }
 .organ h3 { font-size: 22px; margin: 8px 0 8px; }
 .organ p { margin: 0 0 12px; color: var(--ink-soft); font-size: 15.5px; }
 .chips { display: flex; flex-wrap: wrap; gap: 6px; }
-.chip { font: 12.5px var(--mono); padding: 4px 9px; border-radius: 6px; background: var(--panel-2); color: var(--ink); }
+.chip { text-decoration: none; font: 12.5px var(--mono); padding: 4px 9px; border-radius: 6px; background: var(--panel-2); color: var(--ink); }
 .flow { font: 600 12px var(--mono); color: var(--ink-soft); text-align: center; margin-top: 14px; letter-spacing: .08em; }
 
 /* quiz */
@@ -127,9 +128,11 @@ legend { font: 700 17px var(--display); margin-bottom: 10px; padding: 0; }
 .runner button { background: none; border: 0; color: var(--signal); font: inherit; text-decoration: underline; cursor: pointer; padding: 0; }
 
 /* paths table */
-.paths { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.paths { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
 .path { background: var(--panel); border: 1.5px solid var(--line); border-radius: var(--radius); padding: 18px 20px; display: flex; flex-direction: column; gap: 8px; text-decoration: none; color: var(--ink); transition: border-color .2s, transform .2s; }
 .path:hover { border-color: var(--accent); transform: translateY(-2px); }
+.path-parts { display: flex; gap: 6px; margin-bottom: 4px; }
+.path-parts img { flex: 1 1 0; width: 0; height: auto; min-width: 0; aspect-ratio: 16 / 10; object-fit: contain; border-radius: 8px; background: radial-gradient(circle at 50% 40%, #1a2742, var(--screen) 75%); }
 .path .letter { font: 800 14px var(--mono); color: var(--accent); }
 .path h3 { font-size: 20px; }
 .path p { margin: 0; font-size: 15px; color: var(--ink-soft); }
@@ -163,6 +166,7 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
   .bot-head, .path { transition: none; }
 }
 </style>
+<script type="importmap">{ "imports": { "three": "./vendor/three/three.module.js" } }</script>
 </head>
 <body>
 
@@ -218,22 +222,25 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
       </div>
       <div class="anatomy">
         <div class="organ">
+          <canvas class="organ-3d" data-spin="vl53l0x" aria-label="3D model of a VL53L0X distance sensor" role="img"></canvas>
           <span class="eyebrow">Senses</span>
           <h3>What it notices</h3>
           <p>Sound, touch, distance, light and, if you want, a camera.</p>
-          <div class="chips"><span class="chip">INMP441 mic</span><span class="chip">TTP223 touch</span><span class="chip">VL53L0X</span><span class="chip">camera</span></div>
+          <div class="chips"><a class="chip" href="parts.html#inmp441">INMP441 mic</a><a class="chip" href="parts.html#ttp223">TTP223 touch</a><a class="chip" href="parts.html#vl53l0x">VL53L0X</a><a class="chip" href="parts.html#picam3">camera</a></div>
         </div>
         <div class="organ">
+          <canvas class="organ-3d" data-spin="esp32s3" aria-label="3D model of an ESP32-S3 board" role="img"></canvas>
           <span class="eyebrow">Brain</span>
           <h3>What it decides</h3>
           <p>A microcontroller runs the reflexes: moods, blinks, reactions.</p>
-          <div class="chips"><span class="chip">ESP32-S3</span><span class="chip">M5Stack</span><span class="chip">Raspberry Pi</span><span class="chip">Arduino</span></div>
+          <div class="chips"><a class="chip" href="parts.html#esp32s3">ESP32-S3</a><a class="chip" href="parts.html#cores3">M5Stack</a><a class="chip" href="parts.html#pi5">Raspberry Pi</a><a class="chip" href="parts.html#nano">Arduino</a></div>
         </div>
         <div class="organ">
+          <canvas class="organ-3d" data-spin="sg90" aria-label="3D model of an SG90 servo" role="img"></canvas>
           <span class="eyebrow">Expression</span>
           <h3>How it reacts</h3>
           <p>Eyes on a display, a moving neck, sounds from a small speaker.</p>
-          <div class="chips"><span class="chip">GC9A01 round TFT</span><span class="chip">SG90 servos</span><span class="chip">MAX98357A amp</span></div>
+          <div class="chips"><a class="chip" href="parts.html#gc9a01">GC9A01 round TFT</a><a class="chip" href="parts.html#sg90">SG90 servos</a><a class="chip" href="parts.html#max98357a">MAX98357A amp</a></div>
         </div>
       </div>
       <p class="flow">SENSES → BRAIN → EXPRESSION · powered by USB or a battery</p>
@@ -344,22 +351,22 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
 <script>
 // ---------- build paths ----------
 const PATHS = {
-  A: { name: "Minimal ESP32", cost: "€30–50", diff: 2, time: "1–2 wknd",
+  A: { show: ["esp32s3","gc9a01","sg90"], name: "Minimal ESP32", cost: "€30–50", diff: 2, time: "1–2 wknd",
        blurb: "A dev board, a round display and two servos. The classic first build.",
        parts: ["ESP32-S3 dev board", "GC9A01 round TFT or SSD1306 OLED", "2 × SG90 / MG90S servos", "TTP223 touch, INMP441 mic, MAX98357A amp"] },
-  B: { name: "M5Stack kit", cost: "€70–110", diff: 1, time: "1 day",
+  B: { show: ["cores3","sg90"], name: "M5Stack kit", cost: "€70–110", diff: 1, time: "1 day",
        blurb: "Display, mic, speaker and camera already in one box. Stack-chan style.",
        parts: ["M5Stack CoreS3", "2 servos + servo base", "Open Stack-chan case files"] },
-  C: { name: "Raspberry Pi bot", cost: "€80–150", diff: 3, time: "2–4 wknd",
+  C: { show: ["pi5","picam3","st7789"], name: "Raspberry Pi bot", cost: "€80–150", diff: 3, time: "2–4 wknd",
        blurb: "A full Linux computer inside, with a real camera for vision.",
        parts: ["Pi Zero 2 W or Pi 5", "Pi Camera Module 3", "2\" ST7789 TFT", "PCA9685 + 2–3 servos"] },
-  D: { name: "Biped (Otto style)", cost: "€30–60", diff: 2, time: "1–2 wknd",
+  D: { show: ["nano","sg90","hcsr04"], name: "Biped (Otto style)", cost: "€30–60", diff: 2, time: "1–2 wknd",
        blurb: "Four to six servos make legs that walk, wobble and dance.",
        parts: ["Arduino Nano or ESP32", "4–6 SG90 servos", "HC-SR04 ultrasonic eyes", "Printed Otto-style body"] },
-  E: { name: "Wheeled buddy", cost: "€40–80", diff: 3, time: "2–3 wknd",
+  E: { show: ["esp32","n20","tb6612"], name: "Wheeled buddy", cost: "€40–80", diff: 3, time: "2–3 wknd",
        blurb: "Two tiny gear motors let it roam the desk — and stop at the edge.",
        parts: ["ESP32", "2 × N20 gear motors + DRV8833", "VL53L0X + edge IR sensors", "OLED face, 2S battery"] },
-  F: { name: "Premium kit (Reachy Mini)", cost: "€300–500", diff: 2, time: "1 day",
+  F: { show: [], name: "Premium kit (Reachy Mini)", cost: "€300–500", diff: 2, time: "1 day",
        blurb: "An expressive open-hardware head with a Python SDK.",
        parts: ["Reachy Mini Lite or Wireless", "Your computer (Lite)", "Python SDK"] },
 };
@@ -409,6 +416,7 @@ function renderResult() {
 
 document.getElementById("paths-grid").innerHTML = Object.entries(PATHS).map(([k, p]) => `
   <a class="path" data-k="${k}" href="chapters/02-choose-your-path.html">
+    ${p.show.length ? `<span class="path-parts">${p.show.map((id) => `<img data-part="${id}" alt="" width="480" height="300">`).join("")}</span>` : ""}
     <span class="letter">PATH ${k}</span><h3>${p.name}</h3><p>${p.blurb}</p>
     <span class="meta"><span>${p.cost}</span><span>${stars(p.diff)}</span><span>${p.time}</span></span>
   </a>`).join("");
@@ -502,6 +510,11 @@ function frame(now) {
   requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);
+</script>
+<script type="module">
+import { spinner, renderThumbnails } from "./assets/parts3d.js";
+renderThumbnails();
+document.querySelectorAll("canvas[data-spin]").forEach((c) => spinner(c, c.dataset.spin));
 </script>
 </body>
 </html>

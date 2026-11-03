@@ -9,6 +9,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;600&display=swap">
 <link rel="stylesheet" href="../assets/guide.css">
+<script type="importmap">{ "imports": { "three": "../vendor/three/three.module.js" } }</script>
 </head>
 <body>
 <header class="wrap bar">
@@ -43,6 +44,8 @@
       <h1>Basic firmware</h1>
       <div class="meta"><span>3 min read</span><span>Updated November 2026</span></div>
     </header>
+    <section class="part-strip" aria-label="Parts in this chapter"><span class="eyebrow">Parts in this chapter · open one to rotate it in 3D</span>
+      <div class="part-row"><a href="../parts.html#esp32s3"><img data-part="esp32s3" alt="3D model of the ESP32-S3" width="480" height="300"><span>ESP32-S3</span></a><a href="../parts.html#nano"><img data-part="nano" alt="3D model of the Arduino Nano" width="480" height="300"><span>Arduino Nano</span></a><a href="../parts.html#cores3"><img data-part="cores3" alt="3D model of the M5Stack CoreS3" width="480" height="300"><span>M5Stack CoreS3</span></a></div></section>
     <div class="prose">
 <p>Before any AI, a desk buddy should already feel alive: blinking, glancing around, reacting to touch. That is all firmware — a loop that reads the senses and drives the expression.</p>
 <h2 id="choosing-a-toolchain">Choosing a toolchain<a class="anchor" href="#choosing-a-toolchain" aria-label="Link to this section">#</a></h2>
@@ -231,6 +234,10 @@ const obs = new IntersectionObserver((entries) => {
   entries.forEach((e) => { if (e.isIntersecting) links.forEach((a) => a.classList.toggle("active", a.getAttribute("href") === "#" + e.target.id)); });
 }, { rootMargin: "0px 0px -70% 0px" });
 document.querySelectorAll(".prose h2").forEach((h) => obs.observe(h));
+</script>
+<script type="module">
+import { renderThumbnails } from "../assets/parts3d.js";
+renderThumbnails();
 </script>
 </body>
 </html>
