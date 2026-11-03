@@ -1,0 +1,506 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Desk Buddy Guide</title>
+<meta name="description" content="An open-source field guide to building your own desk companion robot. Six build paths, from a bare ESP32 to a premium kit.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+:root {
+  --ground: #eef1f4;
+  --panel: #ffffff;
+  --panel-2: #e3e8ee;
+  --ink: #0e1726;
+  --ink-soft: #4a5568;
+  --line: #cfd7e1;
+  --accent: #2f5bea;
+  --accent-ink: #ffffff;
+  --signal: #ffb020;
+  --screen: #070b14;
+  --eye: #6fe3ff;
+  --radius: 14px;
+  --display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground: #0b1020; --panel: #121a2e; --panel-2: #19233b; --ink: #e8edf6; --ink-soft: #9aa7bd;
+    --line: #26324d; --accent: #6d8dff; --accent-ink: #0b1020; --signal: #ffc04d; --screen: #03060d; --eye: #6fe3ff;
+  }
+}
+:root[data-theme="dark"] {
+  --ground: #0b1020; --panel: #121a2e; --panel-2: #19233b; --ink: #e8edf6; --ink-soft: #9aa7bd;
+  --line: #26324d; --accent: #6d8dff; --accent-ink: #0b1020; --signal: #ffc04d; --screen: #03060d; --eye: #6fe3ff;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0; background: var(--ground); color: var(--ink);
+  font: 17px/1.6 var(--body);
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--accent); }
+:focus-visible { outline: 3px solid var(--signal); outline-offset: 3px; border-radius: 6px; }
+.wrap { max-width: 1120px; margin: 0 auto; padding: 0 16px; }
+h1, h2, h3 { font-family: var(--display); line-height: 1.08; text-wrap: balance; margin: 0; }
+.eyebrow { font: 600 12px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-soft); }
+
+/* top bar */
+.bar { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 18px 0; }
+.brand { display: flex; align-items: center; gap: 10px; font: 800 18px var(--display); color: var(--ink); text-decoration: none; }
+.brand-mark { width: 30px; height: 22px; border-radius: 7px; background: var(--screen); display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 6px 6px; }
+.brand-mark i { background: var(--eye); border-radius: 3px; }
+.bar nav { display: flex; gap: 18px; font-size: 15px; }
+.bar nav a { color: var(--ink-soft); text-decoration: none; }
+.bar nav a:hover { color: var(--ink); }
+
+/* hero */
+.hero { display: grid; grid-template-columns: 1.05fr 1fr; gap: 48px; align-items: center; padding: 40px 0 72px; }
+.hero h1 { font-size: clamp(40px, 6.4vw, 78px); font-weight: 800; letter-spacing: -.02em; margin: 14px 0 18px; }
+.hero h1 em { font-style: normal; color: var(--accent); }
+.hero p.lede { font-size: 19px; color: var(--ink-soft); max-width: 34em; margin: 0 0 28px; }
+.cta { display: flex; flex-wrap: wrap; gap: 12px; }
+.btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; border-radius: 999px; font: 700 16px var(--body); text-decoration: none; border: 2px solid var(--accent); cursor: pointer; }
+.btn-primary { background: var(--accent); color: var(--accent-ink); }
+.btn-ghost { background: transparent; color: var(--accent); }
+
+/* robot */
+.robot { display: flex; flex-direction: column; align-items: center; gap: 18px; }
+.bot { position: relative; width: min(100%, 420px); }
+.bot-head {
+  background: var(--panel); border: 2px solid var(--line); border-radius: 46px; padding: 22px;
+  box-shadow: 0 30px 60px -30px rgba(14, 23, 38, .35);
+  transform-origin: 50% 100%; transition: transform .5s cubic-bezier(.3, 1.4, .5, 1);
+}
+.bot-screen { background: var(--screen); border-radius: 28px; aspect-ratio: 16 / 10; overflow: hidden; }
+.bot-screen canvas { width: 100%; height: 100%; display: block; }
+.bot-neck { width: 70px; height: 26px; margin: 0 auto; background: var(--panel-2); border: 2px solid var(--line); border-top: 0; }
+.bot-base { width: 64%; height: 30px; margin: 0 auto; background: var(--panel); border: 2px solid var(--line); border-radius: 14px 14px 22px 22px; }
+.moods { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.mood { font: 600 13px var(--mono); padding: 8px 14px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--panel); color: var(--ink); cursor: pointer; }
+.mood[aria-pressed="true"] { background: var(--ink); color: var(--ground); border-color: var(--ink); }
+.robot-note { font-size: 14px; color: var(--ink-soft); text-align: center; margin: 0; }
+
+/* sections */
+section { padding: 72px 0; }
+.sec-head { display: flex; flex-direction: column; gap: 10px; margin-bottom: 32px; max-width: 40em; }
+.sec-head h2 { font-size: clamp(30px, 4vw, 46px); font-weight: 800; letter-spacing: -.01em; }
+.sec-head p { margin: 0; color: var(--ink-soft); }
+
+/* anatomy */
+.anatomy { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.organ { background: var(--panel); border: 1.5px solid var(--line); border-radius: var(--radius); padding: 22px; }
+.organ h3 { font-size: 22px; margin: 8px 0 8px; }
+.organ p { margin: 0 0 12px; color: var(--ink-soft); font-size: 15.5px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { font: 12.5px var(--mono); padding: 4px 9px; border-radius: 6px; background: var(--panel-2); color: var(--ink); }
+.flow { font: 600 12px var(--mono); color: var(--ink-soft); text-align: center; margin-top: 14px; letter-spacing: .08em; }
+
+/* quiz */
+.quiz { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
+.q-panel { background: var(--panel); border: 1.5px solid var(--line); border-radius: var(--radius); padding: 24px; display: flex; flex-direction: column; gap: 22px; }
+fieldset { border: 0; margin: 0; padding: 0; }
+legend { font: 700 17px var(--display); margin-bottom: 10px; padding: 0; }
+.opts { display: flex; flex-wrap: wrap; gap: 8px; }
+.opts label { cursor: pointer; }
+.opts input { position: absolute; opacity: 0; pointer-events: none; }
+.opts span { display: inline-block; padding: 9px 14px; border-radius: 10px; border: 1.5px solid var(--line); background: var(--ground); font-size: 15px; }
+.opts input:checked + span { border-color: var(--accent); background: var(--accent); color: var(--accent-ink); }
+.opts input:focus-visible + span { outline: 3px solid var(--signal); outline-offset: 2px; }
+
+.result { background: var(--ink); color: var(--ground); border-radius: var(--radius); padding: 28px; position: sticky; top: 20px; }
+.result .eyebrow { color: color-mix(in srgb, var(--ground) 65%, transparent); }
+.result h3 { font-size: 34px; margin: 10px 0 6px; }
+.result .why { margin: 0 0 18px; color: color-mix(in srgb, var(--ground) 80%, transparent); }
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 18px; }
+.stat { border: 1px solid color-mix(in srgb, var(--ground) 22%, transparent); border-radius: 10px; padding: 10px 12px; }
+.stat b { display: block; font: 700 16px var(--mono); font-variant-numeric: tabular-nums; }
+.stat small { font-size: 12px; opacity: .7; }
+.parts { margin: 0 0 20px; padding-left: 18px; font-size: 15px; }
+.result .btn { border-color: var(--signal); background: var(--signal); color: #1a1300; }
+.runner { font-size: 14px; margin-top: 14px; opacity: .8; }
+.runner button { background: none; border: 0; color: var(--signal); font: inherit; text-decoration: underline; cursor: pointer; padding: 0; }
+
+/* paths table */
+.paths { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.path { background: var(--panel); border: 1.5px solid var(--line); border-radius: var(--radius); padding: 18px 20px; display: flex; flex-direction: column; gap: 8px; text-decoration: none; color: var(--ink); transition: border-color .2s, transform .2s; }
+.path:hover { border-color: var(--accent); transform: translateY(-2px); }
+.path .letter { font: 800 14px var(--mono); color: var(--accent); }
+.path h3 { font-size: 20px; }
+.path p { margin: 0; font-size: 15px; color: var(--ink-soft); }
+.path .meta { display: flex; gap: 14px; font: 13px var(--mono); color: var(--ink); margin-top: auto; padding-top: 6px; font-variant-numeric: tabular-nums; }
+.path.is-match { border-color: var(--signal); box-shadow: 0 0 0 3px color-mix(in srgb, var(--signal) 35%, transparent); }
+
+/* chapters */
+.chapters { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, 1fr); gap: 0 32px; counter-reset: ch; }
+.chapters li { border-top: 1.5px solid var(--line); }
+.chapters a { display: grid; grid-template-columns: 44px 1fr; gap: 4px 14px; padding: 16px 0; text-decoration: none; color: var(--ink); }
+.chapters .n { font: 600 14px var(--mono); color: var(--accent); grid-row: span 2; padding-top: 3px; }
+.chapters b { font: 700 18px var(--display); }
+.chapters span { font-size: 15px; color: var(--ink-soft); }
+.chapters a:hover b { color: var(--accent); }
+
+footer { border-top: 1.5px solid var(--line); padding: 32px 0 48px; color: var(--ink-soft); font-size: 14px; }
+footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px; }
+
+@media (max-width: 880px) {
+  .hero, .quiz { grid-template-columns: 1fr; }
+  .hero { padding-top: 16px; gap: 36px; }
+  .robot { order: -1; }
+  .anatomy, .paths { grid-template-columns: 1fr; }
+  .chapters { grid-template-columns: 1fr; }
+  .bar nav { display: none; }
+  .result { position: static; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .bot-head, .path { transition: none; }
+}
+</style>
+</head>
+<body>
+
+<header class="wrap bar">
+  <a class="brand" href="#top" aria-label="Desk Buddy Guide home"><span class="brand-mark" aria-hidden="true"><i></i><i></i></span>Desk Buddy Guide</a>
+  <nav aria-label="Sections">
+    <a href="#anatomy">How it works</a>
+    <a href="#finder">Find your path</a>
+    <a href="#paths">All paths</a>
+    <a href="parts.html">Parts</a>
+    <a href="models.html">3D models</a>
+    <a href="#chapters">Chapters</a>
+  </nav>
+</header>
+
+<main id="top">
+  <div class="wrap hero">
+    <div>
+      <span class="eyebrow">Open-source · free · build it yourself</span>
+      <h1>Build a little robot that <em>looks back</em> at you.</h1>
+      <p class="lede">A field guide to desk companion robots: a face, a neck, a few senses and a lot of personality. Six build paths, from a €30 ESP32 to a premium kit — pick yours, then follow it step by step.</p>
+      <div class="cta">
+        <a class="btn btn-primary" href="#finder">Find my build path</a>
+        <a class="btn btn-ghost" href="parts.html">Browse the parts</a>
+      </div>
+    </div>
+
+    <div class="robot">
+      <div class="bot" aria-hidden="true">
+        <div class="bot-head" id="head">
+          <div class="bot-screen"><canvas id="eyes" width="640" height="400"></canvas></div>
+        </div>
+        <div class="bot-neck"></div>
+        <div class="bot-base"></div>
+      </div>
+      <div class="moods" role="group" aria-label="Robot mood">
+        <button class="mood" data-mood="idle" aria-pressed="true">idle</button>
+        <button class="mood" data-mood="happy" aria-pressed="false">happy</button>
+        <button class="mood" data-mood="curious" aria-pressed="false">curious</button>
+        <button class="mood" data-mood="sleepy" aria-pressed="false">sleepy</button>
+        <button class="mood" data-mood="thinking" aria-pressed="false">thinking</button>
+      </div>
+      <p class="robot-note">Move your cursor — it follows you. These are procedural eyes, the same technique you will build in chapter 4.</p>
+    </div>
+  </div>
+
+  <section id="anatomy">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow">How it works</span>
+        <h2>Every desk buddy is three things wired together.</h2>
+        <p>Senses feed a small brain, the brain drives expression. Personality is the rules in between.</p>
+      </div>
+      <div class="anatomy">
+        <div class="organ">
+          <span class="eyebrow">Senses</span>
+          <h3>What it notices</h3>
+          <p>Sound, touch, distance, light and, if you want, a camera.</p>
+          <div class="chips"><span class="chip">INMP441 mic</span><span class="chip">TTP223 touch</span><span class="chip">VL53L0X</span><span class="chip">camera</span></div>
+        </div>
+        <div class="organ">
+          <span class="eyebrow">Brain</span>
+          <h3>What it decides</h3>
+          <p>A microcontroller runs the reflexes: moods, blinks, reactions.</p>
+          <div class="chips"><span class="chip">ESP32-S3</span><span class="chip">M5Stack</span><span class="chip">Raspberry Pi</span><span class="chip">Arduino</span></div>
+        </div>
+        <div class="organ">
+          <span class="eyebrow">Expression</span>
+          <h3>How it reacts</h3>
+          <p>Eyes on a display, a moving neck, sounds from a small speaker.</p>
+          <div class="chips"><span class="chip">GC9A01 round TFT</span><span class="chip">SG90 servos</span><span class="chip">MAX98357A amp</span></div>
+        </div>
+      </div>
+      <p class="flow">SENSES → BRAIN → EXPRESSION · powered by USB or a battery</p>
+    </div>
+  </section>
+
+  <section id="finder">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow">Path finder</span>
+        <h2>Which robot should you build first?</h2>
+        <p>Four questions. The recommendation updates as you answer.</p>
+      </div>
+      <div class="quiz">
+        <form class="q-panel" id="quiz">
+          <fieldset>
+            <legend>Your budget for parts</legend>
+            <div class="opts">
+              <label><input type="radio" name="budget" value="low" checked><span>Under €60</span></label>
+              <label><input type="radio" name="budget" value="mid"><span>€60–150</span></label>
+              <label><input type="radio" name="budget" value="high"><span>€300+</span></label>
+            </div>
+          </fieldset>
+          <fieldset>
+            <legend>Have you soldered before?</legend>
+            <div class="opts">
+              <label><input type="radio" name="solder" value="no" checked><span>Never</span></label>
+              <label><input type="radio" name="solder" value="some"><span>A little</span></label>
+              <label><input type="radio" name="solder" value="yes"><span>Comfortable</span></label>
+            </div>
+          </fieldset>
+          <fieldset>
+            <legend>What matters most?</legend>
+            <div class="opts">
+              <label><input type="radio" name="goal" value="face" checked><span>Expressive face</span></label>
+              <label><input type="radio" name="goal" value="vision"><span>Camera &amp; vision</span></label>
+              <label><input type="radio" name="goal" value="walk"><span>Walking &amp; dancing</span></label>
+              <label><input type="radio" name="goal" value="roam"><span>Driving around</span></label>
+            </div>
+          </fieldset>
+          <fieldset>
+            <legend>Do you have a 3D printer?</legend>
+            <div class="opts">
+              <label><input type="radio" name="printer" value="yes"><span>Yes</span></label>
+              <label><input type="radio" name="printer" value="no" checked><span>No</span></label>
+            </div>
+          </fieldset>
+        </form>
+
+        <div class="result" aria-live="polite">
+          <span class="eyebrow">Your recommended path</span>
+          <h3 id="r-title">—</h3>
+          <p class="why" id="r-why"></p>
+          <div class="stats">
+            <div class="stat"><b id="r-cost">—</b><small>parts</small></div>
+            <div class="stat"><b id="r-diff">—</b><small>difficulty</small></div>
+            <div class="stat"><b id="r-time">—</b><small>build time</small></div>
+          </div>
+          <ul class="parts" id="r-parts"></ul>
+          <a class="btn" id="r-link" href="../docs/02-choose-your-path.md">Open this path</a>
+          <p class="runner" id="r-runner"></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="paths">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow">All six paths</span>
+        <h2>Many roads to the same little friend.</h2>
+        <p>Prices are rough ranges for parts only, checked November 2026.</p>
+      </div>
+      <div class="paths" id="paths-grid"></div>
+    </div>
+  </section>
+
+  <section id="chapters">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow">The guide</span>
+        <h2>Ten chapters, hardware first.</h2>
+        <p>Connecting your robot to a computer and a local AI comes last — a good robot is fun on its own.</p>
+      </div>
+      <ol class="chapters">
+        <li><a href="../docs/01-basics.md"><span class="n">01</span><b>Basics</b><span>What a desk buddy is, tools, safety</span></a></li>
+        <li><a href="../docs/02-choose-your-path.md"><span class="n">02</span><b>Choose your path</b><span>Six builds compared</span></a></li>
+        <li><a href="../docs/03-electronics.md"><span class="n">03</span><b>Electronics</b><span>Boards, power, batteries, wiring</span></a></li>
+        <li><a href="../docs/04-eyes-and-face.md"><span class="n">04</span><b>Eyes &amp; face</b><span>Displays and animation</span></a></li>
+        <li><a href="../docs/05-movement.md"><span class="n">05</span><b>Movement</b><span>Servos, motors, mechanisms</span></a></li>
+        <li><a href="../docs/06-senses.md"><span class="n">06</span><b>Senses</b><span>Mic, speaker, touch, distance, camera</span></a></li>
+        <li><a href="../docs/07-body-and-shell.md"><span class="n">07</span><b>Body &amp; shell</b><span>3D printing, cardboard, kits</span></a></li>
+        <li><a href="../docs/08-firmware.md"><span class="n">08</span><b>Basic firmware</b><span>Make it move, look and react</span></a></li>
+        <li><a href="../docs/09-reference-projects.md"><span class="n">09</span><b>Reference projects</b><span>Stack-chan, Otto, Reachy Mini and more</span></a></li>
+        <li><a href="../docs/10-connect-to-pc.md"><span class="n">10</span><b>Connecting to a PC</b><span>A fully local AI brain</span></a></li>
+      </ol>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>Desk Buddy Guide · text CC BY-SA 4.0 · code MIT</span>
+    <span>Third-party projects are linked under their own licences.</span>
+  </div>
+</footer>
+
+<script>
+// ---------- build paths ----------
+const PATHS = {
+  A: { name: "Minimal ESP32", cost: "€30–50", diff: 2, time: "1–2 wknd",
+       blurb: "A dev board, a round display and two servos. The classic first build.",
+       parts: ["ESP32-S3 dev board", "GC9A01 round TFT or SSD1306 OLED", "2 × SG90 / MG90S servos", "TTP223 touch, INMP441 mic, MAX98357A amp"] },
+  B: { name: "M5Stack kit", cost: "€70–110", diff: 1, time: "1 day",
+       blurb: "Display, mic, speaker and camera already in one box. Stack-chan style.",
+       parts: ["M5Stack CoreS3", "2 servos + servo base", "Open Stack-chan case files"] },
+  C: { name: "Raspberry Pi bot", cost: "€80–150", diff: 3, time: "2–4 wknd",
+       blurb: "A full Linux computer inside, with a real camera for vision.",
+       parts: ["Pi Zero 2 W or Pi 5", "Pi Camera Module 3", "2\" ST7789 TFT", "PCA9685 + 2–3 servos"] },
+  D: { name: "Biped (Otto style)", cost: "€30–60", diff: 2, time: "1–2 wknd",
+       blurb: "Four to six servos make legs that walk, wobble and dance.",
+       parts: ["Arduino Nano or ESP32", "4–6 SG90 servos", "HC-SR04 ultrasonic eyes", "Printed Otto-style body"] },
+  E: { name: "Wheeled buddy", cost: "€40–80", diff: 3, time: "2–3 wknd",
+       blurb: "Two tiny gear motors let it roam the desk — and stop at the edge.",
+       parts: ["ESP32", "2 × N20 gear motors + DRV8833", "VL53L0X + edge IR sensors", "OLED face, 2S battery"] },
+  F: { name: "Premium kit (Reachy Mini)", cost: "€300–500", diff: 2, time: "1 day",
+       blurb: "An expressive open-hardware head with a Python SDK.",
+       parts: ["Reachy Mini Lite or Wireless", "Your computer (Lite)", "Python SDK"] },
+};
+const stars = (n) => "★".repeat(n) + "☆".repeat(5 - n);
+
+function recommend(a) {
+  // score each path against the answers; highest wins
+  const s = { A: 0, B: 0, C: 0, D: 0, E: 0, F: 0 };
+  const why = [];
+  if (a.budget === "low") { s.A += 3; s.D += 3; s.E += 1; s.B -= 1; s.C -= 2; s.F -= 9; }
+  if (a.budget === "mid") { s.B += 3; s.C += 3; s.E += 2; s.A += 1; s.F -= 9; }
+  if (a.budget === "high") { s.F += 4; s.C += 2; s.B += 1; }
+  if (a.solder === "no") { s.B += 3; s.F += 2; s.C -= 1; s.E -= 2; }
+  if (a.solder === "some") { s.A += 2; s.D += 1; }
+  if (a.solder === "yes") { s.A += 1; s.C += 2; s.E += 2; }
+  if (a.goal === "face") { s.A += 3; s.B += 3; s.F += 2; }
+  if (a.goal === "vision") { s.C += 4; s.F += 3; s.B += 1; s.A -= 1; s.D -= 2; }
+  if (a.goal === "walk") { s.D += 6; }
+  if (a.goal === "roam") { s.E += 6; }
+  if (a.printer === "no") { s.B += 1; s.F += 1; s.D -= 1; }
+  const order = Object.keys(s).sort((x, y) => s[y] - s[x]);
+  const key = order[0];
+  if (a.solder === "no" && key === "B") why.push("almost no soldering");
+  if (a.budget === "low") why.push("fits a small budget");
+  if (a.goal === "face") why.push("the face is the star");
+  if (a.goal === "vision") why.push("a real camera on board");
+  if (a.goal === "walk") why.push("legs made of servos");
+  if (a.goal === "roam") why.push("wheels and edge sensors");
+  if (a.printer === "no") why.push(key === "B" || key === "F" ? "no printer needed" : "use a print service or cardboard");
+  return { key, runner: order[1], why };
+}
+
+function renderResult() {
+  const f = new FormData(document.getElementById("quiz"));
+  const a = Object.fromEntries(f.entries());
+  const { key, runner, why } = recommend(a);
+  const p = PATHS[key];
+  document.getElementById("r-title").textContent = `${key} · ${p.name}`;
+  document.getElementById("r-why").textContent = p.blurb + (why.length ? " Picked because: " + why.join(", ") + "." : "");
+  document.getElementById("r-cost").textContent = p.cost;
+  document.getElementById("r-diff").textContent = stars(p.diff);
+  document.getElementById("r-time").textContent = p.time;
+  document.getElementById("r-parts").innerHTML = p.parts.map((x) => `<li>${x}</li>`).join("");
+  document.getElementById("r-runner").innerHTML = `Runner-up: <button type="button" data-k="${runner}">${runner} · ${PATHS[runner].name}</button>`;
+  document.querySelectorAll(".path").forEach((el) => el.classList.toggle("is-match", el.dataset.k === key));
+}
+
+document.getElementById("paths-grid").innerHTML = Object.entries(PATHS).map(([k, p]) => `
+  <a class="path" data-k="${k}" href="../docs/02-choose-your-path.md">
+    <span class="letter">PATH ${k}</span><h3>${p.name}</h3><p>${p.blurb}</p>
+    <span class="meta"><span>${p.cost}</span><span>${stars(p.diff)}</span><span>${p.time}</span></span>
+  </a>`).join("");
+document.getElementById("quiz").addEventListener("change", renderResult);
+document.getElementById("r-runner").addEventListener("click", (e) => {
+  const k = e.target.dataset && e.target.dataset.k;
+  if (k) document.querySelector(`.path[data-k="${k}"]`).scrollIntoView({ behavior: "smooth", block: "center" });
+});
+renderResult();
+
+// ---------- procedural eyes ----------
+const cv = document.getElementById("eyes");
+const ctx = cv.getContext("2d");
+const head = document.getElementById("head");
+const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+let mood = "idle";
+const look = { x: 0, y: 0, tx: 0, ty: 0 };
+let blink = 0, nextBlink = performance.now() + 1500, wander = 0;
+const lerp = (a, b, t) => a + (b - a) * t;
+const eyeColor = () => getComputedStyle(document.documentElement).getPropertyValue("--eye").trim() || "#6fe3ff";
+
+addEventListener("pointermove", (e) => {
+  const r = cv.getBoundingClientRect();
+  look.tx = Math.max(-1, Math.min(1, (e.clientX - (r.left + r.width / 2)) / (innerWidth / 2)));
+  look.ty = Math.max(-1, Math.min(1, (e.clientY - (r.top + r.height / 2)) / (innerHeight / 2)));
+  wander = performance.now() + 2500;
+});
+
+document.querySelectorAll(".mood").forEach((b) => b.addEventListener("click", () => {
+  mood = b.dataset.mood;
+  document.querySelectorAll(".mood").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+}));
+
+function roundRect(x, y, w, h, r) {
+  r = Math.min(r, w / 2, h / 2);
+  ctx.beginPath();
+  ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+}
+
+function frame(now) {
+  const W = cv.width, H = cv.height;
+  // idle wandering glances when the cursor is still
+  if (now > wander) { look.tx = (Math.random() * 2 - 1) * 0.7; look.ty = (Math.random() * 2 - 1) * 0.4; wander = now + 1200 + Math.random() * 2200; }
+  if (mood === "thinking") { look.tx = 0.55; look.ty = -0.7; }
+  const k = reduced ? 1 : 0.12;
+  look.x = lerp(look.x, look.tx, k); look.y = lerp(look.y, look.ty, k);
+
+  if (now > nextBlink && mood !== "sleepy") { blink = 1; nextBlink = now + 2000 + Math.random() * 4000; }
+  blink = Math.max(0, blink - 0.12);
+  const lid = blink > 0 ? Math.sin(blink * Math.PI) : 0;
+
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = eyeColor();
+  ctx.shadowColor = ctx.fillStyle; ctx.shadowBlur = 28;
+
+  let ew = 150, eh = 170, gap = 70;
+  let openness = 1 - lid;
+  if (mood === "sleepy") openness = 0.16 + 0.05 * Math.sin(now / 600);
+  if (mood === "curious") { ew = 165; eh = 190; }
+  if (mood === "happy") eh = 150;
+  const cx = W / 2 + look.x * 90, cy = H / 2 + look.y * 55;
+
+  [-1, 1].forEach((side) => {
+    let w = ew, h = Math.max(10, eh * openness);
+    if (mood === "curious" && side === 1) h *= 0.82; // one raised brow
+    const x = cx + side * (gap / 2 + w / 2) - w / 2;
+    const y = cy - h / 2;
+    roundRect(x, y, w, h, 40);
+    ctx.fill();
+    if (mood === "happy") {
+      // a curved lower lid makes the "smiling eyes" shape
+      ctx.save(); ctx.globalCompositeOperation = "destination-out"; ctx.shadowBlur = 0;
+      ctx.beginPath(); ctx.ellipse(x + w / 2, y + h + 30, w * 0.75, 75, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.restore();
+    }
+  });
+
+  if (mood === "thinking") {
+    ctx.shadowBlur = 0;
+    for (let i = 0; i < 3; i++) {
+      const a = 0.25 + 0.75 * ((Math.sin(now / 220 - i * 0.9) + 1) / 2);
+      ctx.globalAlpha = a; ctx.beginPath(); ctx.arc(W / 2 - 40 + i * 40, H - 46, 11, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  // the neck follows the gaze a little, like a pan/tilt servo pair
+  const tilt = mood === "sleepy" ? 6 : mood === "curious" ? -5 : 0;
+  head.style.transform = `rotate(${(look.x * 5 + tilt).toFixed(2)}deg) translateY(${(look.y * 4).toFixed(1)}px)`;
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>

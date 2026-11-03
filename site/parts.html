@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Desk Buddy Parts Catalog</title>
+<meta name="description" content="Every component used in the Desk Buddy Guide: boards, displays, servos, sensors, audio and power — filterable by build path.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+:root {
+  --ground: #eef1f4; --panel: #ffffff; --panel-2: #e3e8ee; --ink: #0e1726; --ink-soft: #4a5568;
+  --line: #cfd7e1; --accent: #2f5bea; --accent-ink: #ffffff; --signal: #ffb020; --screen: #070b14; --eye: #6fe3ff;
+  --radius: 14px;
+  --display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground: #0b1020; --panel: #121a2e; --panel-2: #19233b; --ink: #e8edf6; --ink-soft: #9aa7bd;
+    --line: #26324d; --accent: #6d8dff; --accent-ink: #0b1020; --signal: #ffc04d; --screen: #03060d;
+  }
+}
+:root[data-theme="dark"] {
+  --ground: #0b1020; --panel: #121a2e; --panel-2: #19233b; --ink: #e8edf6; --ink-soft: #9aa7bd;
+  --line: #26324d; --accent: #6d8dff; --accent-ink: #0b1020; --signal: #ffc04d; --screen: #03060d;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--ground); color: var(--ink); font: 17px/1.6 var(--body); -webkit-font-smoothing: antialiased; }
+a { color: var(--accent); }
+:focus-visible { outline: 3px solid var(--signal); outline-offset: 3px; border-radius: 6px; }
+.wrap { max-width: 1180px; margin: 0 auto; padding: 0 16px; }
+h1, h2, h3 { font-family: var(--display); line-height: 1.1; text-wrap: balance; margin: 0; }
+.eyebrow { font: 600 12px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-soft); }
+
+.bar { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 18px 0; }
+.brand { display: flex; align-items: center; gap: 10px; font: 800 18px var(--display); color: var(--ink); text-decoration: none; }
+.brand-mark { width: 30px; height: 22px; border-radius: 7px; background: var(--screen); display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 6px; }
+.brand-mark i { background: var(--eye); border-radius: 3px; }
+.bar nav { display: flex; gap: 18px; font-size: 15px; }
+.bar nav a { color: var(--ink-soft); text-decoration: none; }
+.bar nav a[aria-current="page"] { color: var(--ink); font-weight: 700; }
+
+.intro { padding: 28px 0 24px; display: flex; flex-direction: column; gap: 12px; max-width: 46em; }
+.intro h1 { font-size: clamp(36px, 5vw, 60px); font-weight: 800; letter-spacing: -.02em; }
+.intro p { margin: 0; color: var(--ink-soft); font-size: 18px; }
+
+/* controls */
+.controls { position: sticky; top: 0; z-index: 5; background: var(--ground); padding: 14px 0; border-bottom: 1.5px solid var(--line); display: flex; flex-direction: column; gap: 12px; }
+.row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.row .lbl { font: 600 12px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-soft); min-width: 74px; }
+.search { flex: 1 1 260px; display: flex; }
+.search input { width: 100%; font: 16px var(--body); padding: 10px 14px; border-radius: 10px; border: 1.5px solid var(--line); background: var(--panel); color: var(--ink); }
+select { font: 15px var(--body); padding: 9px 12px; border-radius: 10px; border: 1.5px solid var(--line); background: var(--panel); color: var(--ink); }
+.pill { font: 600 13px var(--mono); padding: 7px 12px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--panel); color: var(--ink); cursor: pointer; }
+.pill[aria-pressed="true"] { background: var(--ink); color: var(--ground); border-color: var(--ink); }
+.count { font: 13px var(--mono); color: var(--ink-soft); margin-left: auto; font-variant-numeric: tabular-nums; }
+
+/* grid */
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; padding: 24px 0 64px; }
+.card { background: var(--panel); border: 1.5px solid var(--line); border-radius: var(--radius); padding: 18px; display: flex; flex-direction: column; gap: 10px; text-align: left; font: inherit; color: inherit; cursor: pointer; transition: border-color .2s, transform .2s; }
+.card:hover { border-color: var(--accent); transform: translateY(-2px); }
+.card-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.cat { font: 600 11.5px var(--mono); letter-spacing: .08em; text-transform: uppercase; padding: 4px 8px; border-radius: 6px; background: var(--panel-2); }
+.price { font: 700 14px var(--mono); font-variant-numeric: tabular-nums; }
+.card h3 { font-size: 20px; }
+.card p { margin: 0; font-size: 15px; color: var(--ink-soft); }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: auto; }
+.tag { font: 12px var(--mono); padding: 3px 8px; border-radius: 6px; border: 1px solid var(--line); }
+.tag.path { border-color: transparent; background: color-mix(in srgb, var(--accent) 14%, transparent); color: var(--accent); font-weight: 600; }
+.empty { grid-column: 1 / -1; text-align: center; padding: 48px 0; color: var(--ink-soft); }
+
+/* category accent stripe */
+.card { border-top-width: 4px; }
+.card[data-cat="brain"] { border-top-color: #2f5bea; }
+.card[data-cat="display"] { border-top-color: #12a5c7; }
+.card[data-cat="motion"] { border-top-color: #e8590c; }
+.card[data-cat="sense"] { border-top-color: #2b9348; }
+.card[data-cat="audio"] { border-top-color: #9c36b5; }
+.card[data-cat="power"] { border-top-color: #d9a400; }
+
+/* detail drawer */
+dialog { border: 0; padding: 0; max-width: 620px; width: calc(100% - 32px); border-radius: 18px; background: var(--panel); color: var(--ink); box-shadow: 0 40px 80px -20px rgba(0,0,0,.45); }
+dialog::backdrop { background: rgba(7, 11, 20, .55); }
+.dlg { padding: 26px; display: flex; flex-direction: column; gap: 16px; }
+.dlg-head { display: flex; justify-content: space-between; align-items: start; gap: 12px; }
+.dlg h2 { font-size: 30px; margin-top: 8px; }
+.close { font: 700 22px var(--body); width: 40px; height: 40px; border-radius: 50%; border: 1.5px solid var(--line); background: var(--ground); color: var(--ink); cursor: pointer; flex: none; }
+.specs { display: grid; grid-template-columns: 130px 1fr; gap: 6px 14px; margin: 0; font-size: 15px; }
+.specs dt { font: 600 12.5px var(--mono); color: var(--ink-soft); text-transform: uppercase; letter-spacing: .06em; padding-top: 2px; }
+.specs dd { margin: 0; }
+.pc { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.pc div { background: var(--ground); border-radius: 12px; padding: 12px 14px; font-size: 15px; }
+.pc b { display: block; font: 600 12px var(--mono); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 6px; }
+.pc ul { margin: 0; padding-left: 18px; }
+.pins { font: 13.5px/1.7 var(--mono); background: var(--screen); color: #cfe9ff; border-radius: 12px; padding: 12px 14px; overflow-x: auto; white-space: pre; }
+.links { display: flex; flex-wrap: wrap; gap: 10px; font-size: 15px; }
+
+footer { border-top: 1.5px solid var(--line); padding: 28px 0 44px; color: var(--ink-soft); font-size: 14px; }
+@media (max-width: 720px) {
+  .bar nav { display: none; }
+  .row .lbl { min-width: 100%; }
+  .pc { grid-template-columns: 1fr; }
+  .specs { grid-template-columns: 1fr; }
+  .controls { position: static; }
+}
+@media (prefers-reduced-motion: reduce) { .card { transition: none; } }
+</style>
+</head>
+<body>
+<header class="wrap bar">
+  <a class="brand" href="index.html"><span class="brand-mark" aria-hidden="true"><i></i><i></i></span>Desk Buddy Guide</a>
+  <nav aria-label="Site">
+    <a href="index.html#finder">Find your path</a>
+    <a href="parts.html" aria-current="page">Parts</a>
+    <a href="models.html">3D models</a>
+    <a href="index.html#chapters">Chapters</a>
+  </nav>
+</header>
+
+<main>
+  <div class="wrap intro">
+    <span class="eyebrow">Parts catalog</span>
+    <h1>Every part, what it does, and which robot needs it.</h1>
+    <p>Filter by category or build path, then open a part for specs, pros and cons and typical wiring. Prices are rough ranges per unit (November 2026) — always compare suppliers.</p>
+  </div>
+
+  <div class="controls">
+    <div class="wrap" style="display:flex;flex-direction:column;gap:12px">
+      <div class="row">
+        <label class="search"><span class="sr" hidden>Search parts</span><input id="q" type="search" placeholder="Search: servo, I2S, round display…" aria-label="Search parts"></label>
+        <select id="sort" aria-label="Sort parts">
+          <option value="cat">Sort by category</option>
+          <option value="price">Sort by price</option>
+          <option value="name">Sort by name</option>
+        </select>
+      </div>
+      <div class="row" id="cats" role="group" aria-label="Category"><span class="lbl">Category</span></div>
+      <div class="row" id="paths" role="group" aria-label="Build path"><span class="lbl">Path</span><span class="count" id="count"></span></div>
+    </div>
+  </div>
+
+  <div class="wrap grid" id="grid"></div>
+</main>
+
+<dialog id="dlg" aria-labelledby="d-name"><div class="dlg" id="dlg-body"></div></dialog>
+
+<footer><div class="wrap">Desk Buddy Guide · text CC BY-SA 4.0 · code MIT · prices are estimates, not offers.</div></footer>
+
+<script>
+const CATS = { brain: "Brain", display: "Display", motion: "Movement", sense: "Senses", audio: "Audio", power: "Power" };
+const PATHN = { A: "Minimal ESP32", B: "M5Stack kit", C: "Raspberry Pi", D: "Biped", E: "Wheeled", F: "Premium kit" };
+
+// p = typical unit price range in EUR; paths = build paths that use the part
+const PARTS = [
+  { id: "esp32", cat: "brain", name: "ESP32 DevKitC", p: [5, 10], paths: ["D", "E"], iface: ["Wi-Fi", "BT", "I2C", "SPI", "I2S"],
+    what: "The classic Wi-Fi + Bluetooth microcontroller. Cheap and everywhere.",
+    specs: { Voltage: "3.3 V logic, 5 V via USB", Memory: "520 KB SRAM, 4 MB flash", Chapter: "3 · Electronics" },
+    pros: ["Very cheap", "Huge community", "Wi-Fi for chapter 10"], cons: ["Limited RAM for big colour screens", "No native USB"] },
+  { id: "esp32s3", cat: "brain", name: "ESP32-S3 DevKitC-1", p: [8, 16], paths: ["A"], iface: ["Wi-Fi", "BT", "USB", "I2C", "SPI", "I2S"],
+    what: "The recommended brain for path A: more RAM (PSRAM) for smooth eyes and audio.",
+    specs: { Voltage: "3.3 V logic, 5 V via USB", Memory: "512 KB SRAM + up to 8 MB PSRAM", Chapter: "3 · Electronics" },
+    pros: ["PSRAM for frame buffers", "Native USB", "Vector instructions for audio"], cons: ["Slightly pricier", "Pick a board with PSRAM"],
+    links: [["Espressif user guide", "https://docs.espressif.com/projects/esp-dev-kits/en/latest/esp32s3/esp32-s3-devkitc-1/user_guide.html"]] },
+  { id: "cores3", cat: "brain", name: "M5Stack CoreS3", p: [55, 75], paths: ["B"], iface: ["Wi-Fi", "BT", "USB", "I2C"],
+    what: "An all-in-one ESP32-S3 box: 2\" touch screen, mic, speaker, camera and battery.",
+    specs: { Display: "2\" IPS touch, 320×240", Built_in: "Camera, mics, speaker, IMU, battery", Chapter: "2 · Path B" },
+    pros: ["Almost no wiring", "Polished look", "Stack-chan compatible"], cons: ["Higher cost", "Fixed layout"],
+    links: [["M5Stack docs", "https://docs.m5stack.com/en/core/CoreS3"]] },
+  { id: "pizero", cat: "brain", name: "Raspberry Pi Zero 2 W", p: [18, 25], paths: ["C"], iface: ["Wi-Fi", "BT", "CSI", "I2C", "SPI"],
+    what: "A tiny Linux computer with a camera connector.",
+    specs: { CPU: "Quad-core Cortex-A53", RAM: "512 MB", Chapter: "3 · Electronics" },
+    pros: ["Full Linux and Python", "Camera support"], cons: ["Boot time", "Needs a good 5 V supply"] },
+  { id: "pi5", cat: "brain", name: "Raspberry Pi 5", p: [65, 120], paths: ["C"], iface: ["Wi-Fi", "BT", "CSI", "USB", "I2C"],
+    what: "Desktop-class power for vision and heavier software on board.",
+    specs: { Power: "5 V 5 A USB-C", RAM: "2–16 GB", Chapter: "3 · Electronics" },
+    pros: ["Fast", "Two camera ports"], cons: ["Cost", "Heat — needs cooling"] },
+  { id: "nano", cat: "brain", name: "Arduino Nano", p: [4, 22], paths: ["D"], iface: ["I2C", "SPI", "PWM"],
+    what: "The simplest board, perfect for driving servos on a biped.",
+    specs: { Voltage: "5 V logic", Memory: "2 KB SRAM", Chapter: "2 · Path D" },
+    pros: ["Very easy", "5 V logic suits hobby servos"], cons: ["No Wi-Fi", "Little memory"] },
+
+  { id: "ssd1306", cat: "display", name: "SSD1306 OLED 0.96\"", p: [2, 6], paths: ["A", "E"], iface: ["I2C"],
+    what: "Crisp monochrome OLED. Two of them make a classic pair of eyes.",
+    specs: { Resolution: "128×64", Voltage: "3.3–5 V", Chapter: "4 · Eyes & face" },
+    pros: ["Cheapest", "High contrast", "Works with RoboEyes"], cons: ["One colour", "Small"],
+    wiring: "OLED  ->  ESP32\nVCC   ->  3V3\nGND   ->  GND\nSDA   ->  GPIO 21\nSCL   ->  GPIO 22" },
+  { id: "gc9a01", cat: "display", name: "GC9A01 round TFT 1.28\"", p: [4, 9], paths: ["A"], iface: ["SPI"],
+    what: "A round colour screen — the perfect eyeball.",
+    specs: { Resolution: "240×240 round", Voltage: "3.3 V", Chapter: "4 · Eyes & face" },
+    pros: ["Round shape", "Colour"], cons: ["Uses more pins (SPI)", "Needs PSRAM for smooth animation"],
+    wiring: "TFT   ->  ESP32-S3\nVCC   ->  3V3\nGND   ->  GND\nSCL   ->  GPIO 12 (SCK)\nSDA   ->  GPIO 11 (MOSI)\nCS    ->  GPIO 10\nDC    ->  GPIO 9\nRST   ->  GPIO 8" },
+  { id: "st7789", cat: "display", name: "ST7789 TFT 2\"", p: [5, 12], paths: ["C"], iface: ["SPI"],
+    what: "A full face on one colour screen.",
+    specs: { Resolution: "240×320", Voltage: "3.3 V", Chapter: "4 · Eyes & face" },
+    pros: ["Room for a whole face", "Fast"], cons: ["Rectangular look"] },
+  { id: "matrix", cat: "display", name: "8×8 LED matrix (MAX7219)", p: [2, 5], paths: ["D"], iface: ["SPI"],
+    what: "Pixel-art eyes, readable from across the room.",
+    specs: { Resolution: "8×8 per module", Voltage: "5 V", Chapter: "4 · Eyes & face" },
+    pros: ["Bright", "Simple"], cons: ["Very low resolution"] },
+
+  { id: "sg90", cat: "motion", name: "SG90 micro servo", p: [1.5, 4], paths: ["A", "B", "D"], iface: ["PWM"],
+    what: "The standard tiny servo for necks and legs.",
+    specs: { Torque: "≈1.8 kg·cm", Voltage: "4.8–6 V", Chapter: "5 · Movement" },
+    pros: ["Cheap", "Everywhere", "Stack-chan case available"], cons: ["Plastic gears", "Buzzes"],
+    wiring: "Servo wire   ->  where\nBrown (GND)  ->  GND (shared)\nRed (+)      ->  5 V servo rail\nOrange (sig) ->  any PWM GPIO" },
+  { id: "mg90s", cat: "motion", name: "MG90S micro servo", p: [3, 6], paths: ["A", "D"], iface: ["PWM"],
+    what: "Same size as SG90 with metal gears — survives curious fingers.",
+    specs: { Torque: "≈2.2 kg·cm", Voltage: "4.8–6 V", Chapter: "5 · Movement" },
+    pros: ["Metal gears", "Drop-in for SG90"], cons: ["Slightly heavier"] },
+  { id: "scs0009", cat: "motion", name: "Serial bus servo (SCS0009)", p: [8, 15], paths: ["B"], iface: ["UART"],
+    what: "Daisy-chained smart servos with position feedback.",
+    specs: { Control: "Half-duplex serial bus", Chapter: "5 · Movement" },
+    pros: ["Smooth and quiet", "Reads back its angle"], cons: ["Pricier", "Needs a bus adapter"] },
+  { id: "n20", cat: "motion", name: "N20 gear motor", p: [3, 8], paths: ["E"], iface: ["PWM"],
+    what: "Tiny geared DC motors for wheels.",
+    specs: { Voltage: "3–12 V (by version)", Chapter: "5 · Movement" },
+    pros: ["Compact", "Many gear ratios"], cons: ["Needs a motor driver"] },
+  { id: "drv8833", cat: "motion", name: "DRV8833 motor driver", p: [2, 5], paths: ["E"], iface: ["PWM"],
+    what: "Drives two small DC motors forward and backward.",
+    specs: { Current: "≈1.2 A per channel", Voltage: "2.7–10.8 V", Chapter: "5 · Movement" },
+    pros: ["Small", "Cheap"], cons: ["Not for big motors"] },
+  { id: "pca9685", cat: "motion", name: "PCA9685 servo driver", p: [3, 8], paths: ["C", "D"], iface: ["I2C"],
+    what: "16 servo channels over two wires.",
+    specs: { Channels: "16 PWM", Chapter: "5 · Movement" },
+    pros: ["Frees your board's pins", "Great with Raspberry Pi"], cons: ["Needs its own servo power"] },
+
+  { id: "inmp441", cat: "sense", name: "INMP441 I²S microphone", p: [2, 5], paths: ["A", "C", "E"], iface: ["I2S"],
+    what: "A digital MEMS mic: clean sound for clap detection and voice.",
+    specs: { Output: "24-bit I²S", Voltage: "3.3 V", Chapter: "6 · Senses" },
+    pros: ["Digital — less noise", "Tiny"], cons: ["Needs I²S-capable board"],
+    wiring: "Mic   ->  ESP32-S3\nVDD   ->  3V3\nGND   ->  GND\nSCK   ->  GPIO 4\nWS    ->  GPIO 5\nSD    ->  GPIO 6\nL/R   ->  GND (left channel)" },
+  { id: "ttp223", cat: "sense", name: "TTP223 touch pad", p: [0.5, 2], paths: ["A", "E"], iface: ["GPIO"],
+    what: "Pet the robot's head and it notices.",
+    specs: { Output: "Digital high on touch", Voltage: "2–5.5 V", Chapter: "6 · Senses" },
+    pros: ["Works through thin plastic", "Dirt cheap"], cons: ["One touch point each"] },
+  { id: "vl53l0x", cat: "sense", name: "VL53L0X distance sensor", p: [3, 8], paths: ["A", "E"], iface: ["I2C"],
+    what: "A laser time-of-flight sensor: knows when your hand is near.",
+    specs: { Range: "up to ≈2 m", Chapter: "6 · Senses" },
+    pros: ["Accurate", "Tiny"], cons: ["Narrow field of view"] },
+  { id: "hcsr04", cat: "sense", name: "HC-SR04 ultrasonic", p: [1, 4], paths: ["D"], iface: ["GPIO"],
+    what: "The classic \"eyes\" on Otto-style bipeds.",
+    specs: { Range: "2–400 cm", Voltage: "5 V", Chapter: "6 · Senses" },
+    pros: ["Cheap", "Looks like eyes"], cons: ["5 V echo needs a divider on 3.3 V boards"] },
+  { id: "picam3", cat: "sense", name: "Raspberry Pi Camera Module 3", p: [25, 35], paths: ["C"], iface: ["CSI"],
+    what: "A real autofocus camera for face tracking and vision.",
+    specs: { Sensor: "12 MP, autofocus", Chapter: "6 · Senses" },
+    pros: ["Great image", "Official support"], cons: ["Raspberry Pi only"] },
+  { id: "ov2640", cat: "sense", name: "OV2640 camera (ESP32-CAM)", p: [6, 12], paths: ["A"], iface: ["DVP"],
+    what: "A cheap camera for ESP32 boards — good for streaming to a PC.",
+    specs: { Sensor: "2 MP", Chapter: "6 · Senses" },
+    pros: ["Very cheap"], cons: ["Little on-board vision power"] },
+
+  { id: "max98357a", cat: "audio", name: "MAX98357A I²S amplifier", p: [2, 6], paths: ["A", "C", "E"], iface: ["I2S"],
+    what: "Turns digital audio into speaker sound — no analog wiring.",
+    specs: { Power: "≈3 W into 4 Ω", Voltage: "2.5–5.5 V", Chapter: "6 · Senses" },
+    pros: ["Simple", "Clean sound"], cons: ["Mono"],
+    wiring: "Amp   ->  ESP32-S3\nVIN   ->  5 V\nGND   ->  GND\nBCLK  ->  GPIO 15\nLRC   ->  GPIO 16\nDIN   ->  GPIO 7" },
+  { id: "speaker", cat: "audio", name: "Speaker 28–40 mm", p: [1, 4], paths: ["A", "C", "E"], iface: ["analog"],
+    what: "A small 4–8 Ω speaker for voice and beeps.",
+    specs: { Impedance: "4–8 Ω", Chapter: "6 · Senses" },
+    pros: ["Fits in a head"], cons: ["Little bass — give it a sealed box"] },
+
+  { id: "tp4056", cat: "power", name: "TP4056 charger (with protection)", p: [0.5, 2], paths: ["A", "E"], iface: ["USB"],
+    what: "Charges a single lithium cell safely from USB.",
+    specs: { Charge: "up to 1 A", Chapter: "3 · Electronics" },
+    pros: ["Cheap", "Protection versions available"], cons: ["Pick the version with protection IC"] },
+  { id: "lipo", cat: "power", name: "1S LiPo battery", p: [4, 10], paths: ["A"], iface: ["—"],
+    what: "Flat battery for a small wireless robot.",
+    specs: { Voltage: "3.7 V nominal", Chapter: "3 · Electronics" },
+    pros: ["Thin and light"], cons: ["Handle with care", "Needs a 5 V boost for servos"] },
+  { id: "18650", cat: "power", name: "18650 Li-ion cell", p: [4, 9], paths: ["E", "D"], iface: ["—"],
+    what: "A robust cylindrical cell with lots of capacity.",
+    specs: { Voltage: "3.7 V nominal", Capacity: "2000–3500 mAh", Chapter: "3 · Electronics" },
+    pros: ["Capacity", "Standard size"], cons: ["Use protected cells only"] },
+  { id: "usb5v", cat: "power", name: "5 V USB supply (2–3 A)", p: [5, 12], paths: ["A", "B", "C", "F"], iface: ["USB"],
+    what: "The safest power source for a robot that stays on the desk.",
+    specs: { Output: "5 V, 2–3 A", Chapter: "3 · Electronics" },
+    pros: ["Safe", "Simple"], cons: ["Cable on the desk"] },
+];
+
+const state = { q: "", cat: null, path: null, sort: "cat" };
+const fmt = (n) => (n % 1 ? n.toFixed(1) : n);
+const priceText = (p) => `€${fmt(p[0])}–${fmt(p[1])}`;
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+function pills(container, entries, key) {
+  const el = document.getElementById(container);
+  entries.forEach(([v, label]) => {
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "pill"; b.textContent = label; b.setAttribute("aria-pressed", "false");
+    b.addEventListener("click", () => {
+      state[key] = state[key] === v ? null : v;
+      el.querySelectorAll(".pill").forEach((x) => x.setAttribute("aria-pressed", String(x === b && state[key] === v)));
+      render();
+    });
+    el.insertBefore(b, el.querySelector(".count"));
+  });
+}
+pills("cats", Object.entries(CATS), "cat");
+pills("paths", Object.entries(PATHN).map(([k, v]) => [k, `${k} · ${v}`]), "path");
+
+function render() {
+  const q = state.q.trim().toLowerCase();
+  let list = PARTS.filter((p) =>
+    (!state.cat || p.cat === state.cat) &&
+    (!state.path || p.paths.includes(state.path)) &&
+    (!q || [p.name, p.what, CATS[p.cat], ...p.iface].join(" ").toLowerCase().replace(/²/g, "2").includes(q.replace(/²/g, "2"))));
+  const order = Object.keys(CATS);
+  list.sort(state.sort === "price" ? (a, b) => a.p[0] - b.p[0]
+    : state.sort === "name" ? (a, b) => a.name.localeCompare(b.name)
+    : (a, b) => order.indexOf(a.cat) - order.indexOf(b.cat));
+  document.getElementById("count").textContent = `${list.length} of ${PARTS.length} parts`;
+  const grid = document.getElementById("grid");
+  grid.innerHTML = list.length ? list.map((p) => `
+    <button class="card" type="button" data-id="${p.id}" data-cat="${p.cat}">
+      <span class="card-top"><span class="cat">${CATS[p.cat]}</span><span class="price">${priceText(p.p)}</span></span>
+      <h3>${esc(p.name)}</h3>
+      <p>${esc(p.what)}</p>
+      <span class="tags">${p.paths.map((k) => `<span class="tag path">${k}</span>`).join("")}${p.iface.slice(0, 3).map((i) => `<span class="tag">${i}</span>`).join("")}</span>
+    </button>`).join("") : `<p class="empty">No part matches. Try another word or clear a filter.</p>`;
+}
+
+const dlg = document.getElementById("dlg");
+document.getElementById("grid").addEventListener("click", (e) => {
+  const card = e.target.closest(".card");
+  if (!card) return;
+  const p = PARTS.find((x) => x.id === card.dataset.id);
+  const specs = { Category: CATS[p.cat], Price: priceText(p.p) + " per unit", Interface: p.iface.join(", "), ...p.specs };
+  document.getElementById("dlg-body").innerHTML = `
+    <div class="dlg-head"><div><span class="eyebrow">${CATS[p.cat]}</span><h2 id="d-name">${esc(p.name)}</h2></div>
+      <button class="close" type="button" aria-label="Close" data-close>×</button></div>
+    <p style="margin:0">${esc(p.what)}</p>
+    <dl class="specs">${Object.entries(specs).map(([k, v]) => `<dt>${k.replace(/_/g, " ")}</dt><dd>${esc(v)}</dd>`).join("")}
+      <dt>Used in</dt><dd>${p.paths.map((k) => `Path ${k} · ${PATHN[k]}`).join("<br>")}</dd></dl>
+    <div class="pc"><div><b>Good</b><ul>${p.pros.map((x) => `<li>${esc(x)}</li>`).join("")}</ul></div>
+      <div><b>Watch out</b><ul>${p.cons.map((x) => `<li>${esc(x)}</li>`).join("")}</ul></div></div>
+    ${p.wiring ? `<div><span class="eyebrow">Typical wiring (example pins)</span><div class="pins" style="margin-top:8px">${esc(p.wiring)}</div></div>` : ""}
+    ${p.links ? `<div class="links">${p.links.map(([t, u]) => `<a href="${u}" target="_blank" rel="noopener">${t} ↗</a>`).join("")}</div>` : ""}`;
+  dlg.showModal();
+});
+dlg.addEventListener("click", (e) => { if (e.target === dlg || e.target.closest("[data-close]")) dlg.close(); });
+
+document.getElementById("q").addEventListener("input", (e) => { state.q = e.target.value; render(); });
+document.getElementById("sort").addEventListener("change", (e) => { state.sort = e.target.value; render(); });
+render();
+</script>
+</body>
+</html>

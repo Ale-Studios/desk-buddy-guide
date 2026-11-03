@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Desk Buddy 3D Viewer</title>
+<meta name="description" content="Spin, zoom and measure printable desk-robot shells in your browser, then download the STL files.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+:root {
+  --ground: #eef1f4; --panel: #ffffff; --panel-2: #e3e8ee; --ink: #0e1726; --ink-soft: #4a5568;
+  --line: #cfd7e1; --accent: #2f5bea; --accent-ink: #ffffff; --signal: #ffb020; --screen: #070b14; --eye: #6fe3ff;
+  --radius: 14px;
+  --display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground: #0b1020; --panel: #121a2e; --panel-2: #19233b; --ink: #e8edf6; --ink-soft: #9aa7bd;
+    --line: #26324d; --accent: #6d8dff; --accent-ink: #0b1020; --signal: #ffc04d; --screen: #03060d;
+  }
+}
+:root[data-theme="dark"] {
+  --ground: #0b1020; --panel: #121a2e; --panel-2: #19233b; --ink: #e8edf6; --ink-soft: #9aa7bd;
+  --line: #26324d; --accent: #6d8dff; --accent-ink: #0b1020; --signal: #ffc04d; --screen: #03060d;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--ground); color: var(--ink); font: 17px/1.6 var(--body); -webkit-font-smoothing: antialiased; }
+a { color: var(--accent); }
+:focus-visible { outline: 3px solid var(--signal); outline-offset: 3px; border-radius: 6px; }
+.wrap { max-width: 1180px; margin: 0 auto; padding: 0 16px; }
+h1, h2, h3 { font-family: var(--display); line-height: 1.1; text-wrap: balance; margin: 0; }
+.eyebrow { font: 600 12px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-soft); }
+.bar { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 18px 0; }
+.brand { display: flex; align-items: center; gap: 10px; font: 800 18px var(--display); color: var(--ink); text-decoration: none; }
+.brand-mark { width: 30px; height: 22px; border-radius: 7px; background: var(--screen); display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 6px; }
+.brand-mark i { background: var(--eye); border-radius: 3px; }
+.bar nav { display: flex; gap: 18px; font-size: 15px; }
+.bar nav a { color: var(--ink-soft); text-decoration: none; }
+.bar nav a[aria-current="page"] { color: var(--ink); font-weight: 700; }
+
+.intro { padding: 24px 0 24px; display: flex; flex-direction: column; gap: 12px; max-width: 46em; }
+.intro h1 { font-size: clamp(34px, 5vw, 58px); font-weight: 800; letter-spacing: -.02em; }
+.intro p { margin: 0; color: var(--ink-soft); font-size: 18px; }
+
+.studio { display: grid; grid-template-columns: 290px 1fr; gap: 18px; padding-bottom: 56px; }
+.side { display: flex; flex-direction: column; gap: 16px; }
+.box { background: var(--panel); border: 1.5px solid var(--line); border-radius: var(--radius); padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+.box h2 { font-size: 17px; }
+.list { display: flex; flex-direction: column; gap: 6px; }
+.item { display: flex; justify-content: space-between; align-items: center; gap: 8px; text-align: left; font: 15px var(--body); padding: 9px 12px; border-radius: 10px; border: 1.5px solid var(--line); background: var(--ground); color: var(--ink); cursor: pointer; }
+.item small { font: 12px var(--mono); color: var(--ink-soft); }
+.item[aria-pressed="true"] { border-color: var(--accent); background: var(--accent); color: var(--accent-ink); }
+.item[aria-pressed="true"] small { color: inherit; opacity: .8; }
+.toggles { display: flex; flex-wrap: wrap; gap: 6px; }
+.pill { font: 600 13px var(--mono); padding: 7px 12px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--ground); color: var(--ink); cursor: pointer; }
+.pill[aria-pressed="true"] { background: var(--ink); color: var(--ground); border-color: var(--ink); }
+.swatches { display: flex; gap: 8px; }
+.sw { width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--line); cursor: pointer; }
+.sw[aria-pressed="true"] { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+.stage { position: relative; background: var(--screen); border-radius: 22px; min-height: 560px; overflow: hidden; }
+.stage canvas { display: block; width: 100%; height: 100%; position: absolute; inset: 0; touch-action: none; }
+.hud { position: absolute; left: 16px; right: 16px; bottom: 14px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; pointer-events: none; }
+.readout { font: 13px var(--mono); color: #cfe9ff; background: rgba(7, 11, 20, .72); border: 1px solid rgba(111, 227, 255, .25); padding: 8px 12px; border-radius: 10px; font-variant-numeric: tabular-nums; }
+.hint { font: 12.5px var(--mono); color: rgba(207, 233, 255, .7); align-self: flex-end; }
+.loading[hidden] { display: none; }
+.loading { position: absolute; inset: 0; display: grid; place-items: center; font: 14px var(--mono); color: #cfe9ff; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.btn { display: inline-flex; align-items: center; gap: 6px; padding: 9px 14px; border-radius: 999px; font: 700 14px var(--body); text-decoration: none; border: 2px solid var(--accent); background: var(--accent); color: var(--accent-ink); cursor: pointer; }
+.btn.ghost { background: transparent; color: var(--accent); }
+.credit { font-size: 13.5px; color: var(--ink-soft); margin: 0; }
+
+.more { padding: 8px 0 64px; }
+.more h2 { font-size: clamp(26px, 3.4vw, 38px); margin-bottom: 14px; }
+.ext { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.ext a { background: var(--panel); border: 1.5px solid var(--line); border-radius: var(--radius); padding: 16px 18px; text-decoration: none; color: var(--ink); display: flex; flex-direction: column; gap: 6px; }
+.ext a:hover { border-color: var(--accent); }
+.ext b { font: 700 18px var(--display); }
+.ext span { font-size: 14.5px; color: var(--ink-soft); }
+.ext em { font: normal 12px var(--mono); color: var(--accent); }
+footer { border-top: 1.5px solid var(--line); padding: 28px 0 44px; color: var(--ink-soft); font-size: 14px; }
+@media (max-width: 860px) {
+  .studio { grid-template-columns: 1fr; }
+  .stage { min-height: 420px; order: -1; }
+  .ext { grid-template-columns: 1fr; }
+  .bar nav { display: none; }
+}
+</style>
+<script type="importmap">{ "imports": { "three": "./vendor/three/three.module.js" } }</script>
+</head>
+<body>
+<header class="wrap bar">
+  <a class="brand" href="index.html"><span class="brand-mark" aria-hidden="true"><i></i><i></i></span>Desk Buddy Guide</a>
+  <nav aria-label="Site">
+    <a href="index.html#finder">Find your path</a>
+    <a href="parts.html">Parts</a>
+    <a href="models.html" aria-current="page">3D models</a>
+    <a href="index.html#chapters">Chapters</a>
+  </nav>
+</header>
+
+<main>
+  <div class="wrap intro">
+    <span class="eyebrow">3D viewer</span>
+    <h1>Turn the parts in your hands before you print them.</h1>
+    <p>Real, printable shells from the open-source Stack-chan project (SG90 servo version). Drag to rotate, scroll or pinch to zoom, and check the size in millimetres before you slice.</p>
+  </div>
+
+  <div class="wrap studio">
+    <aside class="side">
+      <div class="box">
+        <h2>Part</h2>
+        <div class="list" id="list" role="group" aria-label="Choose a part"></div>
+      </div>
+      <div class="box">
+        <h2>View</h2>
+        <div class="toggles">
+          <button class="pill" type="button" id="t-spin" aria-pressed="true">auto-rotate</button>
+          <button class="pill" type="button" id="t-wire" aria-pressed="false">wireframe</button>
+          <button class="pill" type="button" id="t-grid" aria-pressed="true">grid</button>
+          <button class="pill" type="button" id="t-reset">reset view</button>
+        </div>
+        <div class="swatches" role="group" aria-label="Filament colour" id="sw"></div>
+      </div>
+      <div class="box">
+        <div class="actions">
+          <a class="btn" id="dl" href="#" download>Download STL</a>
+          <a class="btn ghost" href="https://github.com/stack-chan/stack-chan/tree/develop/case" target="_blank" rel="noopener">Source ↗</a>
+        </div>
+        <p class="credit">Models © Stack-chan contributors, Apache-2.0, shown unmodified. Original STEP and Fusion 360 files are in the source repository.</p>
+      </div>
+    </aside>
+
+    <div class="stage" id="stage">
+      <div class="loading" id="loading">Loading model…</div>
+      <div class="hud">
+        <span class="readout" id="readout">—</span>
+        <span class="hint">drag · rotate &nbsp; scroll · zoom &nbsp; right-drag · pan</span>
+      </div>
+    </div>
+  </div>
+
+  <section class="wrap more">
+    <span class="eyebrow">More printable bodies</span>
+    <h2>Other open designs, linked to their makers.</h2>
+    <div class="ext">
+      <a href="https://github.com/stack-chan/stack-chan/tree/develop/case" target="_blank" rel="noopener"><em>Apache-2.0</em><b>Stack-chan variants</b><span>Cases for SCS0009 and RS30X servos, battery backpacks and community remixes.</span></a>
+      <a href="https://www.ottodiy.com/" target="_blank" rel="noopener"><em>CC BY-SA 4.0</em><b>Otto DIY biped</b><span>The classic printable walking robot for path D.</span></a>
+      <a href="https://github.com/pollen-robotics/reachy_mini" target="_blank" rel="noopener"><em>BY-SA-NC (non-commercial)</em><b>Reachy Mini</b><span>Open-hardware expressive head by Pollen Robotics.</span></a>
+    </div>
+  </section>
+</main>
+
+<footer><div class="wrap">Desk Buddy Guide · text CC BY-SA 4.0 · code MIT · 3D models keep their original licences · viewer built with three.js (MIT).</div></footer>
+
+<script type="module">
+import * as THREE from "three";
+import { STLLoader } from "./vendor/three/addons/STLLoader.js";
+import { OrbitControls } from "./vendor/three/addons/OrbitControls.js";
+
+const DIR = "models/stack-chan-sg90/";
+const PARTS = [
+  { file: "shell_SG90.stl", name: "Shell", note: "body" },
+  { file: "feet_SG90.stl", name: "Feet", note: "base" },
+  { file: "bracket_SG90_f.stl", name: "Bracket — front", note: "neck" },
+  { file: "bracket_SG90_b.stl", name: "Bracket — back", note: "neck" },
+  { file: "backpack_400mah.stl", name: "Backpack 400 mAh", note: "battery" },
+];
+const COLORS = [["#f2f2ee", "White PLA"], ["#2f5bea", "Blue PLA"], ["#ffb020", "Yellow PLA"], ["#e8590c", "Orange PLA"], ["#2b2f36", "Black PLA"]];
+
+const stage = document.getElementById("stage");
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+stage.prepend(renderer.domElement);
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 5000);
+scene.add(new THREE.HemisphereLight(0xdfefff, 0x1a2030, 1.1));
+const key = new THREE.DirectionalLight(0xffffff, 1.6); key.position.set(1, 1.4, 1.2); scene.add(key);
+const rim = new THREE.DirectionalLight(0x6fe3ff, 0.8); rim.position.set(-1.2, 0.6, -1); scene.add(rim);
+
+const grid = new THREE.GridHelper(200, 20, 0x2c4a66, 0x15253a);
+scene.add(grid);
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true; controls.autoRotate = !matchMedia("(prefers-reduced-motion: reduce)").matches;
+controls.autoRotateSpeed = 1.2;
+document.getElementById("t-spin").setAttribute("aria-pressed", String(controls.autoRotate));
+
+const material = new THREE.MeshStandardMaterial({ color: COLORS[0][0], roughness: 0.55, metalness: 0.05 });
+let mesh = null, fitDist = 200, centerY = 0;
+const loader = new STLLoader();
+const cache = new Map();
+
+function resize() {
+  const w = stage.clientWidth, h = stage.clientHeight;
+  renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix();
+}
+new ResizeObserver(resize).observe(stage);
+
+function frameView() {
+  camera.position.set(fitDist * 0.75, centerY + fitDist * 0.45, fitDist * 0.9);
+  controls.target.set(0, centerY, 0); controls.update();
+}
+
+async function show(i) {
+  const part = PARTS[i];
+  document.querySelectorAll(".item").forEach((b, j) => b.setAttribute("aria-pressed", String(j === i)));
+  document.getElementById("dl").href = DIR + part.file;
+  document.getElementById("dl").setAttribute("download", part.file);
+  const loading = document.getElementById("loading");
+  loading.hidden = false; loading.textContent = "Loading model…";
+  try {
+    let geo = cache.get(part.file);
+    if (!geo) {
+      geo = await loader.loadAsync(DIR + part.file);
+      geo.rotateX(-Math.PI / 2); // STL files are Z-up; three.js is Y-up
+      geo.computeVertexNormals(); geo.center();
+      cache.set(part.file, geo);
+    }
+    if (mesh) scene.remove(mesh);
+    mesh = new THREE.Mesh(geo, material);
+    geo.computeBoundingBox();
+    const s = new THREE.Vector3(); geo.boundingBox.getSize(s);
+    mesh.position.y = s.y / 2; // sit on the grid
+    scene.add(mesh);
+    centerY = s.y / 2;
+    fitDist = Math.max(s.x, s.y, s.z) * 1.6;
+    frameView();
+    const tris = geo.index ? geo.index.count / 3 : geo.attributes.position.count / 3;
+    document.getElementById("readout").textContent =
+      `${part.name} · ${s.x.toFixed(1)} × ${s.z.toFixed(1)} × ${s.y.toFixed(1)} mm · ${Math.round(tris).toLocaleString("en")} triangles`;
+    loading.hidden = true;
+  } catch (e) {
+    loading.textContent = "Could not load this model. Open the page from a web server (not as a local file).";
+  }
+}
+
+document.getElementById("list").innerHTML = PARTS.map((p) => `<button class="item" type="button" aria-pressed="false">${p.name}<small>${p.note}</small></button>`).join("");
+document.querySelectorAll(".item").forEach((b, i) => b.addEventListener("click", () => show(i)));
+
+document.getElementById("sw").innerHTML = COLORS.map(([c, n], i) => `<button class="sw" type="button" style="background:${c}" aria-label="${n}" aria-pressed="${i === 0}"></button>`).join("");
+document.querySelectorAll(".sw").forEach((b, i) => b.addEventListener("click", () => {
+  material.color.set(COLORS[i][0]);
+  document.querySelectorAll(".sw").forEach((x, j) => x.setAttribute("aria-pressed", String(j === i)));
+}));
+
+const toggle = (id, fn) => document.getElementById(id).addEventListener("click", (e) => {
+  const on = e.currentTarget.getAttribute("aria-pressed") !== "true";
+  e.currentTarget.setAttribute("aria-pressed", String(on)); fn(on);
+});
+toggle("t-spin", (on) => { controls.autoRotate = on; });
+toggle("t-wire", (on) => { material.wireframe = on; });
+toggle("t-grid", (on) => { grid.visible = on; });
+document.getElementById("t-reset").addEventListener("click", frameView);
+
+resize();
+show(0);
+renderer.setAnimationLoop(() => { controls.update(); renderer.render(scene, camera); });
+</script>
+</body>
+</html>
