@@ -280,4 +280,109 @@ function usb5v() {
   return G(shell, face, port, side, prongs);
 }
 
-export const HQ_BUILDERS = { ssd1306, gc9a01, st7789, cores3, mg90s, scs0009, n20, drv8833, pca9685, inmp441, ttp223, vl53l0x, max98357a, usb5v };
+// ---------- the parts that also have photos (used in the 3D builder) ----------
+const button = (x, z) => G(rbox(3.5, 1.4, 3, MAT.steel, 0.3, x, 2.3, z), cyl(0.9, 0.9, 0.6, MAT.plasticBlack, x, 3.2, z, 20));
+const microUsbPort = (x, z, rotY = 0) => { const g = G(rbox(7.5, 2.6, 5.5, MAT.steel, 0.6, 0, 0, 0), rbox(6, 1.2, 0.3, new THREE.MeshBasicMaterial({ color: 0x050505 }), 0.3, 0, 0, 2.7)); g.position.set(x, 2.9, z); g.rotation.y = rotY; return g; };
+const at = (obj, x, y, z) => { obj.position.set(x, y, z); return obj; };
+function wroom(x, z, w = 18, d = 25.5, rot = 0) {
+  // ESP32 module: metal shield can + PCB antenna with its meander trace printed on
+  const ant = canvasTex(w, d - 17.6, (g, W, H) => { g.fillStyle = "#131416"; g.fillRect(0, 0, W, H); g.strokeStyle = "#c9a24a"; g.lineWidth = 0.5; g.beginPath(); g.moveTo(2, H - 1); for (let i = 0; i < 6; i++) { g.lineTo(2 + i * 2.6, 1.2); g.lineTo(3.3 + i * 2.6, 1.2); g.lineTo(3.3 + i * 2.6, H - 1); g.lineTo(4.6 + i * 2.6, H - 1); } g.stroke(); }, 30);
+  const can = canvasTex(w - 1, 16.6, (g, W, H) => { const gr = g.createLinearGradient(0, 0, W, H); gr.addColorStop(0, "#d9dde2"); gr.addColorStop(1, "#aeb4bb"); g.fillStyle = gr; g.fillRect(0, 0, W, H); g.fillStyle = "#6b7078"; g.font = "700 1.7px Consolas, monospace"; g.textAlign = "center"; g.fillText("ESP32-WROOM", W / 2, H * 0.4); g.font = "500 1.1px Consolas, monospace"; g.fillText("ESPRESSIF · Wi-Fi + BT", W / 2, H * 0.55); }, 40);
+  const m = G(rbox(w, 0.8, d, MAT.black, 0.3, 0, 0.4, 0),
+    rbox(w - 1, 2.4, 16.6, MAT.steel, 0.5, 0, 2, (d - 17.6) / 2 - 0.2),
+    plane(w - 1.05, 16.5, can, 3.21, 0, (d - 17.6) / 2 - 0.2, { transparent: false, metalness: 0.9, roughness: 0.3 }),
+    plane(w, d - 17.6, ant, 0.81, 0, -(17.6 / 2) - 0.2, { transparent: false }));
+  m.position.set(x, 1.6, z); m.rotation.y = rot; return m;
+}
+function esp32() {
+  return G(board(55, 28, MAT.black, silk([["ESP32-DevKitC", 34, 14, 1.4], ["EN", 6.5, 9, 0.9], ["BOOT", 6.5, 19, 0.9]]), [[-25, -11.5, 1.2], [25, -11.5, 1.2], [-25, 11.5, 1.2], [25, 11.5, 1.2]]),
+    header(19, -12.7), header(19, 12.7), wroom(14.5, 0, 18, 25.5, Math.PI / 2), microUsbPort(-25.6, 0, Math.PI / 2), button(-20, -6), button(-20, 6),
+    ic(4, 4, -12, 0, 0, "CP2102"), ic(6.5, 3.5, -4, -6.5, 3, "1117"), capacitor(-4, 6), capacitor(-1, 6), led(-14, 8.5), resistor(-10, 8.5));
+}
+function esp32s3() {
+  return G(board(63, 25.5, MAT.black, silk([["ESP32-S3-DevKitC-1", 36, 12.75, 1.3], ["USB", 4, 6.2, 0.8], ["UART", 4, 19.3, 0.8]])),
+    header(22, -11.4), header(22, 11.4), wroom(20, 0, 18, 25, Math.PI / 2), usbCPort(-28, -6.2, Math.PI / 2), usbCPort(-28, 6.2, Math.PI / 2),
+    button(-19, -6.5), button(-19, 6.5), rbox(1.6, 1.2, 1.6, phys({ color: 0xffffff, emissive: 0x88ffcc, emissiveIntensity: 0.6, roughness: 0.3 }), 0.3, -9, 2.2, 0),
+    ic(5, 5, -10, -6.5, 0, "CH343"), ic(3, 1.6, -2, 6, 5), capacitor(-3, -6), capacitor(0, -6));
+}
+function pizero() {
+  const gpio = new THREE.Group();
+  for (let i = 0; i < 20; i++) for (let r = 0; r < 2; r++) { gpio.add(cyl(0.85, 0.85, 1.66, MAT.gold, -24.1 + i * 2.54, 0.8, -12.4 + r * 2.54, 16)); gpio.add(cyl(0.45, 0.45, 1.7, new THREE.MeshBasicMaterial({ color: 0x050505 }), -24.1 + i * 2.54, 0.8, -12.4 + r * 2.54, 12)); }
+  return G(board(65, 30, MAT.green, silk([["Raspberry Pi Zero 2 W", 32, 22.5, 1.6], ["HDMI", 12, 26.5, 0.9], ["USB", 41.4, 26.5, 0.9], ["PWR", 54, 26.5, 0.9]]), [[-29, -11.5, 1.35], [29, -11.5, 1.35], [-29, 11.5, 1.35], [29, 11.5, 1.35]]),
+    gpio, rbox(14, 1.3, 14, phys({ color: 0x9aa0a8, metalness: 0.8, roughness: 0.35 }), 0.4, 0, 2.25, 1), rbox(11.2, 3.3, 7.6, MAT.steel, 0.8, -20.1, 3.25, 11.4), microUsbPort(9, 12.4), microUsbPort(21.6, 12.4),
+    rbox(17, 1.4, 4, MAT.plasticBlack, 0.3, 31.2, 2.3, 0), rbox(12, 1.4, 11.5, MAT.steel, 0.4, -27, 2.3, 0), capacitor(-8, -6), capacitor(8, -6), resistor(10, 6), led(-16, -6));
+}
+function pi5() {
+  const usb = (z, blue) => at(G(rbox(17.4, 15.6, 13.2, MAT.steel, 0.6, 0, 7.8, 0), rbox(0.3, 1.8, 11, blue ? MAT.terminalBlue : MAT.plasticBlack, 0.1, 8.8, 4, 0), rbox(0.3, 1.8, 11, blue ? MAT.terminalBlue : MAT.plasticBlack, 0.1, 8.8, 11.6, 0)), 34.2, 1.6, z);
+  const eth = at(G(rbox(21, 13.5, 16, MAT.steel, 0.6, 0, 6.75, 0), rbox(0.3, 8, 12, new THREE.MeshBasicMaterial({ color: 0x050505 }), 0.1, 10.6, 6, 0)), 32, 1.6, -19.5);
+  return G(board(85, 56, MAT.green, silk([["Raspberry Pi 5", 30, 40, 1.8]]), [[-39, -24.5, 1.4], [19, -24.5, 1.4], [-39, 24.5, 1.4], [19, 24.5, 1.4]]),
+    header(20, -24.5, -35.5), header(20, -21.96, -35.5),
+    rbox(16, 1.2, 16, phys({ color: 0xc8ccd2, metalness: 1, roughness: 0.25 }), 0.6, -7, 2.2, -2), ic(14, 10, -7, 15, 0, "RAM"), ic(10, 10, 12, 2, 0, "RP1"),
+    usb(-2.5, true), usb(15, false), eth, usbCPort(-31, 27, 0), rbox(7.6, 3.3, 7.2, MAT.steel, 0.8, -18, 3.25, 25.2), rbox(7.6, 3.3, 7.2, MAT.steel, 0.8, -4.5, 3.25, 25.2),
+    rbox(16, 1.6, 4, MAT.plasticWhite, 0.3, -38, 2.4, 6), capacitor(-18, 4), capacitor(-18, 7), resistor(4, -12), led(-38, 22));
+}
+function nano() {
+  return G(board(45, 18, MAT.blue, silk([["NANO", 30, 9, 1.4], ["RST", 17, 3.2, 0.8]])), header(15, -7.62), header(15, 7.62),
+    ic(7, 7, 4, 0, 0, "ATMEGA328P"), rbox(7.7, 4, 8.6, MAT.steel, 0.8, -19.5, 3.6, 0), button(-6, 0), rbox(3.2, 1, 1.5, MAT.steel, 0.4, 9, 2.1, -4),
+    ic(5, 3, -13, -4, 4, "CH340"), led(14, 3), led(14, -3), resistor(16, 0), capacitor(-10, 5));
+}
+const sg90 = () => servo(phys({ color: 0x2862d8, roughness: 0.35, clearcoat: 0.6 }), "SG90", false);
+function tb6612() {
+  const w = 20.3;
+  return G(board(w, w, MAT.red, silk([...pinLabels(["PWMA", "AIN2", "AIN1", "STBY", "BIN1", "BIN2", "PWMB", "GND"], 1.6, w), ...pinLabels(["VM", "VCC", "GND", "A01", "A02", "B02", "B01", "GND"], 18.7, w), ["TB6612FNG", w / 2, 10, 1.1]])),
+    header(8, -8.9), header(8, 8.9), ic(7.8, 5.4, 0, 0.5, 12, "6612"), capacitor(-6.5, 4.6, 0, true), capacitor(6.5, 4.6), capacitor(4, -4));
+}
+function hcsr04() {
+  const transducer = (x) => {
+    const meshTex = canvasTex(13, 13, (g) => { g.fillStyle = "#c3c8cf"; g.fillRect(0, 0, 13, 13); g.fillStyle = "#4a4f57"; for (let i = 0; i < 13; i += 0.9) for (let j = 0; j < 13; j += 0.9) { g.beginPath(); g.arc(i + (Math.round(j / 0.9) % 2) * 0.45, j, 0.28, 0, 7); g.fill(); } }, 30);
+    const top = new THREE.Mesh(new THREE.CircleGeometry(6.4, 48), new THREE.MeshStandardMaterial({ map: meshTex, metalness: 0.7, roughness: 0.45 })); top.rotation.x = -Math.PI / 2; top.position.set(x, 14.01, 0);
+    return G(cyl(8, 8, 12.2, MAT.steel, x, 7.7, 0, 64), cyl(8.1, 8.1, 0.8, MAT.steel, x, 13.6, 0, 64), top);
+  };
+  return G(board(45, 20, MAT.blue, silk([["T", 6.5, 3, 1.4], ["R", 38.5, 3, 1.4], ["HC-SR04", 22.5, 16.4, 1.2], ...pinLabels(["VCC", "Trig", "Echo", "Gnd"], 19, 45)]), [[-20, -7.5, 1], [20, -7.5, 1], [-20, 7.5, 1], [20, 7.5, 1]]),
+    transducer(-13.5), transducer(13.5), rbox(10.5, 3.6, 4.6, MAT.steel, 1.6, 0, 3.4, -6.5), header(4, 8.6));
+}
+function ov2640() {
+  const cam = at(G(rbox(8.5, 4.8, 8.5, MAT.epoxy, 0.6, 0, 2.4, 0), cyl(3.9, 3.9, 4.2, MAT.plasticBlack, 0, 6.9, 0, 40), cyl(2.9, 2.9, 0.3, phys({ color: 0x1b2a4a, roughness: 0.02, clearcoat: 1, metalness: 0.3 }), 0, 9.1, 0, 32)), 0, 4.8, 4);
+  return G(board(27, 40.5, MAT.black, silk([["ESP32-CAM", 13.5, 37.5, 1.3]])), wroom(0, -7, 16, 24, 0), rbox(15, 2, 15, MAT.steel, 0.4, 0, 2.6, 12), cam,
+    rbox(3, 1.2, 3, phys({ color: 0xffffee, emissive: 0xfff2c0, emissiveIntensity: 0.5 }), 0.3, 9, 2.2, 17), header(8, -12.7, null), header(8, 12.7, null));
+}
+function speaker() {
+  const frame = new THREE.Mesh(new THREE.TorusGeometry(18.8, 1.4, 16, 96), MAT.steel); frame.rotation.x = Math.PI / 2; frame.position.y = 8;
+  const cone = new THREE.Mesh(new THREE.LatheGeometry([new THREE.Vector2(5, 5.2), new THREE.Vector2(9, 6.2), new THREE.Vector2(14, 7.2), new THREE.Vector2(17.6, 8)], 96), phys({ color: 0x1c1c1e, roughness: 0.85, side: THREE.DoubleSide }));
+  const dust = new THREE.Mesh(new THREE.SphereGeometry(5.2, 40, 16, 0, Math.PI * 2, 0, Math.PI / 2.6), phys({ color: 0x141416, roughness: 0.4, clearcoat: 0.5 })); dust.position.y = 3.2; dust.scale.y = 0.6;
+  return G(cyl(18.5, 10, 4.5, MAT.steel, 0, 5.75, 0, 96), cyl(9, 9, 4, phys({ color: 0x3a3d42, metalness: 0.6, roughness: 0.4 }), 0, 2, 0, 64), cone, dust, frame,
+    [-1, 1].map((s) => rbox(5, 0.4, 3, MAT.tin, 0.1, s * 21, 7.6, 0)));
+}
+function tp4056() {
+  const blueLed = led(-3, -3.8); blueLed.children[0].material = phys({ color: 0x001144, emissive: 0x2a6bff, emissiveIntensity: 1.2 });
+  return G(board(26, 17.5, MAT.blue, silk([["B+", 21.5, 3, 1], ["B-", 21.5, 14.5, 1], ["OUT+", 24, 6.3, 0.75], ["OUT-", 24, 11.2, 0.75], ["TP4056", 12, 9, 0.9]])),
+    usbCPort(-9.8, 0, Math.PI / 2), ic(5, 4, 1.5, 0, 8, "TP4056"), ic(3, 1.6, 6.5, -5, 6, "DW01"), ic(3, 3, 6.5, 5, 8, "8205A"),
+    led(-3, -6), blueLed, resistor(-4, 5), resistor(-1, 6), capacitor(1, 6.2), pad(11.5, -6.6, 2, 2.2), pad(11.5, 6.6, 2, 2.2), pad(11.5, -2.6, 1.6, 1.6), pad(11.5, 2.6, 1.6, 1.6));
+}
+function cell18650() {
+  const wrap = canvasTex(57, 58, (g, W, H) => { const gr = g.createLinearGradient(0, 0, 0, H); gr.addColorStop(0, "#2f6fe0"); gr.addColorStop(1, "#1b4bb0"); g.fillStyle = gr; g.fillRect(0, 0, W, H); g.fillStyle = "#e8f0ff"; g.textAlign = "center"; g.save(); g.translate(W / 2, H / 2); g.rotate(-Math.PI / 2); g.font = "800 6px Consolas, monospace"; g.fillText("18650", 0, -4); g.font = "600 3px Consolas, monospace"; g.fillText("3.7V Li-ion  3000mAh", 0, 3); g.restore(); }, 14);
+  const body = new THREE.Mesh(new THREE.CylinderGeometry(9, 9, 62, 64, 1, true), phys({ map: wrap, roughness: 0.25, clearcoat: 0.8 }));
+  const g = G(body, cyl(8.6, 8.6, 1.2, MAT.steel, 0, -31.4, 0, 64), cyl(8.6, 8.6, 1.2, MAT.steel, 0, 31.4, 0, 64), cyl(8.65, 8.65, 0.5, MAT.plasticWhite, 0, 31.9, 0, 64), cyl(3.6, 3.8, 1.4, MAT.steel, 0, 32.6, 0, 40));
+  g.rotation.z = Math.PI / 2; g.position.y = 9;
+  return G(g);
+}
+function lipo() {
+  const label = plane(30, 22, canvasTex(30, 22, (g) => { g.fillStyle = "#e9edf2"; g.fillRect(0, 0, 30, 22); g.fillStyle = "#2b3038"; g.textAlign = "center"; g.font = "800 3.2px Consolas, monospace"; g.fillText("Li-Polymer", 15, 7); g.font = "600 2.2px Consolas, monospace"; g.fillText("3.7V  1000mAh  3.7Wh", 15, 11.5); g.fillText("603040", 15, 15.5); g.fillStyle = "#b8231c"; g.fillRect(0, 19, 30, 3); }, 24), 5.65, -3, 0, { transparent: false, roughness: 0.5 });
+  return G(rbox(40, 5.6, 30, phys({ color: 0xc4c9d0, metalness: 0.7, roughness: 0.32, clearcoat: 0.4 }), 1.8, 0, 2.8, 0), label,
+    rbox(5, 5.8, 30.2, phys({ color: 0xe0a92a, roughness: 0.4, clearcoat: 0.5 }), 0.6, 18, 2.9, 0), rbox(3, 1, 22, MAT.green, 0.3, 21.6, 3, 0),
+    rbox(14, 1.4, 1.4, MAT.wireRed, 0.6, 29.5, 3, 1.6), rbox(14, 1.4, 1.4, phys({ color: 0x15161a, roughness: 0.5 }), 0.6, 29.5, 3, -1.6), rbox(6, 4.4, 6.5, MAT.plasticWhite, 0.5, 39, 2.5, 0));
+}
+function picam3() {
+  const sensor = at(G(rbox(8.5, 4, 8.5, MAT.epoxy, 0.5, 0, 2, 0), cyl(3.8, 3.8, 3.2, MAT.plasticBlack, 0, 5.6, 0, 40), cyl(3, 3, 0.25, phys({ color: 0x1a2c50, roughness: 0.02, clearcoat: 1, metalness: 0.4 }), 0, 7.3, 0, 32)), 0, 1.6, 2.5);
+  return G(board(25, 24, MAT.green, silk([["Camera Module 3", 12.5, 21.5, 1]]), [[-10.5, -9.5, 1.1], [10.5, -9.5, 1.1], [-10.5, 2.5, 1.1], [10.5, 2.5, 1.1]]),
+    sensor, rbox(20.5, 2.4, 5.5, MAT.plasticWhite, 0.3, 0, 2.8, -9.2), rbox(16, 0.15, 30, MAT.plasticWhite, 0.05, 0, 1.7, -26), rbox(16, 0.4, 6, MAT.terminalBlue, 0.05, 0, 1.8, -40), capacitor(-8, 6), resistor(8, 6));
+}
+function matrix() {
+  const leds = canvasTex(32, 32, (c) => { c.fillStyle = "#0c0c0e"; c.fillRect(0, 0, 32, 32); const on = [[2, 1], [5, 1], [1, 2], [2, 2], [5, 2], [6, 2], [2, 5], [3, 6], [4, 6], [5, 5]]; for (let i = 0; i < 8; i++) for (let j = 0; j < 8; j++) { const lit = on.some(([a, b]) => a === i && b === j); c.fillStyle = lit ? "#ff3b2f" : "#3a1715"; c.shadowColor = "#ff3b2f"; c.shadowBlur = lit ? 2 : 0; c.beginPath(); c.arc(2 + i * 4, 2 + j * 4, 1.5, 0, 7); c.fill(); } }, 24);
+  return G(board(32, 32, MAT.blue, silk([["MAX7219", 16, 30.5, 1]])), header(5, -14.5), header(5, 14.5),
+    rbox(32, 7.5, 32, phys({ color: 0x111215, roughness: 0.35, clearcoat: 0.6 }), 0.4, 0, 8.35, 0),
+    plane(32, 32, leds, 12.11, 0, 0, { transparent: false, emissive: 0xffffff, emissiveMap: leds, emissiveIntensity: 0.8, roughness: 0.3 }));
+}
+
+export const HQ_BUILDERS = { ssd1306, gc9a01, st7789, cores3, mg90s, scs0009, n20, drv8833, pca9685, inmp441, ttp223, vl53l0x, max98357a, usb5v,
+  esp32, esp32s3, pizero, pi5, nano, sg90, tb6612, hcsr04, ov2640, speaker, tp4056, "18650": cell18650, lipo, picam3, matrix };

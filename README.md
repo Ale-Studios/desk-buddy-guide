@@ -23,7 +23,7 @@ A desk buddy is a small robot that lives next to your keyboard: it has a face, i
 | 9 | [Reference projects](docs/09-reference-projects.md) | Existing open projects and what to reuse from each |
 | 10 | [Connecting to a PC](docs/10-connect-to-pc.md) | Wi-Fi/WebSocket link and a fully local AI brain |
 
-Extras: [Parts catalog](https://alex-stark-industries.github.io/desk-buddy-guide/parts.html) · [3D models](models/README.md) · [Video library](https://alex-stark-industries.github.io/desk-buddy-guide/videos.html) · [Photo credits](site/photos/README.md) · [Glossary](docs/glossary.md)
+Extras: [**3D robot builder**](https://alex-stark-industries.github.io/desk-buddy-guide/build.html) — pick parts, watch it assemble, get a live price and a step-by-step guide · [Parts catalog](https://alex-stark-industries.github.io/desk-buddy-guide/parts.html) · [3D models](models/README.md) · [Video library](https://alex-stark-industries.github.io/desk-buddy-guide/videos.html) · [Photo credits](site/photos/README.md) · [Glossary](docs/glossary.md)
 
 ## Repository layout
 

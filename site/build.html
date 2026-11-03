@@ -1,0 +1,609 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Desk Buddy Builder</title>
+<meta name="description" content="Pick your parts and watch your desk robot assemble in 3D, with a live price total and a step-by-step build guide made for your exact configuration.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+:root {
+  --ground: #eef1f4; --panel: #ffffff; --panel-2: #e3e8ee; --ink: #0e1726; --ink-soft: #4a5568;
+  --line: #cfd7e1; --accent: #2f5bea; --accent-ink: #ffffff; --signal: #ffb020; --screen: #060607; --eye: #6fe3ff;
+  --ok: #2b9348; --radius: 14px;
+  --display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground: #09090b; --panel: #131418; --panel-2: #1b1d22; --ink: #e8edf6; --ink-soft: #a3a8b2;
+    --line: #2a2d34; --accent: #6d8dff; --accent-ink: #09090b; --signal: #ffc04d; --screen: #040405; --ok: #51cf66;
+  }
+}
+:root[data-theme="dark"] {
+  --ground: #09090b; --panel: #131418; --panel-2: #1b1d22; --ink: #e8edf6; --ink-soft: #a3a8b2;
+  --line: #2a2d34; --accent: #6d8dff; --accent-ink: #09090b; --signal: #ffc04d; --screen: #040405; --ok: #51cf66;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--ground); color: var(--ink); font: 16.5px/1.6 var(--body); -webkit-font-smoothing: antialiased; }
+a { color: var(--accent); }
+:focus-visible { outline: 3px solid var(--signal); outline-offset: 3px; border-radius: 6px; }
+.wrap { max-width: 1320px; margin: 0 auto; padding: 0 16px; }
+h1, h2, h3 { font-family: var(--display); line-height: 1.15; text-wrap: balance; margin: 0; }
+.eyebrow { font: 600 12px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-soft); }
+.bar { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-block: 18px; }
+.brand { display: flex; align-items: center; gap: 10px; font: 800 18px var(--display); color: var(--ink); text-decoration: none; }
+.brand-mark { width: 30px; height: 22px; border-radius: 7px; background: var(--screen); display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 6px; }
+.brand-mark i { background: var(--eye); border-radius: 3px; }
+.bar nav { display: flex; gap: 18px; font-size: 15px; }
+.bar nav a { color: var(--ink-soft); text-decoration: none; }
+.bar nav a[aria-current="page"] { color: var(--ink); font-weight: 700; }
+
+.intro { padding-block: 10px 18px; display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 12px 32px; }
+.intro h1 { font-size: clamp(30px, 4.4vw, 52px); font-weight: 800; letter-spacing: -.02em; }
+.intro p { margin: 6px 0 0; color: var(--ink-soft); max-width: 40em; }
+.presets { display: flex; flex-wrap: wrap; gap: 8px; }
+.pill { font: 600 13px var(--mono); padding: 7px 12px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--panel); color: var(--ink); cursor: pointer; }
+.pill:hover { border-color: var(--accent); }
+
+.studio { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(340px, 1fr); gap: 18px; align-items: start; }
+.stage-col { position: sticky; top: 12px; display: flex; flex-direction: column; gap: 12px; }
+.stage { position: relative; height: min(72vh, 640px); min-height: 380px; border-radius: 22px; overflow: hidden; background: radial-gradient(circle at 50% 38%, #1e2127, var(--screen) 72%); }
+.stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; cursor: grab; }
+.stage .hint { position: absolute; right: 14px; bottom: 12px; font: 12px var(--mono); color: rgba(220, 230, 245, .6); pointer-events: none; }
+.stage .tag { position: absolute; left: 14px; top: 12px; font: 600 12px var(--mono); color: #dfe8f5; background: rgba(6, 6, 7, .6); border: 1px solid rgba(255, 255, 255, .12); padding: 6px 10px; border-radius: 8px; pointer-events: none; }
+
+.total { background: var(--panel); border: 1.5px solid var(--line); border-radius: var(--radius); padding: 16px 18px; display: grid; grid-template-columns: 1fr auto; gap: 6px 16px; align-items: center; }
+.total .price { font: 800 clamp(30px, 3.6vw, 42px)/1 var(--display); font-variant-numeric: tabular-nums; letter-spacing: -.01em; }
+.total .price small { font: 600 14px var(--mono); color: var(--ink-soft); margin-left: 6px; }
+.total .meta { font: 13px var(--mono); color: var(--ink-soft); grid-column: 1 / -1; }
+.total .actions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: end; }
+.btn { display: inline-flex; align-items: center; gap: 6px; padding: 10px 16px; border-radius: 999px; font: 700 14.5px var(--body); text-decoration: none; border: 2px solid var(--accent); background: var(--accent); color: var(--accent-ink); cursor: pointer; }
+.btn.ghost { background: transparent; color: var(--accent); }
+.bump { animation: bump .45s ease; }
+@keyframes bump { 40% { transform: scale(1.06); color: var(--signal); } }
+
+.picker { display: flex; flex-direction: column; gap: 14px; }
+.slot { background: var(--panel); border: 1.5px solid var(--line); border-radius: var(--radius); padding: 16px; }
+.slot-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+.slot-head h2 { font-size: 19px; display: flex; gap: 10px; align-items: baseline; }
+.slot-head h2 span { font: 600 12px var(--mono); color: var(--accent); }
+.slot-head a { font-size: 13.5px; }
+.slot-note { font-size: 13.5px; color: var(--ink-soft); margin: -4px 0 10px; }
+.opts { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+.opt { position: relative; display: flex; flex-direction: column; gap: 4px; text-align: left; padding: 8px; border-radius: 12px; border: 1.5px solid var(--line); background: var(--ground); color: var(--ink); font: inherit; cursor: pointer; transition: border-color .15s, transform .15s; }
+.opt:hover:not(:disabled) { border-color: var(--accent); transform: translateY(-1px); }
+.opt[aria-pressed="true"] { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent) inset; }
+.opt[aria-pressed="true"]::after { content: "✓"; position: absolute; top: 8px; right: 8px; width: 22px; height: 22px; border-radius: 50%; background: var(--accent); color: var(--accent-ink); font: 700 13px/22px var(--body); text-align: center; }
+.opt:disabled { opacity: .42; cursor: not-allowed; }
+.opt img { width: 100%; aspect-ratio: 16 / 10; height: auto; object-fit: contain; border-radius: 8px; background: radial-gradient(circle at 50% 40%, #1e2127, var(--screen) 75%); }
+.opt img.is-photo { background: #fff; }
+.opt .none { width: 100%; aspect-ratio: 16 / 10; border-radius: 8px; display: grid; place-items: center; background: var(--panel-2); font: 600 12px var(--mono); color: var(--ink-soft); }
+.opt b { font: 700 14px/1.25 var(--display); }
+.opt small { font: 12px var(--mono); color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+.opt .why { font-size: 12px; color: var(--ink-soft); line-height: 1.35; }
+
+/* generated guide */
+.guide { padding-block: 56px 24px; }
+.guide-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 12px 24px; margin-bottom: 20px; }
+.guide-head h2 { font-size: clamp(28px, 3.6vw, 42px); font-weight: 800; }
+.progress { font: 600 13px var(--mono); color: var(--ink-soft); display: flex; align-items: center; gap: 10px; }
+.progress i { display: block; width: 180px; height: 8px; border-radius: 99px; background: var(--panel-2); overflow: hidden; }
+.progress i b { display: block; height: 100%; width: 0; background: var(--ok); transition: width .3s; }
+.steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; counter-reset: step; }
+.step { background: var(--panel); border: 1.5px solid var(--line); border-radius: var(--radius); padding: 18px 20px 18px 66px; position: relative; }
+.step::before { counter-increment: step; content: counter(step, decimal-leading-zero); position: absolute; left: 18px; top: 18px; font: 700 15px var(--mono); color: var(--accent); }
+.step.done { border-color: color-mix(in srgb, var(--ok) 60%, var(--line)); }
+.step.done::before { content: "✓"; color: var(--ok); font-size: 18px; }
+.step h3 { font-size: 19px; margin-bottom: 6px; padding-right: 110px; }
+.step p, .step ul { margin: 0 0 10px; font-size: 15.5px; max-width: 72ch; }
+.step ul { padding-left: 18px; }
+.step .check { position: absolute; right: 16px; top: 16px; font: 600 12.5px var(--mono); display: flex; gap: 6px; align-items: center; cursor: pointer; color: var(--ink-soft); }
+.step .check input { width: 18px; height: 18px; accent-color: var(--ok); }
+.step .refs { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 14px; }
+.step pre { background: var(--screen); color: #d6ecff; border-radius: 10px; padding: 12px 14px; overflow-x: auto; font: 13px/1.6 var(--mono); margin: 0 0 10px; }
+.step .warn { border-left: 4px solid var(--signal); padding: 8px 12px; background: var(--ground); border-radius: 8px; font-size: 14.5px; margin-bottom: 10px; }
+table.list { width: 100%; border-collapse: collapse; font-size: 14.5px; font-variant-numeric: tabular-nums; margin-bottom: 10px; }
+table.list th { text-align: left; font: 600 12px var(--mono); text-transform: uppercase; letter-spacing: .06em; color: var(--ink-soft); padding: 6px 8px; border-bottom: 1.5px solid var(--line); }
+table.list td { padding: 7px 8px; border-bottom: 1px solid var(--line); }
+table.list td:last-child, table.list th:last-child { text-align: right; }
+table.list tfoot td { font-weight: 700; border-bottom: 0; }
+.tbl { overflow-x: auto; }
+.toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%) translateY(20px); opacity: 0; background: var(--ink); color: var(--ground); padding: 10px 16px; border-radius: 10px; font: 600 14px var(--body); transition: .25s; pointer-events: none; z-index: 20; }
+.toast.on { opacity: 1; transform: translateX(-50%); }
+footer { border-top: 1.5px solid var(--line); padding: 28px 0 44px; color: var(--ink-soft); font-size: 14px; margin-top: 40px; }
+@media (max-width: 960px) {
+  .studio { grid-template-columns: 1fr; }
+  .stage-col { position: static; }
+  .stage { height: 56vh; }
+}
+@media (max-width: 600px) {
+  .bar { flex-wrap: wrap; }
+  .bar nav { gap: 14px; font-size: 14px; overflow-x: auto; max-width: 100%; white-space: nowrap; padding-bottom: 4px; }
+  .total { grid-template-columns: 1fr; }
+  .total .actions { justify-content: start; }
+  .step { padding-left: 52px; }
+  .step h3 { padding-right: 0; padding-top: 26px; }
+}
+@media print {
+  .bar, .studio, .intro, footer, .check, .toast { display: none !important; }
+  body { background: #fff; color: #000; }
+  .step { break-inside: avoid; border-color: #bbb; }
+}
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .opt, .bump { transition: none; animation: none; } }
+</style>
+<script type="importmap">{ "imports": { "three": "./vendor/three/three.module.js" } }</script>
+</head>
+<body>
+<header class="wrap bar">
+  <a class="brand" href="index.html"><span class="brand-mark" aria-hidden="true"><i></i><i></i></span>Desk Buddy Guide</a>
+  <nav aria-label="Site">
+    <a href="index.html#finder">Find your path</a>
+    <a href="build.html" aria-current="page">Builder</a>
+    <a href="parts.html">Parts</a>
+    <a href="models.html">3D models</a>
+    <a href="videos.html">Videos</a>
+    <a href="chapters/01-basics.html">Chapters</a>
+  </nav>
+</header>
+
+<main>
+  <div class="wrap intro">
+    <div>
+      <span class="eyebrow">Robot builder</span>
+      <h1>Build your desk buddy, part by part.</h1>
+      <p>Choose the parts on the right and watch your robot assemble in 3D. The price updates as you go, and the step-by-step guide below is written for exactly what you picked.</p>
+    </div>
+    <div class="presets" role="group" aria-label="Start from a ready-made build">
+      <span class="eyebrow" style="align-self:center">Start from</span>
+    </div>
+  </div>
+
+  <div class="wrap studio">
+    <div class="stage-col">
+      <div class="stage" id="stage">
+        <span class="tag" id="tag">Your robot</span>
+        <span class="hint">drag · rotate &nbsp; scroll · zoom</span>
+      </div>
+      <div class="total" aria-live="polite">
+        <div>
+          <span class="eyebrow">Estimated parts cost</span>
+          <div class="price" id="price">€0</div>
+        </div>
+        <div class="actions">
+          <a class="btn" href="#guide">Step-by-step guide ↓</a>
+          <button class="btn ghost" type="button" id="share">Copy link</button>
+        </div>
+        <span class="meta" id="meta"></span>
+      </div>
+    </div>
+    <div class="picker" id="picker"></div>
+  </div>
+
+  <section class="wrap guide" id="guide" aria-labelledby="guide-title">
+    <div class="guide-head">
+      <div>
+        <span class="eyebrow">Your build, step by step</span>
+        <h2 id="guide-title">How to build this robot</h2>
+      </div>
+      <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap">
+        <span class="progress"><span id="prog-text">0 of 0 done</span><i><b id="prog-bar"></b></i></span>
+        <button class="btn ghost" type="button" id="copy-list">Copy shopping list</button>
+        <button class="btn ghost" type="button" onclick="print()">Print</button>
+      </div>
+    </div>
+    <ol class="steps" id="steps"></ol>
+  </section>
+</main>
+
+<div class="toast" id="toast" role="status"></div>
+<footer><div class="wrap">Desk Buddy Guide · text CC BY-SA 4.0 · code MIT · prices are rough estimates (November 2026), not offers · 3D shell © Stack-chan contributors (Apache-2.0).</div></footer>
+
+<script type="module">
+import * as THREE from "three";
+import { OrbitControls } from "./vendor/three/addons/OrbitControls.js";
+import { STLLoader } from "./vendor/three/addons/STLLoader.js";
+import { buildPart, makeScene, fitStage, renderThumbnails } from "./assets/parts3d.js";
+import { PARTS } from "./assets/parts-data.js";
+
+const P = Object.fromEntries(PARTS.map((p) => [p.id, p]));
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const eur = (n) => "€" + (Math.round(n * 2) / 2).toLocaleString("en", { maximumFractionDigits: 1 });
+
+// ---------- what can be chosen ----------
+// items: [part id, quantity]; extra: a cost line that is not a catalog part
+const SLOTS = [
+  { id: "brain", title: "Brain", chapter: "03-electronics", multi: false, options: [
+    { id: "esp32s3", label: "ESP32-S3", items: [["esp32s3", 1]], why: "Recommended: RAM for smooth eyes and audio" },
+    { id: "esp32", label: "ESP32", items: [["esp32", 1]], why: "Cheapest Wi-Fi board" },
+    { id: "cores3", label: "M5Stack CoreS3", items: [["cores3", 1]], why: "Screen, mics, speaker and camera built in" },
+    { id: "pizero", label: "Raspberry Pi Zero 2 W", items: [["pizero", 1]], why: "Linux and a real camera" },
+    { id: "nano", label: "Arduino Nano", items: [["nano", 1]], why: "Simplest; no Wi-Fi or audio" },
+  ] },
+  { id: "face", title: "Face", chapter: "04-eyes-and-face", multi: false, options: [
+    { id: "gc9a01", label: "Round TFT eye", items: [["gc9a01", 1]], why: "One big round colour eye" },
+    { id: "oled2", label: "2 × OLED eyes", items: [["ssd1306", 2]], why: "Classic crisp pair of eyes" },
+    { id: "st7789", label: "2\" colour face", items: [["st7789", 1]], why: "Both eyes on one screen" },
+    { id: "matrix2", label: "2 × LED matrix", items: [["matrix", 2]], why: "Bright pixel-art eyes" },
+    { id: "builtin", label: "Built-in screen", items: [], why: "The CoreS3's own display" },
+  ] },
+  { id: "neck", title: "Neck", chapter: "05-movement", multi: false, options: [
+    { id: "none", label: "No movement", items: [], why: "Just a face" },
+    { id: "nod", label: "Nod (1 servo)", items: [["sg90", 1]], why: "Up and down" },
+    { id: "pantilt", label: "Pan + tilt (2 × SG90)", items: [["sg90", 2]], why: "Looks around — the classic" },
+    { id: "pantiltmg", label: "Pan + tilt (2 × MG90S)", items: [["mg90s", 2]], why: "Metal gears, sturdier" },
+    { id: "bus", label: "Pan + tilt (2 × SCS0009)", items: [["scs0009", 2]], why: "Smooth, quiet bus servos" },
+  ] },
+  { id: "senses", title: "Senses", chapter: "06-senses", multi: true, options: [
+    { id: "ttp223", label: "Touch pad", items: [["ttp223", 1]], why: "Pat its head" },
+    { id: "vl53l0x", label: "Distance (laser)", items: [["vl53l0x", 1]], why: "Notices your hand" },
+    { id: "hcsr04", label: "Distance (ultrasonic)", items: [["hcsr04", 1]], why: "Cheap, looks like eyes" },
+    { id: "inmp441", label: "Microphone", items: [["inmp441", 1]], why: "Hears claps and voice" },
+    { id: "picam3", label: "Pi Camera 3", items: [["picam3", 1]], why: "Vision on a Raspberry Pi" },
+    { id: "ov2640", label: "ESP32-CAM", items: [["ov2640", 1]], why: "Camera board for streaming" },
+  ] },
+  { id: "sound", title: "Sound", chapter: "06-senses", multi: false, options: [
+    { id: "none", label: "Silent", items: [], why: "No speaker" },
+    { id: "amp", label: "I²S amp + speaker", items: [["max98357a", 1], ["speaker", 1]], why: "Beeps and speech" },
+  ] },
+  { id: "power", title: "Power", chapter: "03-electronics", multi: false, options: [
+    { id: "usb", label: "USB supply", items: [["usb5v", 1]], why: "Safest: stays on the desk" },
+    { id: "lipo", label: "LiPo battery", items: [["lipo", 1], ["tp4056", 1]], why: "Small and wireless" },
+    { id: "cell", label: "18650 battery", items: [["18650", 1], ["tp4056", 1]], why: "More capacity" },
+  ] },
+  { id: "shell", title: "Body", chapter: "07-body-and-shell", multi: false, options: [
+    { id: "stackchan", label: "Printed Stack-chan shell", items: [], extra: ["Filament for the printed shell (own printer)", 2, 5], why: "Open design, Apache-2.0" },
+    { id: "cardboard", label: "Cardboard mock-up", items: [], extra: ["Cardboard, glue", 0, 2], why: "Free and fast" },
+    { id: "open", label: "No shell", items: [], why: "Bare electronics" },
+  ] },
+];
+const MISC = ["Jumper wires, screws, perfboard, capacitor", 5, 10];
+
+const PRESETS = {
+  "Path A": { brain: "esp32s3", face: "gc9a01", neck: "pantilt", senses: ["ttp223", "inmp441"], sound: "amp", power: "usb", shell: "cardboard" },
+  "Path B": { brain: "cores3", face: "builtin", neck: "pantilt", senses: ["ttp223"], sound: "none", power: "usb", shell: "stackchan" },
+  "Path C": { brain: "pizero", face: "st7789", neck: "pantilt", senses: ["picam3", "inmp441"], sound: "amp", power: "usb", shell: "open" },
+  "Cheapest": { brain: "esp32", face: "oled2", neck: "nod", senses: ["ttp223"], sound: "none", power: "usb", shell: "cardboard" },
+};
+const DEFAULT = PRESETS["Path A"];
+
+// ---------- rules: what does not fit together ----------
+function blocked(slot, opt, s) {
+  const b = s.brain;
+  if (slot === "face" && opt === "builtin" && b !== "cores3") return "Only with the M5Stack CoreS3";
+  if (slot === "face" && opt !== "builtin" && b === "cores3") return "The CoreS3 already has a screen";
+  if (b === "nano" && slot === "face" && ["gc9a01", "st7789"].includes(opt)) return "Too little memory on a Nano";
+  if (b === "nano" && slot === "senses" && ["inmp441", "picam3", "ov2640"].includes(opt)) return "Needs I²S or a camera port";
+  if (b === "nano" && slot === "sound" && opt === "amp") return "The Nano has no I²S audio";
+  if (b === "cores3" && slot === "senses" && ["inmp441", "picam3", "ov2640"].includes(opt)) return "Built into the CoreS3";
+  if (b === "cores3" && slot === "sound" && opt === "amp") return "The CoreS3 has its own speaker";
+  if (slot === "senses" && opt === "picam3" && b !== "pizero") return "Raspberry Pi only";
+  if (slot === "senses" && opt === "ov2640" && b === "pizero") return "Use the Pi Camera instead";
+  if (slot === "neck" && opt === "bus" && b !== "cores3") return "Easiest with the Stack-chan CoreS3 kit";
+  return "";
+}
+function normalise(s) {
+  // drop anything the current brain cannot use, then fill gaps with sensible picks
+  for (const slot of SLOTS) {
+    if (slot.multi) s[slot.id] = (s[slot.id] || []).filter((o) => !blocked(slot.id, o, s));
+    else if (!s[slot.id] || blocked(slot.id, s[slot.id], s)) s[slot.id] = slot.options.find((o) => !blocked(slot.id, o.id, s)).id;
+  }
+  return s;
+}
+
+// ---------- state: from the link, or the default build ----------
+function fromHash() {
+  try { const h = new URLSearchParams(location.hash.slice(1)); if (!h.has("brain")) return null;
+    const s = {}; for (const slot of SLOTS) s[slot.id] = slot.multi ? (h.get(slot.id) || "").split(",").filter(Boolean) : h.get(slot.id); return s; } catch { return null; }
+}
+let state = normalise(fromHash() || structuredClone(DEFAULT));
+const toHash = () => new URLSearchParams(Object.entries(state).map(([k, v]) => [k, Array.isArray(v) ? v.join(",") : v])).toString();
+
+function lines() {
+  const out = [];
+  for (const slot of SLOTS) {
+    const chosen = slot.multi ? state[slot.id] : [state[slot.id]];
+    for (const oid of chosen) {
+      const o = slot.options.find((x) => x.id === oid);
+      o.items.forEach(([id, q]) => out.push({ name: P[id].name, id, q, lo: P[id].p[0] * q, hi: P[id].p[1] * q }));
+      if (o.extra) out.push({ name: o.extra[0], q: 1, lo: o.extra[1], hi: o.extra[2] });
+    }
+  }
+  // a Raspberry Pi drives servos through a PCA9685 board
+  if (state.brain === "pizero" && state.neck !== "none" && state.neck !== "bus") out.push({ name: P.pca9685.name, id: "pca9685", q: 1, lo: P.pca9685.p[0], hi: P.pca9685.p[1] });
+  out.push({ name: MISC[0], q: 1, lo: MISC[1], hi: MISC[2] });
+  return out;
+}
+
+// ---------- picker UI ----------
+const picker = document.getElementById("picker");
+function optImg(o) {
+  const first = o.items[0]?.[0];
+  return first ? `<img data-part="${first}" alt="" width="480" height="300">` : `<span class="none">${o.id === "builtin" ? "built in" : o.id === "stackchan" ? "3D print" : o.id === "cardboard" ? "cardboard" : "none"}</span>`;
+}
+function optPrice(o) {
+  const lo = o.items.reduce((a, [id, q]) => a + P[id].p[0] * q, 0) + (o.extra ? o.extra[1] : 0);
+  const hi = o.items.reduce((a, [id, q]) => a + P[id].p[1] * q, 0) + (o.extra ? o.extra[2] : 0);
+  return hi ? `${eur(lo)}–${eur(hi)}` : "free";
+}
+function renderPicker() {
+  picker.innerHTML = SLOTS.map((slot, i) => `
+    <section class="slot" aria-labelledby="slot-${slot.id}">
+      <div class="slot-head"><h2 id="slot-${slot.id}"><span>${String(i + 1).padStart(2, "0")}</span>${slot.title}</h2>
+        <a href="chapters/${slot.chapter}.html">Learn more →</a></div>
+      ${slot.multi ? `<p class="slot-note">Pick any number.</p>` : ""}
+      <div class="opts" role="group" aria-label="${slot.title}">
+        ${slot.options.map((o) => { const why = blocked(slot.id, o.id, state); const on = slot.multi ? state[slot.id].includes(o.id) : state[slot.id] === o.id;
+          return `<button class="opt" type="button" data-slot="${slot.id}" data-opt="${o.id}" aria-pressed="${on}" ${why ? `disabled title="${esc(why)}"` : ""}>
+            ${optImg(o)}<b>${esc(o.label)}</b><small>${optPrice(o)}</small><span class="why">${esc(why || o.why)}</span></button>`; }).join("")}
+      </div>
+    </section>`).join("");
+  renderThumbnails(picker);
+}
+picker.addEventListener("click", (e) => {
+  const b = e.target.closest(".opt:not(:disabled)"); if (!b) return;
+  const { slot, opt } = b.dataset;
+  const def = SLOTS.find((s) => s.id === slot);
+  if (def.multi) state[slot] = state[slot].includes(opt) ? state[slot].filter((x) => x !== opt) : [...state[slot], opt];
+  else state[slot] = opt;
+  update(slot === "brain");
+});
+
+const presets = document.querySelector(".presets");
+Object.keys(PRESETS).forEach((name) => {
+  const b = document.createElement("button"); b.type = "button"; b.className = "pill"; b.textContent = name;
+  b.addEventListener("click", () => { state = normalise(structuredClone(PRESETS[name])); update(true); });
+  presets.appendChild(b);
+});
+
+// ---------- 3D stage ----------
+const stage = document.getElementById("stage");
+// preserveDrawingBuffer lets visitors save a picture of their robot (right-click → save image)
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+stage.prepend(renderer.domElement);
+const scene = makeScene(renderer);
+fitStage(scene, new THREE.Vector3(120, 150, 120));
+const camera = new THREE.PerspectiveCamera(30, 1, 1, 5000);
+camera.position.set(230, 190, 250);
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.target.set(0, 50, -30); controls.enableDamping = true; controls.minDistance = 90; controls.maxDistance = 700;
+controls.autoRotate = !matchMedia("(prefers-reduced-motion: reduce)").matches; controls.autoRotateSpeed = 0.8;
+controls.addEventListener("start", () => { controls.autoRotate = false; });
+function resize() { const w = stage.clientWidth, h = stage.clientHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); }
+new ResizeObserver(resize).observe(stage); resize();
+
+// placed models fly in from above when added and shrink away when removed
+const placed = new Map();
+const FACE_FWD = new THREE.Euler(Math.PI / 2, 0, 0);
+const NO_ROT = new THREE.Euler();
+// The shell STL opens toward +Y in its own file; after the Z-up → Y-up turn that faces
+// backwards, so it is spun round to open toward the viewer like the real Stack-chan.
+const SHELL_ROT = new THREE.Euler(0, Math.PI, 0);
+const part = (id) => () => buildPart(id);
+// Bounding box of a model in a given orientation, measured at the origin.
+const boxCache = new Map();
+function boxOf(key, obj, rot) {
+  const k = key + rot.x + "," + rot.y + "," + rot.z;
+  if (!boxCache.has(k)) {
+    const save = [obj.position.clone(), obj.rotation.clone(), obj.scale.clone()];
+    obj.position.set(0, 0, 0); obj.rotation.copy(rot); obj.scale.setScalar(1); obj.updateMatrixWorld(true);
+    boxCache.set(k, new THREE.Box3().setFromObject(obj, true));
+    obj.position.copy(save[0]); obj.rotation.copy(save[1]); obj.scale.copy(save[2]); obj.updateMatrixWorld(true);
+  }
+  return boxCache.get(k);
+}
+// Places a model so its bounding box lands where asked:
+// cx / cy / cz = centre on that axis; bottom / top = y faces; back / front = z faces.
+function fit(key, makeObj, rot, at) {
+  let e = placed.get(key);
+  if (!e) { const obj = makeObj(); if (!obj) return null; obj.scale.setScalar(0.01); scene.add(obj); e = { obj, fresh: true }; placed.set(key, e); }
+  const b = boxOf(key, e.obj, rot), c = b.getCenter(new THREE.Vector3());
+  const pos = new THREE.Vector3(
+    "cx" in at ? at.cx - c.x : 0,
+    "bottom" in at ? at.bottom - b.min.y : "top" in at ? at.top - b.max.y : "cy" in at ? at.cy - c.y : -b.min.y,
+    "back" in at ? at.back - b.min.z : "front" in at ? at.front - b.max.z : "cz" in at ? at.cz - c.z : -c.z);
+  if (e.fresh) { e.obj.position.set(pos.x, pos.y + 90, pos.z); e.fresh = false; }
+  e.target = pos; e.rot = rot; e.alive = true; e.seen = true;
+  return b.clone().translate(pos);
+}
+
+// Stack-chan shell and feet: the real STL files (Apache-2.0)
+const stlGeo = {};
+const loadStl = (file) => (stlGeo[file] ||= new STLLoader().loadAsync(`models/stack-chan-sg90/${file}`).then((geo) => { geo.rotateX(-Math.PI / 2); geo.computeVertexNormals(); geo.center(); geo.computeBoundingBox(); return geo; }));
+// loaded before the first layout, so their real size is known when parts are placed
+const stlReady = {};
+await Promise.all(["feet_SG90.stl", "shell_SG90.stl"].map((f) => loadStl(f).then((g) => { stlReady[f] = g; }))).catch(() => {});
+function stl(file, color, opacity) {
+  return () => {
+    const geo = stlReady[file];
+    if (!geo) return plate();
+    const mat = new THREE.MeshPhysicalMaterial({ color, roughness: 0.55, clearcoat: 0.3, transparent: opacity < 1, opacity, depthWrite: opacity >= 1, side: THREE.DoubleSide });
+    const m = new THREE.Mesh(geo, mat); m.position.y = -geo.boundingBox.min.y; m.castShadow = opacity >= 1; m.receiveShadow = true;
+    const g = new THREE.Group(); g.add(m); return g;
+  };
+}
+const plate = () => { const m = new THREE.Mesh(new THREE.BoxGeometry(104, 6, 84), new THREE.MeshPhysicalMaterial({ color: 0x2a2d33, roughness: 0.6, clearcoat: 0.3 })); m.position.y = 3; m.castShadow = m.receiveShadow = true; const g = new THREE.Group(); g.add(m); return g; };
+const cardboard = (w, h, d) => () => {
+  const mat = new THREE.MeshStandardMaterial({ color: 0xc08f58, roughness: 0.95, transparent: true, opacity: 0.32, depthWrite: false, side: THREE.DoubleSide });
+  const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat); m.position.y = h / 2;
+  const edges = new THREE.LineSegments(new THREE.EdgesGeometry(m.geometry), new THREE.LineBasicMaterial({ color: 0x8a6237 })); edges.position.y = h / 2;
+  const g = new THREE.Group(); g.add(m, edges); return g;
+};
+
+function layout() {
+  placed.forEach((e) => { e.seen = false; });
+  const s = state;
+  // base: printed Stack-chan feet, or a plain mounting plate
+  const base = s.shell === "stackchan" ? fit("feet", stl("feet_SG90.stl", 0xe9e7e1, 1), NO_ROT, { cx: 0, cz: 0, bottom: 0 }) : fit("plate", plate, NO_ROT, { cx: 0, cz: 0, bottom: 0 });
+  let top = base.max.y;
+  // neck: the pan servo stands on the base, the tilt servo lies on top of it
+  const servoId = servoOf(s.neck);
+  if (["pantilt", "pantiltmg", "bus"].includes(s.neck)) top = fit("servo-pan", part(servoId), NO_ROT, { cx: 0, cz: 0, bottom: top }).max.y;
+  if (s.neck !== "none") top = fit("servo-tilt", part(servoId), new THREE.Euler(0, 0, Math.PI / 2), { cx: 0, cz: 0, bottom: top - 2 }).max.y;
+  const neckTop = top + 2;
+  // head: brain behind, face in front of it
+  let head;
+  if (s.brain === "cores3") head = fit("brain-cores3", part("cores3"), FACE_FWD, { cx: 0, bottom: neckTop, cz: 0 });
+  else {
+    head = fit("brain-" + s.brain, part(s.brain), FACE_FWD, { cx: 0, bottom: neckTop, front: 0 });
+    const faceAt = (key, id, cx, rot = FACE_FWD) => head.union(fit(key, part(id), rot, { cx, bottom: neckTop + 1, back: 3 }));
+    if (s.face === "gc9a01") faceAt("face-gc9a01", "gc9a01", 0);
+    // the 2" TFT is a portrait module: turn it in its own plane so the face is landscape
+    if (s.face === "st7789") faceAt("face-st7789", "st7789", 0, new THREE.Euler(Math.PI / 2, Math.PI / 2, 0));
+    if (s.face === "oled2") { faceAt("face-oled-l", "ssd1306", -16); faceAt("face-oled-r", "ssd1306", 16); }
+    if (s.face === "matrix2") { faceAt("face-mx-l", "matrix", -18); faceAt("face-mx-r", "matrix", 18); }
+  }
+  const hc = head.getCenter(new THREE.Vector3());
+  // with a cardboard body the top sensors sit on its lid, not on the electronics
+  const lid = s.shell === "cardboard" ? neckTop - 6 + Math.round(head.getSize(new THREE.Vector3()).y + 12) : head.max.y;
+  // senses sit on the head: touch on top, mic on the left, camera at the front edge, distance under the face
+  if (s.senses.includes("ttp223")) fit("ttp223", part("ttp223"), NO_ROT, { cx: hc.x + 8, cz: hc.z - 4, bottom: lid });
+  if (s.senses.includes("inmp441")) fit("inmp441", part("inmp441"), NO_ROT, { cx: head.min.x + 9, cz: hc.z - 4, bottom: lid });
+  if (s.senses.includes("picam3")) fit("picam3", part("picam3"), FACE_FWD, { cx: hc.x - 4, bottom: lid, front: head.max.z });
+  if (s.senses.includes("ov2640")) fit("ov2640", part("ov2640"), FACE_FWD, { cx: hc.x - 4, bottom: lid, front: head.max.z });
+  if (s.senses.includes("vl53l0x")) fit("vl53l0x", part("vl53l0x"), FACE_FWD, { cx: 0, top: head.min.y - 1, front: head.max.z });
+  if (s.senses.includes("hcsr04")) fit("hcsr04", part("hcsr04"), FACE_FWD, { cx: 0, bottom: base.max.y, back: 20 });
+  // sound on the base
+  if (s.sound === "amp") { fit("amp", part("max98357a"), NO_ROT, { cx: 36, cz: -26, bottom: base.max.y }); fit("speaker", part("speaker"), NO_ROT, { cx: -30, cz: -20, bottom: base.max.y }); }
+  // power and helper boards wait behind the robot
+  if (s.power === "usb") fit("usb5v", part("usb5v"), NO_ROT, { cx: 0, back: -150, bottom: 0 });
+  if (s.power === "lipo") { fit("lipo", part("lipo"), NO_ROT, { cx: -22, cz: -78, bottom: 0 }); fit("tp4056", part("tp4056"), NO_ROT, { cx: 34, cz: -72, bottom: 0 }); }
+  if (s.power === "cell") { fit("18650", part("18650"), NO_ROT, { cx: -14, cz: -76, bottom: 0 }); fit("tp4056", part("tp4056"), NO_ROT, { cx: 34, cz: -72, bottom: 0 }); }
+  if (s.brain === "pizero" && !["none", "bus"].includes(s.neck)) fit("pca9685", part("pca9685"), NO_ROT, { cx: 0, cz: -112, bottom: 0 });
+  // body around the head
+  if (s.shell === "stackchan") fit("shell", stl("shell_SG90.stl", 0xf2f1ec, 0.26), SHELL_ROT, { cx: hc.x, cz: hc.z, cy: hc.y });
+  if (s.shell === "cardboard") {
+    const sz = head.getSize(new THREE.Vector3()), w = Math.round(sz.x + 14), h = Math.round(sz.y + 12), d = Math.round(sz.z + 12);
+    fit(`cardboard-${w}-${h}-${d}`, cardboard(w, h, d), NO_ROT, { cx: hc.x, cz: hc.z, bottom: neckTop - 6 });
+  }
+  placed.forEach((e) => { if (!e.seen) e.alive = false; });
+}
+
+let last = performance.now();
+renderer.setAnimationLoop((now) => {
+  const k = 1 - Math.pow(0.0015, Math.min(0.05, (now - last) / 1000)); last = now;
+  placed.forEach((e, key) => {
+    const o = e.obj;
+    if (e.alive) {
+      o.position.lerp(e.target, k);
+      o.rotation.x += (e.rot.x - o.rotation.x) * k; o.rotation.y += (e.rot.y - o.rotation.y) * k; o.rotation.z += (e.rot.z - o.rotation.z) * k;
+      o.scale.setScalar(o.scale.x + (1 - o.scale.x) * k);
+    } else {
+      o.scale.setScalar(o.scale.x * (1 - k)); o.position.y += 60 * k;
+      if (o.scale.x < 0.02) { scene.remove(o); placed.delete(key); }
+    }
+  });
+  controls.update(); renderer.render(scene, camera);
+});
+
+// ---------- step-by-step guide for this exact build ----------
+const done = (() => { try { return JSON.parse(localStorage.getItem("dbg-steps") || "{}"); } catch { return {}; } })();
+const saveDone = () => { try { localStorage.setItem("dbg-steps", JSON.stringify(done)); } catch {} };
+const ch = (file, label) => `<a href="chapters/${file}.html">${label} →</a>`;
+const partLink = (id) => `<a href="parts.html#${id}">${esc(P[id].name)}</a>`;
+
+function steps() {
+  const s = state, L = lines();
+  const lo = L.reduce((a, l) => a + l.lo, 0), hi = L.reduce((a, l) => a + l.hi, 0);
+  const ids = [...new Set(L.filter((l) => l.id).map((l) => l.id))];
+  const needsSolder = s.brain !== "cores3" || s.senses.length > 0 || s.neck !== "none";
+  const servos = s.neck !== "none";
+  const out = [];
+  out.push({ key: "buy", title: "Order the parts", body: `
+    <div class="tbl"><table class="list"><thead><tr><th>Part</th><th>Qty</th><th>Estimate</th></tr></thead><tbody>
+    ${L.map((l) => `<tr><td>${l.id ? partLink(l.id) : esc(l.name)}</td><td>${l.q}</td><td>${eur(l.lo)}–${eur(l.hi)}</td></tr>`).join("")}
+    </tbody><tfoot><tr><td>Total</td><td></td><td>${eur(lo)}–${eur(hi)}</td></tr></tfoot></table></div>
+    <p>Buy one spare of the cheap modules — one may arrive dead. Prices are rough ranges; compare suppliers.</p>`, refs: [ch("02-choose-your-path", "Choose your path")] });
+  out.push({ key: "tools", title: "Get your tools ready", body: `<ul>
+    <li>USB data cable and a computer${s.brain === "pizero" ? ", plus a microSD card for the Raspberry Pi" : ""}</li>
+    <li>Breadboard and jumper wires</li>
+    ${needsSolder ? "<li>Temperature-controlled soldering iron and solder</li><li>Multimeter</li>" : ""}
+    ${s.shell === "stackchan" ? "<li>A 3D printer (or an online print service)</li>" : s.shell === "cardboard" ? "<li>Cardboard, a cutter and a glue gun</li>" : ""}</ul>`, refs: [ch("01-basics", "Basics: tools and safety")] });
+  if (needsSolder && s.brain !== "cores3") out.push({ key: "solder", title: "Solder the pin headers", body: `<p>Most modules ship with loose header pins. Solder them on: ${ids.filter((i) => !["usb5v", "speaker", "lipo", "18650", "sg90", "mg90s", "scs0009", "cores3", "picam3"].includes(i)).map(partLink).join(", ") || "—"}.</p>
+    <p>Check every joint with the multimeter for shorts between neighbouring pins before you power anything.</p>`, refs: [ch("01-basics", "Basics"), `<a href="videos.html#solder">Soldering videos →</a>`] });
+  out.push({ key: "power", title: "Plan the power", body: `
+    ${s.power === "usb" ? "<p>Power everything from the 5 V USB supply. It is the simplest and safest option.</p>" : `<div class="warn"><b>Lithium safety:</b> use a protected cell or the charger version with a protection chip, never short or puncture the battery, and never leave it charging unattended.</div><p>Wire the battery to the TP4056 charger (B+ / B−); the robot takes power from OUT+ / OUT−${servos ? ", through a 5 V boost converter rated for the servos' peak current" : ""}.</p>`}
+    ${servos ? `<p>Give the servos their own 5 V rail with a 470–1000 µF capacitor, and connect all grounds together. Plan for about 0.75 A per servo that may move at once.</p>` : ""}`, refs: [ch("03-electronics", "Electronics: power")] });
+  out.push({ key: "brain", title: `Bring the ${P[s.brain].name} to life`, body: s.brain === "cores3"
+    ? `<p>Connect the CoreS3 over USB-C. The easiest start is the Stack-chan web installer, which flashes a working face without installing any toolchain.</p>`
+    : s.brain === "pizero" ? `<p>Flash Raspberry Pi OS Lite to the microSD card, enable Wi-Fi and SSH, and boot the Pi. Python will drive the display, camera and servos.</p>`
+    : `<p>Install the Arduino IDE${s.brain.startsWith("esp32") ? " and the Espressif ESP32 board package" : ""}, then upload the Blink example. If the LED blinks, board, cable and toolchain all work.</p>`,
+    refs: [ch("08-firmware", "Basic firmware"), `<a href="videos.html#esp32">ESP32 first steps →</a>`] });
+  if (s.face !== "builtin") {
+    const lib = { oled2: "Adafruit SSD1306 + RoboEyes (GPL-3.0)", gc9a01: "TFT_eSPI or LovyanGFX", st7789: "TFT_eSPI or LovyanGFX", matrix2: "a MAX7219 LED-matrix library" }[s.face];
+    const wiringId = { oled2: "ssd1306", gc9a01: "gc9a01" }[s.face];
+    out.push({ key: "face", title: "Wire the face and draw the eyes", body: `<p>Connect the display and install ${lib}. Start with two blinking eyes, then add random glances.</p>
+      ${wiringId && P[wiringId].wiring ? `<pre>${esc(P[wiringId].wiring)}</pre>` : ""}
+      ${s.face === "oled2" ? "<p>Two SSD1306 boards on one I²C bus need different addresses — most boards have a solder jumper to change one of them.</p>" : ""}`, refs: [ch("04-eyes-and-face", "Eyes & face"), `<a href="videos.html#eyes">Eye animation videos →</a>`] });
+  }
+  if (servos) out.push({ key: "neck", title: s.neck === "nod" ? "Add the nodding servo" : "Build the pan-tilt neck", body: `
+    <p>Before mounting, centre each servo in software (90°) and only then press the horn on — this keeps the head straight.</p>
+    ${P[servoOf(s.neck)].wiring ? `<pre>${esc(P[servoOf(s.neck)].wiring)}</pre>` : ""}
+    ${s.brain === "pizero" ? "<p>On the Raspberry Pi, drive the servos through the PCA9685 board over I²C.</p>" : ""}
+    <p>Limit the angles in software so the servos never hit their end stops, and ease every movement.</p>`, refs: [ch("05-movement", "Movement"), `<a href="videos.html#servo">Servo videos →</a>`] });
+  s.senses.forEach((id) => {
+    const p = P[id];
+    out.push({ key: "sense-" + id, title: `Add the ${p.name}`, body: `<p>${esc(p.what)}</p>${p.wiring ? `<pre>${esc(p.wiring)}</pre>` : ""}
+      ${id === "hcsr04" && s.brain !== "nano" ? `<div class="warn">The HC-SR04 Echo pin outputs 5 V — put a voltage divider on it before it reaches the 3.3 V board.</div>` : ""}`, refs: [ch("06-senses", "Senses"), partLink(id)] });
+  });
+  if (s.sound === "amp") out.push({ key: "sound", title: "Give it a voice", body: `<p>Wire the MAX98357A amplifier over I²S and connect the speaker. Give the speaker a closed box so it does not sound thin.</p><pre>${esc(P.max98357a.wiring)}</pre>`, refs: [ch("06-senses", "Senses: audio"), `<a href="videos.html#audio">Audio videos →</a>`] });
+  out.push({ key: "shell", title: s.shell === "stackchan" ? "Print and assemble the Stack-chan shell" : s.shell === "cardboard" ? "Make a cardboard body" : "Tidy the electronics", body:
+    s.shell === "stackchan" ? `<p>Print the shell, feet and the two brackets for SG90 servos (PLA, 0.2 mm layers, 3 walls). The files are open under Apache-2.0 — inspect them in the <a href="models.html">3D viewer</a> first.</p>${s.brain !== "cores3" ? "<p>The Stack-chan shell is designed around the M5Stack CoreS3; with another board you will need to adapt the front opening.</p>" : ""}`
+    : s.shell === "cardboard" ? `<p>Cut a box around the display first, then leave room for the neck and the USB cable. It is the fastest way to find good proportions before printing.</p>`
+    : `<p>Fix the boards to a base with screws or stand-offs and bundle the wires, so nothing pulls when the head moves.</p>`, refs: [ch("07-body-and-shell", "Body & shell")] });
+  out.push({ key: "life", title: "Write the behaviour loop", body: `<p>Combine everything into a mood state machine: idle glances, ${s.senses.includes("ttp223") ? "happy when touched, " : ""}${s.senses.some((x) => ["vl53l0x", "hcsr04"].includes(x)) ? "curious when something comes close, " : ""}sleepy after a long silence.</p>`, refs: [ch("08-firmware", "Basic firmware: behaviour loop")] });
+  if (s.brain !== "nano") out.push({ key: "ai", title: "Optional: connect it to a local AI", body: `<p>Link the robot to your computer over Wi-Fi and let a local speech-to-text, language model and voice run there — free and private.</p>`, refs: [ch("10-connect-to-pc", "Connecting to a PC")] });
+  return out;
+}
+const servoOf = (neck) => ({ nod: "sg90", pantilt: "sg90", pantiltmg: "mg90s", bus: "scs0009" }[neck]);
+
+function renderSteps() {
+  const list = steps();
+  document.getElementById("steps").innerHTML = list.map((st) => `
+    <li class="step${done[st.key] ? " done" : ""}" data-key="${st.key}">
+      <label class="check"><input type="checkbox" ${done[st.key] ? "checked" : ""}> done</label>
+      <h3>${st.title}</h3>${st.body}<div class="refs">${st.refs.join("")}</div>
+    </li>`).join("");
+  const n = list.filter((st) => done[st.key]).length;
+  document.getElementById("prog-text").textContent = `${n} of ${list.length} done`;
+  document.getElementById("prog-bar").style.width = `${(n / list.length) * 100}%`;
+}
+document.getElementById("steps").addEventListener("change", (e) => {
+  const li = e.target.closest(".step"); if (!li) return;
+  done[li.dataset.key] = e.target.checked; saveDone(); renderSteps();
+});
+
+// ---------- totals, sharing ----------
+function renderTotal() {
+  const L = lines();
+  const lo = L.reduce((a, l) => a + l.lo, 0), hi = L.reduce((a, l) => a + l.hi, 0);
+  const el = document.getElementById("price");
+  el.innerHTML = `${eur(lo)}–${eur(hi)}<small>EUR</small>`;
+  el.classList.remove("bump"); void el.offsetWidth; el.classList.add("bump");
+  document.getElementById("meta").textContent = `${L.reduce((a, l) => a + l.q, 0)} items · rough estimate, tools and shipping not included`;
+  document.getElementById("tag").textContent = `${P[state.brain].name} · ${SLOTS[1].options.find((o) => o.id === state.face).label}`;
+}
+function toast(msg) { const t = document.getElementById("toast"); t.textContent = msg; t.classList.add("on"); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove("on"), 1800); }
+document.getElementById("share").addEventListener("click", async () => {
+  try { await navigator.clipboard.writeText(location.href); toast("Link copied — it opens this exact build"); } catch { toast("Copy the address bar to share this build"); }
+});
+document.getElementById("copy-list").addEventListener("click", async () => {
+  const L = lines();
+  const text = L.map((l) => `${l.q} × ${l.name}  (${eur(l.lo)}–${eur(l.hi)})`).join("\n") + `\nTotal: ${eur(L.reduce((a, l) => a + l.lo, 0))}–${eur(L.reduce((a, l) => a + l.hi, 0))}\n${location.href}`;
+  try { await navigator.clipboard.writeText(text); toast("Shopping list copied"); } catch { toast("Could not copy — use Print instead"); }
+});
+
+function update(brainChanged = false) {
+  normalise(state);
+  history.replaceState(null, "", "#" + toHash());
+  renderPicker(); layout(); renderTotal(); renderSteps();
+}
+update();
+</script>
+</body>
+</html>

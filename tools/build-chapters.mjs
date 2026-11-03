@@ -119,6 +119,7 @@ function page(i, md) {
   <a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true"><i></i><i></i></span>Desk Buddy Guide</a>
   <nav aria-label="Site">
     <a href="../index.html#finder">Find your path</a>
+    <a href="../build.html">Builder</a>
     <a href="../parts.html">Parts</a>
     <a href="../models.html">3D models</a>
     <a href="../videos.html">Videos</a>

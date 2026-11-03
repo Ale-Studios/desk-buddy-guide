@@ -93,6 +93,14 @@ section { padding: 72px 0; }
 .sec-head p { margin: 0; color: var(--ink-soft); }
 
 /* anatomy */
+.road { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.road a { height: 100%; display: flex; flex-direction: column; gap: 8px; padding: 22px; border-radius: var(--radius); background: var(--panel); border: 1.5px solid var(--line); color: var(--ink); text-decoration: none; transition: border-color .2s, transform .2s; }
+.road a:hover { border-color: var(--accent); transform: translateY(-2px); }
+.road .n { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; background: var(--accent); color: var(--accent-ink); font: 800 16px var(--display); }
+.road b { font: 800 22px var(--display); }
+.road span:not(.n) { color: var(--ink-soft); font-size: 15.5px; }
+.road em { font-style: normal; margin-top: auto; color: var(--accent); font-weight: 700; font-size: 15px; }
+.road-sec { padding-top: 24px; }
 .anatomy { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
 .organ-3d { display: block; width: 100%; aspect-ratio: 16 / 9; margin-bottom: 14px; border-radius: 10px; background: radial-gradient(circle at 50% 40%, #1e2127, var(--screen) 75%); }
 img.is-photo { object-fit: contain; background: #fff; }
@@ -157,7 +165,7 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
   .hero, .quiz { grid-template-columns: 1fr; }
   .hero { padding-top: 16px; gap: 36px; }
   .robot { order: -1; }
-  .anatomy, .paths { grid-template-columns: 1fr; }
+  .anatomy, .paths, .road { grid-template-columns: 1fr; }
   .chapters { grid-template-columns: 1fr; }
   .bar { flex-wrap: wrap; }
   .bar nav { gap: 14px; font-size: 14px; overflow-x: auto; max-width: 100%; white-space: nowrap; padding-bottom: 4px; }
@@ -178,6 +186,7 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
     <a href="#anatomy">How it works</a>
     <a href="#finder">Find your path</a>
     <a href="#paths">All paths</a>
+    <a href="build.html">Builder</a>
     <a href="parts.html">Parts</a>
     <a href="models.html">3D models</a>
     <a href="videos.html">Videos</a>
@@ -192,8 +201,8 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
       <h1>Build a little robot that <em>looks back</em> at you.</h1>
       <p class="lede">A field guide to desk companion robots: a face, a neck, a few senses and a lot of personality. Six build paths, from a €30 ESP32 to a premium kit — pick yours, then follow it step by step.</p>
       <div class="cta">
-        <a class="btn btn-primary" href="#finder">Find my build path</a>
-        <a class="btn btn-ghost" href="parts.html">Browse the parts</a>
+        <a class="btn btn-primary" href="build.html">Build my robot in 3D</a>
+        <a class="btn btn-ghost" href="#finder">Not sure? Find my path</a>
       </div>
     </div>
 
@@ -215,6 +224,20 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
       <p class="robot-note">Move your cursor — it follows you. These are procedural eyes, the same technique you will build in chapter 4.</p>
     </div>
   </div>
+
+  <section id="start" class="road-sec" aria-labelledby="road-title">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow">Start here</span>
+        <h2 id="road-title">Three steps from idea to a robot on your desk.</h2>
+      </div>
+      <ol class="road">
+        <li><a href="#finder"><span class="n">1</span><b>Pick a path</b><span>Answer four questions and get the build that fits your budget and skills.</span><em>Find my path →</em></a></li>
+        <li><a href="build.html"><span class="n">2</span><b>Build it in 3D</b><span>Choose every part, watch the robot assemble live and see the total price.</span><em>Open the builder →</em></a></li>
+        <li><a href="build.html#guide"><span class="n">3</span><b>Follow your steps</b><span>A step-by-step guide written for your exact parts, with a progress tracker.</span><em>See my steps →</em></a></li>
+      </ol>
+    </div>
+  </section>
 
   <section id="anatomy">
     <div class="wrap">
