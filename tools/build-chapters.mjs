@@ -10,7 +10,7 @@ import { marked } from "marked";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const DOCS = path.join(root, "docs");
 const OUT = path.join(root, "site", "chapters");
-const REPO = "https://github.com/Alex-Stark-industries/desk-buddy-guide";
+const REPO = "https://github.com/Ale-Studios/desk-buddy-guide";
 
 const CHAPTERS = [
   ["01-basics", "Basics"],

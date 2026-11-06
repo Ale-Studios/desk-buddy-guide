@@ -2,7 +2,7 @@
 
 **An open-source field guide to building your own desk companion robot — from a bare ESP32 to a fully expressive little bot.**
 
-**→ Read it online: https://alex-stark-industries.github.io/desk-buddy-guide/**
+**→ Read it online: https://ale-studios.github.io/desk-buddy-guide/**
 
 A desk buddy is a small robot that lives next to your keyboard: it has a face, it looks around, it reacts to touch and sound, and — if you want — it can talk to an AI running on your own computer. This guide gathers what the maker community already knows, organises it, and lays out **several different paths** so you can pick the one that fits your budget, tools and skills.
 
@@ -23,7 +23,7 @@ A desk buddy is a small robot that lives next to your keyboard: it has a face, i
 | 9 | [Reference projects](docs/09-reference-projects.md) | Existing open projects and what to reuse from each |
 | 10 | [Connecting to a PC](docs/10-connect-to-pc.md) | Wi-Fi/WebSocket link and a fully local AI brain |
 
-Extras: [**3D robot builder**](https://alex-stark-industries.github.io/desk-buddy-guide/build.html) — pick parts, watch it assemble, get a live price and a step-by-step guide · [Parts catalog](https://alex-stark-industries.github.io/desk-buddy-guide/parts.html) · [3D models](models/README.md) · [Video library](https://alex-stark-industries.github.io/desk-buddy-guide/videos.html) · [Photo credits](site/photos/README.md) · [Glossary](docs/glossary.md)
+Extras: [**3D robot builder**](https://ale-studios.github.io/desk-buddy-guide/build.html) — pick parts, watch it assemble, get a live price and a step-by-step guide · [Parts catalog](https://ale-studios.github.io/desk-buddy-guide/parts.html) · [3D models](models/README.md) · [Video library](https://ale-studios.github.io/desk-buddy-guide/videos.html) · [Photo credits](site/photos/README.md) · [Glossary](docs/glossary.md)
 
 ## Repository layout
 
