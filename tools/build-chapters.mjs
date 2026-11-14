@@ -52,7 +52,7 @@ function rewriteHref(href) {
   if (m) return `${m[1]}.html${m[2] || ""}`;
   if (href === "glossary.md") return `${REPO}/blob/main/docs/glossary.md`;
   if (href === "../models/README.md") return "../models.html"; // the site has a live 3D viewer
-  if (href.startsWith("../models/") || href.startsWith("../firmware/") || href.startsWith("../media/")) return `${REPO}/tree/main/${href.slice(3)}`;
+  if (href.startsWith("../models/") || href.startsWith("../brain/") || href.startsWith("../firmware/") || href.startsWith("../media/")) return `${REPO}/tree/main/${href.slice(3)}`;
   return href;
 }
 

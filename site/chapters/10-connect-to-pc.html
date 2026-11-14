@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Connecting to a PC · Desk Buddy Guide</title>
-<meta name="description" content="A microcontroller cannot run a language model. The pattern every serious project uses is the same: the robot is the body, your computer is the brain. And with today&amp;#39;s open-sour">
+<meta name="description" content="A microcontroller cannot run a language model. The pattern every serious project uses is the same: the robot is the body, your computer is the brain. With today&amp;#39;s open-source t">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;600&display=swap">
@@ -44,25 +44,298 @@
     <header class="chapter-head">
       <span class="eyebrow">Chapter 10 of 10</span>
       <h1>Connecting to a PC</h1>
-      <div class="meta"><span>3 min read</span><span>Updated November 2026</span></div>
+      <div class="meta"><span>19 min read</span><span>Updated November 2026</span></div>
     </header>
     <section class="part-strip" aria-label="Parts in this chapter"><span class="eyebrow">Parts in this chapter · open one for photos, specs and wiring</span>
       <div class="part-row"><a href="../parts.html#esp32s3"><img data-part="esp32s3" alt="3D model of the ESP32-S3" width="480" height="300"><span>ESP32-S3</span></a><a href="../parts.html#inmp441"><img data-part="inmp441" alt="3D model of the INMP441 mic" width="480" height="300"><span>INMP441 mic</span></a><a href="../parts.html#max98357a"><img data-part="max98357a" alt="3D model of the MAX98357A amp" width="480" height="300"><span>MAX98357A amp</span></a></div></section>
     <div class="prose">
-<p>A microcontroller cannot run a language model. The pattern every serious project uses is the same: <strong>the robot is the body, your computer is the brain.</strong> And with today&#39;s open-source tools, that brain can run entirely on your own machine — free, private, with no cloud account and no API key.</p>
+<p>A microcontroller cannot run a language model. The pattern every serious project uses is the same: <strong>the robot is the body, your computer is the brain.</strong> With today&#39;s open-source tools that brain can run entirely on your own machine — free, private, unlimited, with no cloud account and no API key.</p>
+<p>This chapter is a complete build. By the end your robot will hear you, think with a language model on your PC, answer out loud and change its face while it does. Every piece is free to download and runs offline; there are no message limits, because nothing is rented.</p>
 <h2 id="architecture">Architecture<a class="anchor" href="#architecture" aria-label="Link to this section">#</a></h2>
 <pre><code>ROBOT (ESP32)                          COMPUTER on the same network
                                        ┌──────────────────────────────┐
-microphone ── audio frames ──────────▶ │ wake word   (optional)        │
+microphone ── audio frames ──────────▶ │ end-of-speech detection       │
                                        │ speech-to-text  e.g. whisper  │
                                        │ language model  e.g. Ollama   │
-                                       │ text-to-speech  e.g. Kokoro   │
+                                       │ text-to-speech  e.g. Piper    │
 speaker   ◀── audio ─────────────────  │                               │
 face/servos ◀── {&quot;face&quot;:&quot;happy&quot;} ────  │ behaviour / tool logic        │
                                        └──────────────────────────────┘
 </code></pre>
 <p>The robot stays responsive (blinking, looking around) on its own; the computer only handles the slow, heavy parts.</p>
-<h2 id="step-1-pick-a-link">Step 1 — pick a link<a class="anchor" href="#step-1-pick-a-link" aria-label="Link to this section">#</a></h2>
+<h2 id="pick-your-brain">Pick your brain<a class="anchor" href="#pick-your-brain" aria-label="Link to this section">#</a></h2>
+<p>There is more than one free and unlimited way to do this. The main build below uses the first row; the others are covered in <a href="#other-free-and-unlimited-ways">Other free and unlimited ways</a> and slot into the same robot without changing its firmware.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Brain</th>
+<th>Talks freely?</th>
+<th>Needs</th>
+<th>Difficulty</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Full local AI</strong> — Whisper + Ollama + Piper (this chapter&#39;s build)</td>
+<td>Yes</td>
+<td>A PC with 8 GB of RAM or more</td>
+<td>Medium</td>
+</tr>
+<tr>
+<td><strong>A desktop app as the model server</strong> — LM Studio, Jan</td>
+<td>Yes</td>
+<td>Same as above</td>
+<td>Easy</td>
+</tr>
+<tr>
+<td><strong>llama.cpp&#39;s own server</strong></td>
+<td>Yes</td>
+<td>Same as above</td>
+<td>Medium–hard</td>
+</tr>
+<tr>
+<td><strong>Home Assistant Assist</strong></td>
+<td>Yes, with Ollama</td>
+<td>An always-on PC or mini PC</td>
+<td>Medium</td>
+</tr>
+<tr>
+<td><strong>A brain on a Raspberry Pi 5 or an old laptop</strong></td>
+<td>Yes, slowly</td>
+<td>Pi 5 (8 GB) or any spare computer</td>
+<td>Medium</td>
+</tr>
+<tr>
+<td><strong>No language model at all</strong> — fixed voice commands</td>
+<td>No, only phrases you define</td>
+<td>Nothing extra (even on the robot itself)</td>
+<td>Easy</td>
+</tr>
+</tbody></table>
+</div>
+<blockquote><p><span class="label">Note</span>&quot;free&quot; online AI services are deliberately left out. Their free tiers have limits, can change or disappear, and send everything you say to someone else&#39;s server — the opposite of what this guide is about.</p>
+</blockquote>
+<h2 id="what-your-computer-needs">What your computer needs<a class="anchor" href="#what-your-computer-needs" aria-label="Link to this section">#</a></h2>
+<p>Language models are measured by their size on disk. To run fast, the whole model should fit in your graphics card&#39;s memory (VRAM) with about 1 GB to spare. If it doesn&#39;t, it still works on the processor and ordinary RAM — just more slowly.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Your PC</th>
+<th>Model size that feels good</th>
+<th>Example models</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Laptop, no graphics card, 8 GB RAM</td>
+<td>about 1–2 GB (1.5–3 billion parameters)</td>
+<td><code>qwen2.5:1.5b</code>, <code>llama3.2:3b</code></td>
+</tr>
+<tr>
+<td>Graphics card with 4 GB, or 16 GB RAM</td>
+<td>about 2–3 GB (3–4 billion)</td>
+<td><code>llama3.2:3b</code>, <code>qwen2.5:3b</code>, <code>qwen3:4b</code></td>
+</tr>
+<tr>
+<td>Graphics card with 6–8 GB</td>
+<td>about 4–5 GB (7–8 billion)</td>
+<td><code>qwen2.5:7b</code>, <code>qwen3:8b</code></td>
+</tr>
+<tr>
+<td>Graphics card with 12 GB or more</td>
+<td>about 8–10 GB (12–14 billion)</td>
+<td><code>gemma3:12b</code>, <code>qwen2.5:14b</code></td>
+</tr>
+</tbody></table>
+</div>
+<p>Download sizes from the Ollama library: <code>qwen2.5:1.5b</code> about 1 GB, <code>qwen2.5:3b</code> 1.9 GB, <code>llama3.2:3b</code> 2.0 GB, <code>qwen3:4b</code> 2.5 GB, <code>qwen2.5:7b</code> 4.7 GB, <code>qwen3:8b</code> 5.2 GB, <code>gemma3:12b</code> 8.2 GB, <code>qwen2.5:14b</code> 9.0 GB.</p>
+<p>For a robot, <strong>speed matters more than cleverness</strong>: a small model that answers in a second feels far more alive than a smart one that takes ten. Start small and move up only if the answers are too simple.</p>
+<blockquote class="warn"><p><span class="label">Warning</span>every model has its own licence, and they differ even inside one family — Qwen2.5 1.5B and 7B are Apache-2.0, while Qwen2.5 3B uses Qwen&#39;s own licence. Llama and Gemma have their own terms too. For a personal robot this rarely matters; read the model&#39;s licence before you sell anything built on it.</p>
+</blockquote>
+<p>Speech recognition and the voice are light: they add roughly 1 GB of RAM together and run fine on the processor.</p>
+<h2 id="step-1-install-the-language-model-ollama">Step 1 — install the language model (Ollama)<a class="anchor" href="#step-1-install-the-language-model-ollama" aria-label="Link to this section">#</a></h2>
+<p><a href="https://ollama.com" target="_blank" rel="noopener">Ollama ↗</a> downloads open models and serves them on your PC. It is free, open source (MIT) and runs on Windows, macOS and Linux.</p>
+<ol>
+<li><p>Download and install it from <a href="https://ollama.com/download" target="_blank" rel="noopener">ollama.com/download ↗</a>. On Windows it then runs in the background, with an icon near the clock.</p>
+</li>
+<li><p>Open a terminal (PowerShell on Windows) and download a model from the table above:</p>
+<pre><code class="language-bash">ollama pull llama3.2:3b
+</code></pre>
+</li>
+<li><p>Talk to it to check that it works, then type <code>/bye</code> to leave:</p>
+<pre><code class="language-bash">ollama run llama3.2:3b
+</code></pre>
+</li>
+<li><p>See what is installed, and what is loaded right now (and whether it runs on the graphics card):</p>
+<pre><code class="language-bash">ollama list
+</code></pre>
+<pre><code class="language-bash">ollama ps
+</code></pre>
+</li>
+</ol>
+<p>Good to know:</p>
+<ul>
+<li><strong>It unloads a model after 5 minutes without questions</strong> by default, and the next question waits while it loads again. The brain below asks it to stay loaded for 30 minutes (<code>keep_alive</code>); you can change the default for everything with the <code>OLLAMA_KEEP_ALIVE</code> environment variable.</li>
+<li><strong>Models are big.</strong> On Windows they live in <code>C:\Users\&lt;you&gt;\.ollama\models</code>. To keep them on another drive, set the <code>OLLAMA_MODELS</code> environment variable to a folder there, quit Ollama from the taskbar and start it again.</li>
+<li><strong>It listens only on your own PC</strong> (<code>127.0.0.1:11434</code>) by default. That is what you want here: the robot talks to the brain, and only the brain talks to Ollama.</li>
+<li><strong>&quot;Thinking&quot; models</strong> (Qwen3 and other reasoning models) first write a hidden chain of thought, which adds seconds before every answer. For a talking robot, prefer a model without it, or turn it off (see <a href="#step-6-make-it-feel-alive">step 6</a>).</li>
+</ul>
+<h2 id="step-2-install-the-voice-parts-python">Step 2 — install the voice parts (Python)<a class="anchor" href="#step-2-install-the-voice-parts-python" aria-label="Link to this section">#</a></h2>
+<p>The brain is a small Python program. Install Python <strong>3.11 or newer</strong> from <a href="https://www.python.org/downloads/" target="_blank" rel="noopener">python.org ↗</a> — on Windows, tick <strong>&quot;Add python.exe to PATH&quot;</strong> in the installer.</p>
+<p>Get the guide&#39;s <code>brain/</code> folder (download this repository as a ZIP from GitHub, or clone it), open a terminal in that folder and create a private environment for it, so nothing is installed system-wide:</p>
+<pre><code class="language-bash">python -m venv .venv
+</code></pre>
+<p>Activate it — on Windows:</p>
+<pre><code class="language-bash">.venv\Scripts\activate
+</code></pre>
+<p>On macOS / Linux:</p>
+<pre><code class="language-bash">source .venv/bin/activate
+</code></pre>
+<p>Install the parts listed in <a href="https://github.com/Ale-Studios/desk-buddy-guide/tree/main/brain/requirements.txt"><code>brain/requirements.txt</code></a>:</p>
+<pre><code class="language-bash">pip install -r requirements.txt
+</code></pre>
+<p>Download a voice for Piper. <code>en_US-lessac-medium</code> is a clear, neutral English voice:</p>
+<pre><code class="language-bash">python -m piper.download_voices en_US-lessac-medium
+</code></pre>
+<p>What you just installed:</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Part</th>
+<th>Project</th>
+<th>Licence</th>
+<th>Job</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Speech-to-text</td>
+<td><a href="https://github.com/SYSTRAN/faster-whisper" target="_blank" rel="noopener">faster-whisper ↗</a></td>
+<td>MIT</td>
+<td>OpenAI&#39;s Whisper models, reimplemented to run fast on an ordinary processor. Downloads its model the first time it starts.</td>
+</tr>
+<tr>
+<td>Text-to-speech</td>
+<td><a href="https://github.com/OHF-Voice/piper1-gpl" target="_blank" rel="noopener">Piper ↗</a></td>
+<td>GPL-3.0</td>
+<td>Fast, natural voices in many languages, on the processor.</td>
+</tr>
+<tr>
+<td>Model client</td>
+<td><a href="https://github.com/ollama/ollama-python" target="_blank" rel="noopener">ollama-python ↗</a></td>
+<td>MIT</td>
+<td>Talks to Ollama.</td>
+</tr>
+<tr>
+<td>Robot link</td>
+<td><a href="https://github.com/python-websockets/websockets" target="_blank" rel="noopener">websockets ↗</a></td>
+<td>BSD-3-Clause</td>
+<td>The WebSocket server the robot connects to.</td>
+</tr>
+<tr>
+<td>PC test</td>
+<td><a href="https://github.com/spatialaudio/python-sounddevice" target="_blank" rel="noopener">sounddevice ↗</a></td>
+<td>MIT</td>
+<td>Microphone and speakers for the test without a robot.</td>
+</tr>
+</tbody></table>
+</div>
+<blockquote class="tip"><p><span class="label">Tip</span>other languages work too. Pick a Piper voice in your language from its <a href="https://github.com/OHF-Voice/piper1-gpl/blob/main/docs/VOICES.md" target="_blank" rel="noopener">voice list ↗</a>, and use a multilingual Whisper model (<code>base</code> or <code>small</code>, without <code>.en</code>) with your language code — for example <code>BUDDY_WHISPER=small</code> and <code>BUDDY_LANGUAGE=it</code>.</p>
+</blockquote>
+<h2 id="step-3-the-brain-server">Step 3 — the brain server<a class="anchor" href="#step-3-the-brain-server" aria-label="Link to this section">#</a></h2>
+<p><a href="https://github.com/Ale-Studios/desk-buddy-guide/tree/main/brain/brain.py"><code>brain/brain.py</code></a> is the whole brain, about 200 commented lines. It does five things:</p>
+<ol>
+<li><strong>Listens.</strong> The robot streams its microphone as 16 kHz, 16-bit mono audio. The brain measures how loud each 32 ms frame is: the first loud frame switches the robot&#39;s face to <em>listening</em>, and 0.7 s of quiet afterwards means you have finished. A little audio from just before you started is kept, so the first syllable is not cut off.</li>
+<li><strong>Transcribes</strong> what you said with Whisper.</li>
+<li><strong>Thinks.</strong> It sends your words to the language model together with a short personality (the <em>system prompt</em>) and the last 8 exchanges, so the robot remembers the conversation.</li>
+<li><strong>Speaks sentence by sentence.</strong> As soon as the model has written one full sentence, Piper turns it into audio and it goes to the robot — while the model is still writing the next one. This is the single biggest trick for making a local AI feel fast.</li>
+<li><strong>Ignores its own voice.</strong> While the robot is thinking or speaking, incoming microphone audio is dropped, so it never answers itself.</li>
+</ol>
+<p>The personality lives at the top of the file. It tells the model that its words will be spoken, so it should reply in short, plain sentences — lists, Markdown and emojis sound terrible read aloud:</p>
+<pre><code class="language-python">SYSTEM = {
+    &quot;role&quot;: &quot;system&quot;,
+    &quot;content&quot;: (
+        f&quot;You are {NAME}, a small, friendly robot that lives on a desk. &quot;
+        &quot;Your words are spoken aloud by a speaker, so answer in one to three short sentences &quot;
+        &quot;of plain spoken language: no lists, no Markdown, no emojis, no code. &quot;
+        &quot;Reply in the language the user speaks. If you are not sure about a fact, say so.&quot;
+    ),
+}
+</code></pre>
+<p>The sentence-by-sentence streaming is the heart of it:</p>
+<pre><code class="language-python">for piece in stream_reply([SYSTEM, *history]):   # the model writes a few letters at a time
+    full += piece
+    buf += piece
+    *done, buf = SENTENCE_END.split(buf)          # any complete sentences yet?
+    for s in done:
+        speak(s)                                  # voice them now, keep the rest for later
+</code></pre>
+<p>Start it from the <code>brain/</code> folder, with the environment active and Ollama running:</p>
+<pre><code class="language-bash">python brain.py
+</code></pre>
+<p>The first start downloads the Whisper model, so give it a minute. When it prints <em>&quot;Buddy&#39;s brain is listening on ws://0.0.0.0:8765&quot;</em>, it is ready.</p>
+<p>Everything can be changed with environment variables, without touching the code:</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Default</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>BUDDY_MODEL</code></td>
+<td><code>llama3.2:3b</code></td>
+<td>Which language model to use</td>
+</tr>
+<tr>
+<td><code>BUDDY_NAME</code></td>
+<td><code>Buddy</code></td>
+<td>The robot&#39;s name, used in its personality</td>
+</tr>
+<tr>
+<td><code>BUDDY_WHISPER</code></td>
+<td><code>base.en</code></td>
+<td>Speech model: <code>tiny.en</code> (fastest), <code>base.en</code>, <code>small.en</code> (most accurate); drop <code>.en</code> for other languages</td>
+</tr>
+<tr>
+<td><code>BUDDY_LANGUAGE</code></td>
+<td><code>en</code></td>
+<td>The language you speak</td>
+</tr>
+<tr>
+<td><code>BUDDY_VOICE</code></td>
+<td><code>en_US-lessac-medium.onnx</code></td>
+<td>Path to the Piper voice</td>
+</tr>
+<tr>
+<td><code>BUDDY_THRESHOLD</code></td>
+<td><code>600</code></td>
+<td>How loud counts as speech; raise it in a noisy room</td>
+</tr>
+<tr>
+<td><code>BUDDY_PORT</code></td>
+<td><code>8765</code></td>
+<td>The port the robot connects to</td>
+</tr>
+<tr>
+<td><code>BUDDY_OPENAI_URL</code></td>
+<td><em>(empty)</em></td>
+<td>Use LM Studio, llama.cpp, Jan… instead of Ollama (see below)</td>
+</tr>
+</tbody></table>
+</div>
+<p>In Windows PowerShell, set one for the current window like this, then start the brain:</p>
+<pre><code class="language-bash">$env:BUDDY_MODEL = &quot;llama3.2:3b&quot;
+</code></pre>
+<h2 id="step-4-test-it-from-the-pc">Step 4 — test it from the PC<a class="anchor" href="#step-4-test-it-from-the-pc" aria-label="Link to this section">#</a></h2>
+<p>Before soldering anything, check the whole loop with <a href="https://github.com/Ale-Studios/desk-buddy-guide/tree/main/brain/pc_test.py"><code>brain/pc_test.py</code></a>. It pretends to be the robot: same connection, same messages, same audio format. Leave <code>brain.py</code> running and open a second terminal in the same folder, with the environment active.</p>
+<p>Type to it and hear the answer on your speakers:</p>
+<pre><code class="language-bash">python pc_test.py
+</code></pre>
+<p>Then talk to it through the PC&#39;s microphone, exactly as the robot will — wear headphones, or the microphone will hear the speakers:</p>
+<pre><code class="language-bash">python pc_test.py --mic
+</code></pre>
+<p>You will see the face commands scroll by — <code>listening</code>, <code>thinking</code>, <code>talking</code>, <code>idle</code> — and the brain&#39;s window prints what it heard, what it answered and how long it took. Once this works, the robot side is only plumbing.</p>
+<h2 id="step-5-connect-the-robot">Step 5 — connect the robot<a class="anchor" href="#step-5-connect-the-robot" aria-label="Link to this section">#</a></h2>
+<h3 id="choose-the-link">Choose the link<a class="anchor" href="#choose-the-link" aria-label="Link to this section">#</a></h3>
 <div class="table-scroll"><table>
 <thead>
 <tr>
@@ -72,43 +345,238 @@ face/servos ◀── {&quot;face&quot;:&quot;happy&quot;} ────  │ beh
 </tr>
 </thead>
 <tbody><tr>
-<td><strong>WebSocket over Wi-Fi</strong></td>
+<td><strong>WebSocket over Wi-Fi</strong> (used here)</td>
 <td>Wireless, two-way, carries both JSON and audio</td>
 <td>Slightly more code</td>
 </tr>
 <tr>
 <td><strong>MQTT</strong></td>
 <td>Great for several devices, many tools</td>
-<td>Needs a broker running</td>
+<td>Needs a broker running; awkward for audio</td>
 </tr>
 <tr>
 <td><strong>USB serial</strong></td>
 <td>Simplest, no network setup</td>
-<td>Robot is tethered</td>
+<td>Robot is tethered; slow for audio</td>
 </tr>
 </tbody></table>
 </div>
-<h2 id="step-2-define-a-small-protocol">Step 2 — define a small protocol<a class="anchor" href="#step-2-define-a-small-protocol" aria-label="Link to this section">#</a></h2>
-<p>Keep it human-readable. Commands from computer to robot:</p>
-<pre><code class="language-json">{ &quot;face&quot;: &quot;happy&quot; }
-{ &quot;look&quot;: [12, -4] }
-{ &quot;nod&quot;: 2 }
-{ &quot;say&quot;: &quot;audio-start&quot;, &quot;rate&quot;: 16000 }
+<h3 id="the-protocol">The protocol<a class="anchor" href="#the-protocol" aria-label="Link to this section">#</a></h3>
+<p>Human-readable JSON for commands and events, binary messages for audio. Commands from the brain to the robot:</p>
+<pre><code class="language-json">{ &quot;face&quot;: &quot;listening&quot; }
+{ &quot;face&quot;: &quot;thinking&quot; }
+{ &quot;face&quot;: &quot;talking&quot;, &quot;say&quot;: &quot;audio-start&quot;, &quot;rate&quot;: 22050 }
+{ &quot;say&quot;: &quot;audio-end&quot; }
+{ &quot;face&quot;: &quot;idle&quot; }
 </code></pre>
-<p>Events from robot to computer:</p>
+<p>Between <code>audio-start</code> and <code>audio-end</code> come binary messages of raw 16-bit mono PCM at the given sample rate (the brain sends whatever rate the Piper voice uses). Events from the robot to the brain:</p>
 <pre><code class="language-json">{ &quot;event&quot;: &quot;touch&quot; }
-{ &quot;event&quot;: &quot;near&quot;, &quot;mm&quot;: 180 }
-{ &quot;event&quot;: &quot;audio&quot;, &quot;rate&quot;: 16000 }
+{ &quot;event&quot;: &quot;text&quot;, &quot;text&quot;: &quot;hello&quot; }
 </code></pre>
-<p>Audio travels as raw 16-bit PCM frames (16 kHz mono is enough for speech) in binary WebSocket messages.</p>
-<h2 id="step-3-the-computer-side">Step 3 — the computer side<a class="anchor" href="#step-3-the-computer-side" aria-label="Link to this section">#</a></h2>
-<p>A small Python or Node.js server that:</p>
+<p>…plus the microphone itself: binary messages of 16-bit, 16 kHz mono PCM, sent continuously while the robot is not speaking. Add your own commands (<code>{ &quot;look&quot;: [12, -4] }</code>, <code>{ &quot;nod&quot;: 2 }</code>) on both sides as the robot grows.</p>
+<h3 id="wiring">Wiring<a class="anchor" href="#wiring" aria-label="Link to this section">#</a></h3>
+<p>The <a href="https://github.com/Ale-Studios/desk-buddy-guide/tree/main/firmware/voice-link/voice-link.ino">voice link sketch</a> uses an ESP32-S3 with the INMP441 microphone and MAX98357A amplifier from <a href="06-senses.html">chapter 6</a>, each on its own I²S bus, so the robot can listen and speak without re-wiring:</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Module</th>
+<th>Module pin</th>
+<th>ESP32-S3 pin</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>INMP441 microphone</td>
+<td>VDD</td>
+<td>3V3</td>
+</tr>
+<tr>
+<td></td>
+<td>GND</td>
+<td>GND</td>
+</tr>
+<tr>
+<td></td>
+<td>L/R</td>
+<td>GND (left channel)</td>
+</tr>
+<tr>
+<td></td>
+<td>SCK</td>
+<td>GPIO 4</td>
+</tr>
+<tr>
+<td></td>
+<td>WS</td>
+<td>GPIO 5</td>
+</tr>
+<tr>
+<td></td>
+<td>SD</td>
+<td>GPIO 6</td>
+</tr>
+<tr>
+<td>MAX98357A amplifier</td>
+<td>VIN</td>
+<td>5V</td>
+</tr>
+<tr>
+<td></td>
+<td>GND</td>
+<td>GND</td>
+</tr>
+<tr>
+<td></td>
+<td>BCLK</td>
+<td>GPIO 15</td>
+</tr>
+<tr>
+<td></td>
+<td>LRC</td>
+<td>GPIO 16</td>
+</tr>
+<tr>
+<td></td>
+<td>DIN</td>
+<td>GPIO 7</td>
+</tr>
+<tr>
+<td></td>
+<td>SD, GAIN</td>
+<td>not connected (on, 9 dB gain)</td>
+</tr>
+</tbody></table>
+</div>
+<p>These pins avoid the ESP32-S3&#39;s strapping pins (0, 3, 45, 46) and its USB pins (19, 20). Other free pins work too: change the numbers at the top of the sketch.</p>
+<h3 id="the-firmware">The firmware<a class="anchor" href="#the-firmware" aria-label="Link to this section">#</a></h3>
+<p>In the Arduino IDE (see <a href="08-firmware.html">chapter 8</a>):</p>
 <ol>
-<li>Receives audio from the robot and detects when you stop speaking.</li>
-<li>Transcribes it with a speech-to-text model.</li>
-<li>Sends the text to a local language model.</li>
-<li>Turns the reply into speech and streams it back, together with a face command.</li>
+<li>Install the <strong>esp32</strong> board package by Espressif, version <strong>3.x</strong> — its <code>ESP_I2S</code> library is built in.</li>
+<li>From the Library Manager install <strong>WebSockets</strong> by Markus Sattler and <strong>ArduinoJson</strong> by Benoit Blanchon (version 7).</li>
+<li>Open <code>firmware/voice-link/voice-link.ino</code> and fill in your Wi-Fi name, password and the PC&#39;s address.</li>
+<li>Upload, and open the Serial Monitor at 115200 baud: you should see <em>&quot;Wi-Fi ok&quot;</em> and then <em>&quot;connected to the brain&quot;</em>.</li>
 </ol>
+<p>The sketch is deliberately small: it streams the microphone while the robot is quiet, plays whatever audio arrives, and calls <code>setFace()</code> for every face command. Connect <code>setFace()</code> to the eyes from chapter 4 and you are done. Two details matter:</p>
+<ul>
+<li><code>WiFi.setSleep(false)</code> — Wi-Fi power saving delays packets and makes the audio stutter.</li>
+<li>The amplifier&#39;s <code>write()</code> waits while its buffer is full. That naturally slows the network down to playback speed, so the robot never has to hold a whole sentence in memory.</li>
+</ul>
+<h3 id="find-your-pc-39-s-address-and-open-the-door">Find your PC&#39;s address and open the door<a class="anchor" href="#find-your-pc-39-s-address-and-open-the-door" aria-label="Link to this section">#</a></h3>
+<p>The robot needs the PC&#39;s address on your home network. On Windows run <code>ipconfig</code> and look for <strong>IPv4 Address</strong> under your Wi-Fi or Ethernet adapter (something like <code>192.168.1.50</code>); on macOS use <code>ipconfig getifaddr en0</code>, on Linux <code>hostname -I</code>.</p>
+<pre><code class="language-bash">ipconfig
+</code></pre>
+<p>The first time <code>brain.py</code> starts, Windows asks whether Python may communicate on networks: allow <strong>Private networks</strong> only. Make sure your home Wi-Fi is set as a <em>Private</em> network in Windows settings, or the robot will not get through.</p>
+<blockquote class="tip"><p><span class="label">Tip</span>give the PC a fixed address in your router&#39;s DHCP settings (&quot;address reservation&quot;), so you never have to re-flash the robot when the address changes.</p>
+</blockquote>
+<h2 id="step-6-make-it-feel-alive">Step 6 — make it feel alive<a class="anchor" href="#step-6-make-it-feel-alive" aria-label="Link to this section">#</a></h2>
+<p>On an ordinary PC the full loop (listen → transcribe → think → speak) takes from one to several seconds. The robot should never look frozen during that time:</p>
+<ul>
+<li><strong>Change the face instantly.</strong> The brain sends <code>listening</code> the moment you start talking and <code>thinking</code> the moment you stop. Make <em>thinking</em> visibly different — eyes looking up, a slow blink, a small head tilt.</li>
+<li><strong>Keep idle movements going</strong> on the robot itself (chapter 8); never block the behaviour loop while waiting.</li>
+<li><strong>Speak the first sentence early</strong> — already built in. The shorter the first sentence, the sooner the robot starts talking: one more reason to ask for short answers in the personality.</li>
+<li><strong>Keep the model loaded.</strong> <code>brain.py</code> loads it at start-up and keeps it for 30 minutes after the last question; the first answer after it has been unloaded always takes longer.</li>
+<li><strong>Use the smallest speech model that understands you.</strong> <code>tiny.en</code> is the fastest; move to <code>small.en</code> only if it mishears you often.</li>
+<li><strong>Turn off &quot;thinking&quot;</strong> if you use a reasoning model: in <code>stream_reply()</code> add <code>think=False</code> to the <code>ollama.chat(...)</code> call — only for models that support thinking.</li>
+<li><strong>Give it a character.</strong> Change the system prompt: a grumpy robot, a cheerful one, one that speaks only in short rhymes. Keep the rule about short, plain sentences.</li>
+</ul>
+<p>Ideas for later, each a small change to <code>brain.py</code>:</p>
+<ul>
+<li><strong>Interrupting</strong> (&quot;barge-in&quot;): keep measuring the microphone while the robot speaks and stop playback when you start talking. You will need to deal with the robot hearing its own speaker.</li>
+<li><strong>Actions:</strong> ask the model to end a reply with a tag such as <code>[nod]</code> or <code>[happy]</code>, strip it before speaking and send it as a command.</li>
+<li><strong>Long-term memory:</strong> save <code>history</code> to a file on exit and load it at start, or keep a short list of facts about you in the system prompt.</li>
+<li><strong>A wake word</strong>, so the robot only listens after hearing its name — openWakeWord on the PC, or Espressif&#39;s WakeNet on the robot (table below).</li>
+</ul>
+<h2 id="troubleshooting">Troubleshooting<a class="anchor" href="#troubleshooting" aria-label="Link to this section">#</a></h2>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Usual cause</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Robot never connects</td>
+<td>Wrong IP in the sketch, brain not running, or Windows Firewall blocking Python (allow it on <em>Private</em> networks)</td>
+</tr>
+<tr>
+<td>Robot connects but never reacts to speech</td>
+<td>Microphone too quiet: lower <code>BUDDY_THRESHOLD</code>, and check the INMP441&#39;s L/R pin is on GND</td>
+</tr>
+<tr>
+<td>It reacts to every noise</td>
+<td>Raise <code>BUDDY_THRESHOLD</code> (try 1000–1500)</td>
+</tr>
+<tr>
+<td>It answers itself in a loop</td>
+<td>The robot sends microphone audio while speaking: keep the <code>speaking</code> check in the sketch</td>
+</tr>
+<tr>
+<td>Voice too fast, too slow or squeaky</td>
+<td>The amplifier runs at a different rate from the audio: it must restart at the <code>rate</code> in <code>audio-start</code></td>
+</tr>
+<tr>
+<td>Voice crackles or stutters</td>
+<td>Wi-Fi power saving still on, weak signal, or the supply sags when the amplifier peaks (chapter 3)</td>
+</tr>
+<tr>
+<td>Every answer takes 10 seconds or more</td>
+<td>Model too large for your PC — <code>ollama ps</code> should say <em>100% GPU</em> — or a &quot;thinking&quot; model</td>
+</tr>
+<tr>
+<td>The first answer is slow, the rest fast</td>
+<td>Normal: the model was loading</td>
+</tr>
+<tr>
+<td><code>model &quot;…&quot; not found</code></td>
+<td>You haven&#39;t downloaded it: <code>ollama pull &lt;name&gt;</code></td>
+</tr>
+<tr>
+<td>Mishears words</td>
+<td>Try <code>BUDDY_WHISPER=small.en</code>, speak 30–50 cm from the microphone, reduce background noise</td>
+</tr>
+<tr>
+<td>Answers contain lists, asterisks or emojis</td>
+<td>Strengthen the system prompt; the brain already strips the worst symbols before speaking</td>
+</tr>
+</tbody></table>
+</div>
+<h2 id="other-free-and-unlimited-ways">Other free and unlimited ways<a class="anchor" href="#other-free-and-unlimited-ways" aria-label="Link to this section">#</a></h2>
+<p>Every option below is free, has no usage limits and runs on your own hardware. The robot never changes: they only replace one block of the brain.</p>
+<h3 id="lm-studio-models-with-a-mouse-instead-of-a-terminal">LM Studio — models with a mouse instead of a terminal<a class="anchor" href="#lm-studio-models-with-a-mouse-instead-of-a-terminal" aria-label="Link to this section">#</a></h3>
+<p><a href="https://lmstudio.ai" target="_blank" rel="noopener">LM Studio ↗</a> is a desktop app for Windows, macOS and Linux: you search, download and try models in a chat window, and it can serve them to other programs. It is free for personal use and, since July 2025, for use at work too; the app itself is not open source.</p>
+<ol>
+<li><p>Install LM Studio and download a model from its search page (the same size advice applies).</p>
+</li>
+<li><p>Start its local server — from the app&#39;s developer/server page, or in a terminal with <code>lms server start</code>. By default it listens at <code>http://localhost:1234/v1</code>.</p>
+</li>
+<li><p>In the brain&#39;s environment install the extra client, then point the brain at LM Studio, using the model name LM Studio shows:</p>
+<pre><code class="language-bash">pip install openai
+</code></pre>
+<pre><code class="language-bash">$env:BUDDY_OPENAI_URL = &quot;http://localhost:1234/v1&quot;
+</code></pre>
+<pre><code class="language-bash">$env:BUDDY_MODEL = &quot;&lt;model name from LM Studio&gt;&quot;
+</code></pre>
+</li>
+</ol>
+<p>That is the general rule: <strong>any program that offers an &quot;OpenAI-compatible&quot; server works with <code>brain.py</code></strong> through <code>BUDDY_OPENAI_URL</code>. The API key the client asks for is ignored by local servers; the brain fills in a placeholder.</p>
+<h3 id="jan-an-open-source-desktop-app">Jan — an open-source desktop app<a class="anchor" href="#jan-an-open-source-desktop-app" aria-label="Link to this section">#</a></h3>
+<p><a href="https://github.com/janhq/jan" target="_blank" rel="noopener">Jan ↗</a> (Apache-2.0) is an open-source alternative to LM Studio: chat window, model downloads, and a local OpenAI-compatible server on <code>localhost:1337</code> that you switch on in its settings. Use it with <code>BUDDY_OPENAI_URL=http://localhost:1337/v1</code>, as above.</p>
+<h3 id="llama-cpp-the-engine-underneath">llama.cpp — the engine underneath<a class="anchor" href="#llama-cpp-the-engine-underneath" aria-label="Link to this section">#</a></h3>
+<p><a href="https://github.com/ggml-org/llama.cpp" target="_blank" rel="noopener">llama.cpp ↗</a> (MIT) is the engine many local AI apps are built on. Using it directly gives you the most control and the smallest footprint, at the cost of more settings. Download a ready-made build for your system from its releases page, then start its server with a model straight from Hugging Face:</p>
+<pre><code class="language-bash">llama-server -hf bartowski/Llama-3.2-3B-Instruct-GGUF:Q4_K_M --port 8080
+</code></pre>
+<p>and set <code>BUDDY_OPENAI_URL=http://localhost:8080/v1</code>. Always pass <code>--port</code> yourself: the default port has changed between versions. Models come as single <code>.gguf</code> files; <code>Q4_K_M</code> is a good balance of size and quality.</p>
+<h3 id="home-assistant-assist-if-you-run-a-smart-home">Home Assistant Assist — if you run a smart home<a class="anchor" href="#home-assistant-assist-if-you-run-a-smart-home" aria-label="Link to this section">#</a></h3>
+<p><a href="https://www.home-assistant.io/voice_control/" target="_blank" rel="noopener">Home Assistant ↗</a> has a complete local voice pipeline called <strong>Assist</strong>: speech-to-text (Whisper, or <em>Speech-to-Phrase</em> for fixed commands), text-to-speech (Piper) and, through its <a href="https://www.home-assistant.io/integrations/ollama/" target="_blank" rel="noopener">Ollama integration ↗</a>, a local language model as the conversation agent that can also control your home. Your robot then becomes one more voice device in the house. It needs a machine that is always on (a mini PC or a Raspberry Pi 5 running Home Assistant) and is the most work to set up of these options; in return it is maintained by a large community.</p>
+<h3 id="a-brain-on-a-raspberry-pi-5-or-an-old-laptop">A brain on a Raspberry Pi 5 or an old laptop<a class="anchor" href="#a-brain-on-a-raspberry-pi-5-or-an-old-laptop" aria-label="Link to this section">#</a></h3>
+<p>The brain does not have to be your main PC. Ollama, Whisper and Piper all run on Linux, including a <strong>Raspberry Pi 5 (8 GB)</strong>. Expect only the smallest models (around 1–1.5 billion parameters, such as <code>qwen2.5:1.5b</code> or <code>llama3.2:1b</code>) to answer at a usable speed, with <code>tiny.en</code> for speech. An old laptop with 8 GB of RAM does better than a Pi, and costs nothing if it is already in a drawer.</p>
+<p>Install everything as in steps 1–3, start <code>brain.py</code> there and put that machine&#39;s address in the sketch. If Ollama runs on a <em>different</em> computer from <code>brain.py</code>, set <code>OLLAMA_HOST=0.0.0.0</code> on the Ollama computer (and restart Ollama) so it accepts connections from your network, and set <code>OLLAMA_HOST=http://&lt;its address&gt;:11434</code> where <code>brain.py</code> runs — on your home network only.</p>
+<h3 id="no-language-model-a-fixed-command-brain">No language model: a fixed-command brain<a class="anchor" href="#no-language-model-a-fixed-command-brain" aria-label="Link to this section">#</a></h3>
+<p>Not every desk buddy needs to chat. A robot that understands twenty phrases perfectly — <em>&quot;good morning&quot;</em>, <em>&quot;what time is it&quot;</em>, <em>&quot;start a 25-minute timer&quot;</em>, <em>&quot;dance&quot;</em> — answers instantly, never says anything strange and needs no big download. Two ways to build one:</p>
+<ul>
+<li><strong>On the PC, with Vosk.</strong> <a href="https://github.com/alphacep/vosk-api" target="_blank" rel="noopener">Vosk ↗</a> (Apache-2.0) is an offline speech recogniser with small models (around 50 MB) for many languages, and it can be limited to a list of phrases, which makes it very accurate for commands. Replace the language model in <code>brain.py</code> with a dictionary of phrases → replies, and keep Piper for the voice.</li>
+<li><strong>On the robot itself, with ESP-SR.</strong> Espressif&#39;s <a href="https://github.com/espressif/esp-sr" target="_blank" rel="noopener">ESP-SR ↗</a> runs a wake word (WakeNet) and spoken commands (MultiNet) directly on an ESP32-S3 — no PC at all. Its licence allows free use only on Espressif chips. Answers are then pre-recorded sounds or beeps.</li>
+</ul>
+<p>You can also combine them: fixed commands for the things the robot must always get right (timers, volume, <em>&quot;go to sleep&quot;</em>), and the language model for everything else.</p>
 <h2 id="free-local-building-blocks">Free local building blocks<a class="anchor" href="#free-local-building-blocks" aria-label="Link to this section">#</a></h2>
 <div class="table-scroll"><table>
 <thead>
@@ -120,28 +588,52 @@ face/servos ◀── {&quot;face&quot;:&quot;happy&quot;} ────  │ beh
 </tr>
 </thead>
 <tbody><tr>
+<td>Language model server</td>
+<td><a href="https://github.com/ollama/ollama" target="_blank" rel="noopener">Ollama ↗</a></td>
+<td>MIT</td>
+<td>Runs open models locally. Its OpenAI-compatible API lives at <code>http://localhost:11434/v1/</code>; clients need an API-key field but any placeholder works locally.</td>
+</tr>
+<tr>
+<td>Language model server</td>
+<td><a href="https://github.com/ggml-org/llama.cpp" target="_blank" rel="noopener">llama.cpp ↗</a></td>
+<td>MIT</td>
+<td>The engine behind many local apps; <code>llama-server</code> is OpenAI-compatible.</td>
+</tr>
+<tr>
+<td>Language model app</td>
+<td><a href="https://lmstudio.ai" target="_blank" rel="noopener">LM Studio ↗</a> · <a href="https://github.com/janhq/jan" target="_blank" rel="noopener">Jan ↗</a></td>
+<td>Proprietary, free · Apache-2.0</td>
+<td>Desktop apps with a local server.</td>
+</tr>
+<tr>
 <td>Speech-to-text</td>
 <td><a href="https://github.com/ggml-org/whisper.cpp" target="_blank" rel="noopener">whisper.cpp ↗</a></td>
 <td>MIT</td>
 <td>Runs on CPU or GPU (CUDA, Vulkan, Metal…). Models: tiny 75 MiB, base 142 MiB, small 466 MiB, medium 1.5 GiB, large 2.9 GiB.</td>
 </tr>
 <tr>
-<td>Language model</td>
-<td><a href="https://github.com/ollama/ollama" target="_blank" rel="noopener">Ollama ↗</a></td>
-<td>See repository</td>
-<td>Runs open models locally. Its OpenAI-compatible API lives at <code>http://localhost:11434/v1/</code>; clients need an API-key field but any placeholder works locally.</td>
+<td>Speech-to-text</td>
+<td><a href="https://github.com/SYSTRAN/faster-whisper" target="_blank" rel="noopener">faster-whisper ↗</a></td>
+<td>MIT</td>
+<td>The same Whisper models from Python; used by <code>brain.py</code>.</td>
 </tr>
 <tr>
-<td>Text-to-speech</td>
-<td><a href="https://huggingface.co/hexgrad/Kokoro-82M" target="_blank" rel="noopener">Kokoro-82M ↗</a></td>
+<td>Speech-to-text (commands)</td>
+<td><a href="https://github.com/alphacep/vosk-api" target="_blank" rel="noopener">Vosk ↗</a></td>
 <td>Apache-2.0</td>
-<td>Small, natural-sounding voices.</td>
+<td>Small offline models; can be restricted to a phrase list.</td>
 </tr>
 <tr>
 <td>Text-to-speech</td>
 <td><a href="https://github.com/OHF-Voice/piper1-gpl" target="_blank" rel="noopener">Piper ↗</a></td>
 <td>GPL-3.0</td>
-<td>Fast; the original <code>rhasspy/piper</code> repository was archived in October 2025 and development continues here.</td>
+<td>Fast; used by <code>brain.py</code>. The original <code>rhasspy/piper</code> repository was archived in October 2025 and development continues here.</td>
+</tr>
+<tr>
+<td>Text-to-speech</td>
+<td><a href="https://huggingface.co/hexgrad/Kokoro-82M" target="_blank" rel="noopener">Kokoro-82M ↗</a></td>
+<td>Apache-2.0</td>
+<td>Small, very natural-sounding voices; heavier to install than Piper.</td>
 </tr>
 <tr>
 <td>Wake word</td>
@@ -149,28 +641,41 @@ face/servos ◀── {&quot;face&quot;:&quot;happy&quot;} ────  │ beh
 <td>Code Apache-2.0; pre-trained models CC BY-NC-SA 4.0</td>
 <td>Runs on a PC or Pi, not on microcontrollers. The included models are <strong>non-commercial</strong>.</td>
 </tr>
+<tr>
+<td>Wake word &amp; commands on the robot</td>
+<td><a href="https://github.com/espressif/esp-sr" target="_blank" rel="noopener">ESP-SR ↗</a></td>
+<td>Espressif MIT (Espressif chips only)</td>
+<td>WakeNet and MultiNet on the ESP32-S3.</td>
+</tr>
 </tbody></table>
 </div>
-<blockquote><p><span class="label">Note</span>check every licence before you sell a robot or a product built on these tools. Open source does not always mean &quot;free for commercial use&quot; — openWakeWord&#39;s pre-trained models are the clearest example.</p>
+<blockquote><p><span class="label">Note</span>check every licence before you sell a robot or a product built on these tools. Open source does not always mean &quot;free for commercial use&quot; — openWakeWord&#39;s pre-trained models and some model weights are the clearest examples. Piper is GPL-3.0: fine for your own robot, but read what it requires before you distribute a product that includes it.</p>
 </blockquote>
-<h2 id="step-4-hide-the-latency">Step 4 — hide the latency<a class="anchor" href="#step-4-hide-the-latency" aria-label="Link to this section">#</a></h2>
-<p>On an ordinary PC the full loop (listen → transcribe → think → speak) takes from one to several seconds. The robot should never look frozen during that time:</p>
+<h2 id="privacy-and-safety">Privacy and safety<a class="anchor" href="#privacy-and-safety" aria-label="Link to this section">#</a></h2>
 <ul>
-<li>switch to the <strong>thinking</strong> face the moment you stop speaking;</li>
-<li>keep small idle movements going;</li>
-<li>start speaking the first sentence as soon as it is ready instead of waiting for the full reply.</li>
-</ul>
-<h2 id="step-5-privacy-and-safety">Step 5 — privacy and safety<a class="anchor" href="#step-5-privacy-and-safety" aria-label="Link to this section">#</a></h2>
-<ul>
-<li>Bind the server to your <strong>local network only</strong>; never expose it to the internet.</li>
+<li>Run the brain on your <strong>home network only</strong>; never forward its port on your router or expose it to the internet. It has no password.</li>
 <li>Keep a physical way to mute the microphone (a switch, or covering the touch pad).</li>
-<li>Log nothing you would not want stored.</li>
+<li>The brain keeps the conversation in memory only while it runs and writes nothing to disk. Log nothing you would not want stored.</li>
+<li>After the one-time downloads everything runs on your hardware: unplug the internet and the robot keeps talking.</li>
 </ul>
 <h2 id="sources">Sources<a class="anchor" href="#sources" aria-label="Link to this section">#</a></h2>
 <ul>
-<li>whisper.cpp licence, backends and model sizes: <a href="https://github.com/ggml-org/whisper.cpp" target="_blank" rel="noopener">https://github.com/ggml-org/whisper.cpp ↗</a></li>
-<li>Piper archive notice and new home: <a href="https://github.com/rhasspy/piper" target="_blank" rel="noopener">https://github.com/rhasspy/piper ↗</a> · <a href="https://github.com/OHF-Voice/piper1-gpl" target="_blank" rel="noopener">https://github.com/OHF-Voice/piper1-gpl ↗</a></li>
+<li>Ollama download and model library (sizes): <a href="https://ollama.com/download" target="_blank" rel="noopener">https://ollama.com/download ↗</a> · <a href="https://ollama.com/library" target="_blank" rel="noopener">https://ollama.com/library ↗</a></li>
+<li>Ollama FAQ (5-minute keep-alive default, <code>OLLAMA_KEEP_ALIVE</code>, <code>OLLAMA_MODELS</code>, <code>OLLAMA_HOST</code>): <a href="https://docs.ollama.com/faq" target="_blank" rel="noopener">https://docs.ollama.com/faq ↗</a></li>
 <li>Ollama OpenAI-compatible API: <a href="https://docs.ollama.com/api/openai-compatibility" target="_blank" rel="noopener">https://docs.ollama.com/api/openai-compatibility ↗</a></li>
+<li>Ollama Python library (<code>chat</code>, streaming, <code>keep_alive</code>): <a href="https://github.com/ollama/ollama-python" target="_blank" rel="noopener">https://github.com/ollama/ollama-python ↗</a></li>
+<li>faster-whisper (MIT, VAD filter, NumPy input): <a href="https://github.com/SYSTRAN/faster-whisper" target="_blank" rel="noopener">https://github.com/SYSTRAN/faster-whisper ↗</a></li>
+<li>Piper Python API and voice download; archive notice and new home: <a href="https://github.com/OHF-Voice/piper1-gpl/blob/main/docs/API_PYTHON.md" target="_blank" rel="noopener">https://github.com/OHF-Voice/piper1-gpl/blob/main/docs/API_PYTHON.md ↗</a> · <a href="https://github.com/rhasspy/piper" target="_blank" rel="noopener">https://github.com/rhasspy/piper ↗</a></li>
+<li>whisper.cpp licence, backends and model sizes: <a href="https://github.com/ggml-org/whisper.cpp" target="_blank" rel="noopener">https://github.com/ggml-org/whisper.cpp ↗</a></li>
+<li>websockets (asyncio server and client): <a href="https://websockets.readthedocs.io/" target="_blank" rel="noopener">https://websockets.readthedocs.io/ ↗</a></li>
+<li>ESP32 Arduino core <code>ESP_I2S</code> library: <a href="https://docs.espressif.com/projects/arduino-esp32/en/latest/api/i2s.html" target="_blank" rel="noopener">https://docs.espressif.com/projects/arduino-esp32/en/latest/api/i2s.html ↗</a></li>
+<li>arduinoWebSockets: <a href="https://github.com/Links2004/arduinoWebSockets" target="_blank" rel="noopener">https://github.com/Links2004/arduinoWebSockets ↗</a> · ArduinoJson: <a href="https://arduinojson.org/" target="_blank" rel="noopener">https://arduinojson.org/ ↗</a></li>
+<li>Model licences: <a href="https://huggingface.co/Qwen/Qwen2.5-3B-Instruct" target="_blank" rel="noopener">https://huggingface.co/Qwen/Qwen2.5-3B-Instruct ↗</a> · <a href="https://huggingface.co/Qwen/Qwen2.5-7B-Instruct" target="_blank" rel="noopener">https://huggingface.co/Qwen/Qwen2.5-7B-Instruct ↗</a></li>
+<li>LM Studio OpenAI-compatible server and free use at work: <a href="https://lmstudio.ai/docs/developer/openai-compat" target="_blank" rel="noopener">https://lmstudio.ai/docs/developer/openai-compat ↗</a> · <a href="https://lmstudio.ai/blog/free-for-work" target="_blank" rel="noopener">https://lmstudio.ai/blog/free-for-work ↗</a></li>
+<li>llama.cpp server: <a href="https://github.com/ggml-org/llama.cpp/blob/master/tools/server/README.md" target="_blank" rel="noopener">https://github.com/ggml-org/llama.cpp/blob/master/tools/server/README.md ↗</a></li>
+<li>Jan local API server: <a href="https://github.com/janhq/jan" target="_blank" rel="noopener">https://github.com/janhq/jan ↗</a></li>
+<li>Home Assistant local voice and Ollama integration: <a href="https://www.home-assistant.io/voice_control/" target="_blank" rel="noopener">https://www.home-assistant.io/voice_control/ ↗</a> · <a href="https://www.home-assistant.io/integrations/ollama/" target="_blank" rel="noopener">https://www.home-assistant.io/integrations/ollama/ ↗</a></li>
+<li>Vosk: <a href="https://github.com/alphacep/vosk-api" target="_blank" rel="noopener">https://github.com/alphacep/vosk-api ↗</a> · ESP-SR: <a href="https://github.com/espressif/esp-sr" target="_blank" rel="noopener">https://github.com/espressif/esp-sr ↗</a></li>
 <li>Kokoro-82M (Apache-2.0): <a href="https://huggingface.co/hexgrad/Kokoro-82M" target="_blank" rel="noopener">https://huggingface.co/hexgrad/Kokoro-82M ↗</a></li>
 <li>openWakeWord licences and hardware notes: <a href="https://github.com/dscripka/openWakeWord" target="_blank" rel="noopener">https://github.com/dscripka/openWakeWord ↗</a></li>
 </ul>
@@ -186,12 +691,18 @@ face/servos ◀── {&quot;face&quot;:&quot;happy&quot;} ────  │ beh
     <span class="eyebrow">On this page</span>
     <ul>
       <li><a href="#architecture">Architecture</a></li>
-      <li><a href="#step-1-pick-a-link">Step 1 — pick a link</a></li>
-      <li><a href="#step-2-define-a-small-protocol">Step 2 — define a small protocol</a></li>
-      <li><a href="#step-3-the-computer-side">Step 3 — the computer side</a></li>
+      <li><a href="#pick-your-brain">Pick your brain</a></li>
+      <li><a href="#what-your-computer-needs">What your computer needs</a></li>
+      <li><a href="#step-1-install-the-language-model-ollama">Step 1 — install the language model (Ollama)</a></li>
+      <li><a href="#step-2-install-the-voice-parts-python">Step 2 — install the voice parts (Python)</a></li>
+      <li><a href="#step-3-the-brain-server">Step 3 — the brain server</a></li>
+      <li><a href="#step-4-test-it-from-the-pc">Step 4 — test it from the PC</a></li>
+      <li><a href="#step-5-connect-the-robot">Step 5 — connect the robot</a></li>
+      <li><a href="#step-6-make-it-feel-alive">Step 6 — make it feel alive</a></li>
+      <li><a href="#troubleshooting">Troubleshooting</a></li>
+      <li><a href="#other-free-and-unlimited-ways">Other free and unlimited ways</a></li>
       <li><a href="#free-local-building-blocks">Free local building blocks</a></li>
-      <li><a href="#step-4-hide-the-latency">Step 4 — hide the latency</a></li>
-      <li><a href="#step-5-privacy-and-safety">Step 5 — privacy and safety</a></li>
+      <li><a href="#privacy-and-safety">Privacy and safety</a></li>
       <li><a href="#sources">Sources</a></li>
     </ul>
   </aside>

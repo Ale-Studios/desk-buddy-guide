@@ -1,0 +1,8 @@
+# The desk buddy brain (chapter 10). Install with:  pip install -r requirements.txt
+faster-whisper>=1.1      # speech-to-text (MIT)
+piper-tts>=1.3           # text-to-speech (GPL-3.0)
+ollama>=0.4              # client for the Ollama language-model server (MIT)
+websockets>=14           # robot link (BSD-3-Clause)
+numpy
+sounddevice              # only for pc_test.py (MIT)
+# openai                 # only if you use LM Studio / llama.cpp / Jan instead of Ollama (Apache-2.0)
