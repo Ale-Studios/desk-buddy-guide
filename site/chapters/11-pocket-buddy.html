@@ -1,0 +1,399 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pocket buddy · Desk Buddy Guide</title>
+<meta name="description" content="A desk buddy does not have to sit on a desk. This chapter is a small, stand-alone build: a keychain-sized robot with an animated face, one button and a rechargeable battery — a han">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="../assets/guide.css">
+<script type="importmap">{ "imports": { "three": "../vendor/three/three.module.js" } }</script>
+</head>
+<body>
+<header class="wrap bar">
+  <a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true"><i></i><i></i></span>Desk Buddy Guide</a>
+  <nav aria-label="Site">
+    <a href="../index.html#finder">Find your path</a>
+    <a href="../build.html">Builder</a>
+    <a href="../parts.html">Parts</a>
+    <a href="../models.html">3D models</a>
+    <a href="../videos.html">Videos</a>
+    <a href="01-basics.html" aria-current="page">Chapters</a>
+  </nav>
+</header>
+<div class="wrap layout">
+  <nav class="toc-left" aria-label="Chapters">
+    <details open><summary>Chapters</summary>
+    <ol>
+      <li><a href="01-basics.html"><span>01</span>Basics</a></li>
+      <li><a href="02-choose-your-path.html"><span>02</span>Choose your path</a></li>
+      <li><a href="03-electronics.html"><span>03</span>Electronics</a></li>
+      <li><a href="04-eyes-and-face.html"><span>04</span>Eyes &amp; face</a></li>
+      <li><a href="05-movement.html"><span>05</span>Movement</a></li>
+      <li><a href="06-senses.html"><span>06</span>Senses</a></li>
+      <li><a href="07-body-and-shell.html"><span>07</span>Body &amp; shell</a></li>
+      <li><a href="08-firmware.html"><span>08</span>Basic firmware</a></li>
+      <li><a href="09-reference-projects.html"><span>09</span>Reference projects</a></li>
+      <li><a href="10-connect-to-pc.html"><span>10</span>Connecting to a PC</a></li>
+      <li><a href="11-pocket-buddy.html" aria-current="page"><span>11</span>Pocket buddy</a></li>
+    </ol>
+    </details>
+  </nav>
+  <article>
+    <header class="chapter-head">
+      <span class="eyebrow">Chapter 11 of 11</span>
+      <h1>Pocket buddy</h1>
+      <div class="meta"><span>7 min read</span><span>Updated November 2026</span></div>
+    </header>
+    <section class="part-strip" aria-label="Parts in this chapter"><span class="eyebrow">Parts in this chapter · open one for photos, specs and wiring</span>
+      <div class="part-row"><a href="../parts.html#ssd1306"><img data-part="ssd1306" alt="3D model of the SSD1306 OLED" width="480" height="300"><span>SSD1306 OLED</span></a><a href="../parts.html#lipo"><img data-part="lipo" alt="3D model of the 1S LiPo" width="480" height="300"><span>1S LiPo</span></a><a href="../parts.html#tp4056"><img data-part="tp4056" alt="3D model of the TP4056 charger" width="480" height="300"><span>TP4056 charger</span></a><a href="../parts.html#ttp223"><img data-part="ttp223" alt="3D model of the TTP223 touch" width="480" height="300"><span>TTP223 touch</span></a></div></section>
+    <div class="prose">
+<p>A desk buddy does not have to sit on a desk. This chapter is a small, stand-alone build: a <strong>keychain-sized robot with an animated face, one button and a rechargeable battery</strong> — a handful of parts, one evening, no servos and no PC needed.</p>
+<p>It trades features for size on purpose. It blinks, looks around, changes mood when you press the button, gets sleepy when you ignore it, and then goes to sleep to save the battery. That is the whole personality, and it is surprisingly charming.</p>
+<blockquote><p><span class="label">Note</span>This chapter was written from the board and library documentation and has not yet been tested on a physical build. The sketch is short and standard, but if you build it and something differs, please <a href="https://github.com/Ale-Studios/desk-buddy-guide/issues">open an issue</a> so the chapter can be fixed.</p>
+</blockquote>
+<h2 id="what-you-are-building">What you are building<a class="anchor" href="#what-you-are-building" aria-label="Link to this section">#</a></h2>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Size</strong></td>
+<td>About 40 × 25 × 15 mm in a printed case</td>
+</tr>
+<tr>
+<td><strong>Face</strong></td>
+<td>A 0.91&quot; (128 × 32) or 0.96&quot; (128 × 64) OLED with animated eyes</td>
+</tr>
+<tr>
+<td><strong>Input</strong></td>
+<td>One tactile button (press = next mood; it also wakes the robot)</td>
+</tr>
+<tr>
+<td><strong>Power</strong></td>
+<td>A small 3.7 V LiPo, recharged over USB-C</td>
+</tr>
+<tr>
+<td><strong>Brain</strong></td>
+<td>An ESP32-C3 board the size of a postage stamp</td>
+</tr>
+<tr>
+<td><strong>Cost</strong></td>
+<td>Roughly €12–25 (typical ranges, checked November 2026 — prices drift)</td>
+</tr>
+<tr>
+<td><strong>Skills</strong></td>
+<td>Four wires to solder; no 3D printer needed (a small plastic box works)</td>
+</tr>
+</tbody></table>
+</div>
+<h2 id="pick-your-parts">Pick your parts<a class="anchor" href="#pick-your-parts" aria-label="Link to this section">#</a></h2>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Part</th>
+<th>Suggestion</th>
+<th>Typical price</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Board</td>
+<td><strong>Seeed XIAO ESP32-C3</strong></td>
+<td>€6–10</td>
+<td>About 21 × 18 mm, USB-C, built-in LiPo charger and battery pads. The easiest path.</td>
+</tr>
+<tr>
+<td>Display</td>
+<td>SSD1306 OLED, I²C</td>
+<td>€2–4</td>
+<td><strong>0.91&quot; 128 × 32</strong> for a slim body, <strong>0.96&quot; 128 × 64</strong> for bigger eyes. Both use the same library.</td>
+</tr>
+<tr>
+<td>Button</td>
+<td>6 × 6 mm tactile</td>
+<td>under €1</td>
+<td>Or a small micro switch.</td>
+</tr>
+<tr>
+<td>Battery</td>
+<td>3.7 V LiPo, 150–300 mAh, <strong>with protection circuit</strong></td>
+<td>€3–7</td>
+<td>Thin cells such as 3 × 12 × 30 mm or 5 × 20 × 30 mm fit a keychain.</td>
+</tr>
+<tr>
+<td>Wire</td>
+<td>Thin silicone or enamelled wire</td>
+<td>under €3</td>
+<td>Keeps the build small and flexible.</td>
+</tr>
+<tr>
+<td>Optional</td>
+<td>Slide switch, piezo buzzer, LIS3DH / MPU6050 accelerometer</td>
+<td>€1–4 each</td>
+<td>For a hard power-off, chirps and &quot;shake me&quot; reactions.</td>
+</tr>
+</tbody></table>
+</div>
+<p><strong>Other roads to a pocket buddy</strong></p>
+<ul>
+<li><strong>Cheaper board, one more part:</strong> an ESP32-C3 SuperMini costs less but has no battery charger — add a <a href="https://ale-studios.github.io/desk-buddy-guide/parts.html#tp4056" target="_blank" rel="noopener">TP4056 charger ↗</a> module.</li>
+<li><strong>Even smaller, no wiring:</strong> ESP32-C3 boards with a built-in 0.42&quot; OLED (72 × 40 pixels) need only a battery. The face is tiny, but it is the smallest build there is.</li>
+<li><strong>No soldering at all:</strong> an <a href="https://docs.m5stack.com/en/core/M5StickC%20PLUS2" target="_blank" rel="noopener">M5StickC Plus2 ↗</a> already has a screen, a battery, buttons and a motion sensor in a case. It is larger and costs more.</li>
+</ul>
+<h2 id="wiring">Wiring<a class="anchor" href="#wiring" aria-label="Link to this section">#</a></h2>
+<p>Test everything on a breadboard first, then solder.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>OLED</th>
+<th>XIAO ESP32-C3</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>VCC</td>
+<td>3V3</td>
+</tr>
+<tr>
+<td>GND</td>
+<td>GND</td>
+</tr>
+<tr>
+<td>SDA</td>
+<td>D4 (GPIO6)</td>
+</tr>
+<tr>
+<td>SCL</td>
+<td>D5 (GPIO7)</td>
+</tr>
+</tbody></table>
+</div>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Button</th>
+<th>XIAO ESP32-C3</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>One leg</td>
+<td>D1 (GPIO3)</td>
+</tr>
+<tr>
+<td>Other leg</td>
+<td>GND</td>
+</tr>
+</tbody></table>
+</div>
+<p>The button uses the board&#39;s internal pull-up, so no resistor is needed. D1 is one of the pins that can wake the ESP32-C3 from deep sleep (GPIO0–5).</p>
+<p>The battery connects to the <strong>BAT+ / BAT−</strong> pads on the back of the XIAO; the board charges it whenever USB-C is plugged in and shows its charging state on an LED.</p>
+<blockquote class="warn"><p><span class="label">Warning</span>the plugs sold on LiPo batteries have <strong>no standard polarity</strong>. Check the red (+) and black (−) wires against the pad markings with a multimeter before you connect anything. Reversed polarity can destroy the board and heat the cell.</p>
+</blockquote>
+<h2 id="build-steps">Build steps<a class="anchor" href="#build-steps" aria-label="Link to this section">#</a></h2>
+<ol>
+<li><strong>Install the software.</strong> In the Arduino IDE, add ESP32 support (the Espressif &quot;esp32&quot; board package), choose the board <strong>XIAO_ESP32C3</strong>, and install the libraries <strong>Adafruit SSD1306</strong> and <strong>Adafruit GFX</strong> from the Library Manager.</li>
+<li><strong>Wire it on a breadboard</strong> as above and plug in USB-C.</li>
+<li><strong>Check the display.</strong> If it stays blank, run an I²C scanner sketch: most modules answer at <code>0x3C</code>, a few at <code>0x3D</code> — change the address in the sketch to match.</li>
+<li><strong>Upload the sketch</strong> below and press the button. Each press should change the eyes.</li>
+<li><strong>Solder it small.</strong> Replace the breadboard wires with four short wires between the OLED pads and the board, and two wires to the button. Keep wires short and cover bare joints with heat-shrink or a drop of hot glue.</li>
+<li><strong>Add the battery last.</strong> Check the polarity, solder it to BAT+ / BAT−, and charge it once through USB-C to confirm the charger works.</li>
+<li><strong>Close it up</strong> (see <a href="#case-ideas">Case ideas</a>) and add a keyring.</li>
+</ol>
+<h2 id="the-sketch">The sketch<a class="anchor" href="#the-sketch" aria-label="Link to this section">#</a></h2>
+<p>The same file is in the repository at <a href="https://github.com/Ale-Studios/desk-buddy-guide/tree/main/firmware/pocket-buddy/pocket-buddy.ino"><code>firmware/pocket-buddy/pocket-buddy.ino</code></a> (MIT licence). It draws two rounded-rectangle eyes, blinks at random, glances left and right, changes mood on each button press, and goes into deep sleep after 30 seconds of inactivity; pressing the button wakes it again.</p>
+<pre><code class="language-cpp">// Pocket Desk Buddy — animated eyes, one button, deep sleep.
+// Board: Seeed XIAO ESP32-C3 · Display: SSD1306 128x32 or 128x64 (I2C)
+// Libraries: Adafruit SSD1306, Adafruit GFX · Licence: MIT
+
+#include &lt;Wire.h&gt;
+#include &lt;Adafruit_GFX.h&gt;
+#include &lt;Adafruit_SSD1306.h&gt;
+#include &quot;esp_sleep.h&quot;
+
+#define W 128
+#define H 32                               // 32 = 0.91&quot; display, 64 = 0.96&quot; display
+Adafruit_SSD1306 oled(W, H, &amp;Wire, -1);
+
+const int BTN = 3;                         // XIAO ESP32-C3 D1 = GPIO3, button to GND
+const unsigned long SLEEP_AFTER = 30000;   // ms without a press before deep sleep
+
+const int EYE_H[] = {22, 12, 3, 28};       // eye height: normal, happy, sleepy, surprised
+int mood = 0, lookX = 0;
+unsigned long lastAct, nextBlink;
+
+void drawEyes(bool blinking) {
+  oled.clearDisplay();
+  int h = blinking ? 2 : EYE_H[mood], cy = H / 2;
+  oled.fillRoundRect(W / 2 - 40 + lookX, cy - h / 2, 30, h, 6, WHITE);
+  oled.fillRoundRect(W / 2 + 10 + lookX, cy - h / 2, 30, h, 6, WHITE);
+  oled.display();
+}
+
+void goToSleep() {
+  oled.ssd1306_command(SSD1306_DISPLAYOFF);
+  esp_deep_sleep_enable_gpio_wakeup(1ULL &lt;&lt; BTN, ESP_GPIO_WAKEUP_GPIO_LOW);
+  esp_deep_sleep_start();                  // wakes (and restarts) when the button is pressed
+}
+
+void setup() {
+  pinMode(BTN, INPUT_PULLUP);
+  Wire.begin();                            // default pins: SDA = D4, SCL = D5
+  oled.begin(SSD1306_SWITCHCAPVCC, 0x3C);  // use 0x3D if your module needs it
+  lastAct = millis();
+  nextBlink = lastAct + 2500;
+  drawEyes(false);
+}
+
+void loop() {
+  unsigned long now = millis();
+
+  if (digitalRead(BTN) == LOW) {           // press = next mood
+    mood = (mood + 1) % 4;
+    lastAct = now;
+    drawEyes(false);
+    while (digitalRead(BTN) == LOW) delay(10);   // wait for release (simple debounce)
+    delay(30);
+  }
+
+  if (now &gt; nextBlink) {                   // blink every 2–6 seconds
+    drawEyes(true); delay(110); drawEyes(false);
+    nextBlink = now + random(2000, 6000);
+  }
+
+  if (random(0, 400) == 0) {               // now and then, glance sideways
+    lookX = random(-8, 9);
+    drawEyes(false);
+  }
+
+  if (now - lastAct &gt; SLEEP_AFTER) {       // bored: get sleepy, then sleep
+    mood = 2;
+    drawEyes(false);
+    delay(1500);
+    goToSleep();
+  }
+  delay(10);
+}
+</code></pre>
+<p><strong>Make it yours</strong></p>
+<ul>
+<li><strong>0.96&quot; display?</strong> Set <code>H</code> to <code>64</code> and raise the eye heights in <code>EYE_H</code> (for example 36, 18, 4, 44).</li>
+<li><strong>Longer or shorter attention span:</strong> change <code>SLEEP_AFTER</code>.</li>
+<li><strong>More moods:</strong> add an entry to <code>EYE_H</code> and raise the <code>% 4</code>. Real expressions (angry, tired, love) take more drawing code; the <a href="https://github.com/FluxGarage/RoboEyes" target="_blank" rel="noopener">FluxGarage RoboEyes ↗</a> library does this for SSD1306 displays — check its licence before you reuse it.</li>
+<li><strong>Different drawing library:</strong> <a href="https://github.com/olikraus/u8g2" target="_blank" rel="noopener">U8g2 ↗</a> is a popular alternative and also works with these displays.</li>
+</ul>
+<h2 id="power-and-battery-life">Power and battery life<a class="anchor" href="#power-and-battery-life" aria-label="Link to this section">#</a></h2>
+<p>Battery life depends on the display and the board, so treat these as rough estimates and measure your own build with a multimeter:</p>
+<ul>
+<li>With the screen on and Wi-Fi off, an ESP32-C3 board plus an OLED draws on the order of a few tens of milliamps. A 250 mAh cell then lasts roughly <strong>6–10 hours</strong> of continuous use.</li>
+<li>In deep sleep the chip itself uses microamps, but the regulator and LEDs on a development board add to that. Measure it: standby is typically days rather than hours, not months.</li>
+<li>The display is the biggest consumer. Showing less (and sleeping sooner) is the easiest way to stretch a charge.</li>
+</ul>
+<blockquote class="warn"><p><span class="label">Warning</span>treat the LiPo with respect. Use a cell <strong>with a protection circuit</strong>, never puncture or crush it, do not charge it unattended, keep it away from heat (a car in the sun), and stop using any cell that swells. See also <a href="03-electronics.html">chapter 3</a> and the <a href="01-basics.html">battery notes in chapter 1</a>.</p>
+</blockquote>
+<h2 id="case-ideas">Case ideas<a class="anchor" href="#case-ideas" aria-label="Link to this section">#</a></h2>
+<ul>
+<li><strong>3D-printed shell</strong> of about 40 × 25 × 15 mm with a window for the OLED, a hole for USB-C and a button on the side. Put the battery under the board. Printable shells for other robots are listed in <a href="07-body-and-shell.html">chapter 7</a>.</li>
+<li><strong>No printer:</strong> a small plastic box, a mint tin lid or a piece of layered cardboard with a cut-out for the screen works fine.</li>
+<li><strong>Add a keyring:</strong> a small loop in the case, or a hole drilled through a corner.</li>
+<li><strong>Leave USB-C reachable</strong> for charging and reprogramming.</li>
+</ul>
+<h2 id="ideas-for-next-steps">Ideas for next steps<a class="anchor" href="#ideas-for-next-steps" aria-label="Link to this section">#</a></h2>
+<ul>
+<li><strong>Pomodoro mode:</strong> a long press starts a 25-minute focus timer with calm eyes; a happy face when it ends.</li>
+<li><strong>Shake me:</strong> add an I²C accelerometer (LIS3DH or MPU6050) on the same two wires and make the eyes dizzy when you shake it — see <a href="06-senses.html">Senses</a>.</li>
+<li><strong>Chirps:</strong> a small piezo buzzer on a spare pin for a &quot;hello&quot; sound.</li>
+<li><strong>Give it a brain:</strong> the ESP32-C3 has Wi-Fi, so it can later be linked to a local AI on your PC — see <a href="10-connect-to-pc.html">Connecting to a PC</a> (the voice build there uses an ESP32-S3 with a microphone and speaker, so it is a separate project).</li>
+</ul>
+<h2 id="troubleshooting">Troubleshooting<a class="anchor" href="#troubleshooting" aria-label="Link to this section">#</a></h2>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Check</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Blank screen</td>
+<td>Wiring (SDA/SCL swapped?), 3V3 power, and the I²C address (<code>0x3C</code> vs <code>0x3D</code>).</td>
+</tr>
+<tr>
+<td>Upload fails</td>
+<td>Hold BOOT while plugging in USB-C to enter flash mode; try another cable (many are charge-only).</td>
+</tr>
+<tr>
+<td>Eyes flicker or garble</td>
+<td>Loose wire, or a 128 × 64 display with <code>H</code> set to <code>32</code> (and the other way round).</td>
+</tr>
+<tr>
+<td>Button does nothing</td>
+<td>Both legs must be on different sides of the switch; check D1 and GND.</td>
+</tr>
+<tr>
+<td>Never wakes from sleep</td>
+<td>Use a pin from GPIO0–5 (D0–D3 on the XIAO) and wire the button to GND.</td>
+</tr>
+<tr>
+<td>Battery drains fast</td>
+<td>Measure standby current; reduce <code>SLEEP_AFTER</code>; make sure the LED and display are off in sleep.</td>
+</tr>
+<tr>
+<td>Board gets hot while charging</td>
+<td>Unplug and check the battery polarity and wiring immediately.</td>
+</tr>
+</tbody></table>
+</div>
+<h2 id="getting-started-links">Getting started links<a class="anchor" href="#getting-started-links" aria-label="Link to this section">#</a></h2>
+<ul>
+<li>Seeed XIAO ESP32-C3 getting started and pinout: <a href="https://wiki.seeedstudio.com/XIAO_ESP32C3_Getting_Started/" target="_blank" rel="noopener">https://wiki.seeedstudio.com/XIAO_ESP32C3_Getting_Started/ ↗</a></li>
+<li>Adafruit SSD1306 library (BSD licence): <a href="https://github.com/adafruit/Adafruit_SSD1306" target="_blank" rel="noopener">https://github.com/adafruit/Adafruit_SSD1306 ↗</a></li>
+<li>U8g2 display library: <a href="https://github.com/olikraus/u8g2" target="_blank" rel="noopener">https://github.com/olikraus/u8g2 ↗</a></li>
+<li>FluxGarage RoboEyes (animated eyes for SSD1306): <a href="https://github.com/FluxGarage/RoboEyes" target="_blank" rel="noopener">https://github.com/FluxGarage/RoboEyes ↗</a></li>
+<li>ESP32-C3 sleep modes (deep sleep and GPIO wake-up): <a href="https://docs.espressif.com/projects/esp-idf/en/latest/esp32c3/api-reference/system/sleep_modes.html" target="_blank" rel="noopener">https://docs.espressif.com/projects/esp-idf/en/latest/esp32c3/api-reference/system/sleep_modes.html ↗</a></li>
+<li>M5StickC Plus2 documentation: <a href="https://docs.m5stack.com/en/core/M5StickC%20PLUS2" target="_blank" rel="noopener">https://docs.m5stack.com/en/core/M5StickC%20PLUS2 ↗</a></li>
+</ul>
+
+    </div>
+    <nav class="pager" aria-label="Previous and next chapter">
+      <a class="prev" href="10-connect-to-pc.html"><small>← Previous</small><b>Connecting to a PC</b></a>
+      <a class="next" href="../index.html#finder"><small>Done? →</small><b>Pick your build path</b></a>
+    </nav>
+    <p class="edit">Spotted a mistake or a dead link? <a href="https://github.com/Ale-Studios/desk-buddy-guide/edit/main/docs/11-pocket-buddy.md" target="_blank" rel="noopener">Edit this chapter on GitHub ↗</a></p>
+  </article>
+  <aside class="toc-right" aria-label="On this page">
+    <span class="eyebrow">On this page</span>
+    <ul>
+      <li><a href="#what-you-are-building">What you are building</a></li>
+      <li><a href="#pick-your-parts">Pick your parts</a></li>
+      <li><a href="#wiring">Wiring</a></li>
+      <li><a href="#build-steps">Build steps</a></li>
+      <li><a href="#the-sketch">The sketch</a></li>
+      <li><a href="#power-and-battery-life">Power and battery life</a></li>
+      <li><a href="#case-ideas">Case ideas</a></li>
+      <li><a href="#ideas-for-next-steps">Ideas for next steps</a></li>
+      <li><a href="#troubleshooting">Troubleshooting</a></li>
+      <li><a href="#getting-started-links">Getting started links</a></li>
+    </ul>
+  </aside>
+</div>
+<footer><div class="wrap">Desk Buddy Guide · text CC BY-SA 4.0 · code MIT · third-party projects are linked under their own licences.</div></footer>
+<script>
+// on phones the chapter list starts collapsed so the text comes first
+if (matchMedia("(max-width: 800px)").matches) document.querySelector(".toc-left details").removeAttribute("open");
+// highlight the section being read in the right-hand table of contents
+const links = [...document.querySelectorAll(".toc-right a")];
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach((e) => { if (e.isIntersecting) links.forEach((a) => a.classList.toggle("active", a.getAttribute("href") === "#" + e.target.id)); });
+}, { rootMargin: "0px 0px -70% 0px" });
+document.querySelectorAll(".prose h2").forEach((h) => obs.observe(h));
+</script>
+<script type="module">
+import { renderThumbnails } from "../assets/parts3d.js";
+renderThumbnails();
+</script>
+</body>
+</html>

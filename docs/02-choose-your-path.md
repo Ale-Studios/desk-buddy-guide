@@ -1,6 +1,6 @@
 # 2 · Choose your path
 
-Six ways to build a desk buddy. All of them can later be connected to a PC (chapter 10).
+Six ways to build a desk buddy. All of them can later be connected to a PC (chapter 10). Want something even smaller, that fits in a pocket? See the stand-alone build in [chapter 11](11-pocket-buddy.md).
 
 | Path | Brain | Typical cost* | Difficulty | Build time | Best for |
 |------|-------|---------------|------------|-----------|----------|

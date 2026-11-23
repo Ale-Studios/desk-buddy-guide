@@ -23,6 +23,7 @@ const CHAPTERS = [
   ["08-firmware", "Basic firmware"],
   ["09-reference-projects", "Reference projects"],
   ["10-connect-to-pc", "Connecting to a PC"],
+  ["11-pocket-buddy", "Pocket buddy"],
 ];
 
 // Parts shown as 3D thumbnails at the top of each chapter (ids from site/assets/parts3d.js)
@@ -34,6 +35,7 @@ const CHAPTER_PARTS = {
   "06-senses": [["inmp441", "INMP441 mic"], ["max98357a", "MAX98357A amp"], ["speaker", "Speaker"], ["ttp223", "TTP223 touch"], ["vl53l0x", "VL53L0X"], ["hcsr04", "HC-SR04"], ["picam3", "Pi Camera 3"], ["ov2640", "OV2640"]],
   "08-firmware": [["esp32s3", "ESP32-S3"], ["nano", "Arduino Nano"], ["cores3", "M5Stack CoreS3"]],
   "10-connect-to-pc": [["esp32s3", "ESP32-S3"], ["inmp441", "INMP441 mic"], ["max98357a", "MAX98357A amp"]],
+  "11-pocket-buddy": [["ssd1306", "SSD1306 OLED"], ["lipo", "1S LiPo"], ["tp4056", "TP4056 charger"], ["ttp223", "TTP223 touch"]],
 };
 const partStrip = (file) => {
   const list = CHAPTER_PARTS[file];
@@ -179,7 +181,7 @@ renderThumbnails();
 
 fs.mkdirSync(OUT, { recursive: true });
 CHAPTERS.forEach(([file], i) => {
-  const md = fs.readFileSync(path.join(DOCS, `${file}.md`), "utf8");
+  const md = fs.readFileSync(path.join(DOCS, `${file}.md`), "utf8").replaceAll("\r\n", "\n"); // Windows checkouts use CRLF
   fs.writeFileSync(path.join(OUT, `${file}.html`), page(i, md));
 });
 console.log(`built ${CHAPTERS.length} chapter pages → site/chapters/`);
