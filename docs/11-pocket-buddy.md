@@ -39,6 +39,8 @@ It trades features for size on purpose. It blinks, looks around, changes mood wh
 
 Test everything on a breadboard first, then solder.
 
+![Wiring diagram: the OLED's 3V3, GND, SDA and SCL go to the XIAO's 3V3, GND, D4 and D5; a push button sits between D1 and GND; the LiPo battery connects to the BAT+ and BAT− pads on the back of the board.](../site/assets/pocket-buddy-wiring.svg)
+
 | OLED | XIAO ESP32-C3 |
 |---|---|
 | VCC | 3V3 |
@@ -55,7 +57,7 @@ The button uses the board's internal pull-up, so no resistor is needed. D1 is on
 
 The battery connects to the **BAT+ / BAT−** pads on the back of the XIAO; the board charges it whenever USB-C is plugged in and shows its charging state on an LED.
 
-> **Warning:** the plugs sold on LiPo batteries have **no standard polarity**. Check the red (+) and black (−) wires against the pad markings with a multimeter before you connect anything. Reversed polarity can destroy the board and heat the cell.
+> **Warning:** The plugs sold on LiPo batteries have **no standard polarity**. Check the red (+) and black (−) wires against the pad markings with a multimeter before you connect anything. Reversed polarity can destroy the board and heat the cell.
 
 ## Build steps
 
@@ -161,7 +163,7 @@ Battery life depends on the display and the board, so treat these as rough estim
 - In deep sleep the chip itself uses microamps, but the regulator and LEDs on a development board add to that. Measure it: standby is typically days rather than hours, not months.
 - The display is the biggest consumer. Showing less (and sleeping sooner) is the easiest way to stretch a charge.
 
-> **Warning:** treat the LiPo with respect. Use a cell **with a protection circuit**, never puncture or crush it, do not charge it unattended, keep it away from heat (a car in the sun), and stop using any cell that swells. See also [chapter 3](03-electronics.md) and the [battery notes in chapter 1](01-basics.md).
+> **Warning:** Treat the LiPo with respect. Use a cell **with a protection circuit**, never puncture or crush it, do not charge it unattended, keep it away from heat (a car in the sun), and stop using any cell that swells. See also [chapter 3](03-electronics.md) and the [battery notes in chapter 1](01-basics.md).
 
 ## Case ideas
 

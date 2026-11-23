@@ -1,0 +1,103 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 640" width="880" height="640" role="img" aria-labelledby="t d">
+<title id="t">Pocket buddy wiring diagram</title>
+<desc id="d">A Seeed XIAO ESP32-C3 board connected to an SSD1306 OLED (3V3, GND, SDA to D4, SCL to D5), a push button between D1 and GND, and a LiPo battery to the BAT+ and BAT- pads on the back of the board.</desc>
+<rect width="880" height="640" rx="18" fill="#f6f7f9"/><rect x="1.5" y="1.5" width="877" height="637" rx="17" fill="none" stroke="#cfd7e1" stroke-width="3"/>
+<text x="440" y="40" font-size="22" fill="#1c2230" text-anchor="middle" font-weight="700" font-family="Segoe UI, Arial, sans-serif">Pocket buddy — wiring</text>
+<rect x="40" y="150" width="190" height="130" rx="10" fill="#1d2a4d"/>
+<rect x="54" y="164" width="120" height="102" rx="5" fill="#05070b" stroke="#3a4766" stroke-width="2"/>
+<rect x="78" y="196" width="26" height="38" rx="9" fill="#6fe3ff"/><rect x="118" y="196" width="26" height="38" rx="9" fill="#6fe3ff"/>
+<text x="115" y="138" font-size="15" fill="#1c2230" text-anchor="middle" font-weight="700" font-family="Segoe UI, Arial, sans-serif">SSD1306 OLED (I²C)</text>
+<rect x="226" y="167" width="14" height="10" rx="2" fill="#c9a24a"/>
+<text x="220" y="177" font-size="12" fill="#d9dfef" text-anchor="end" font-weight="600" font-family="Segoe UI, Arial, sans-serif">GND</text>
+<rect x="226" y="195" width="14" height="10" rx="2" fill="#c9a24a"/>
+<text x="220" y="205" font-size="12" fill="#d9dfef" text-anchor="end" font-weight="600" font-family="Segoe UI, Arial, sans-serif">VCC</text>
+<rect x="226" y="223" width="14" height="10" rx="2" fill="#c9a24a"/>
+<text x="220" y="233" font-size="12" fill="#d9dfef" text-anchor="end" font-weight="600" font-family="Segoe UI, Arial, sans-serif">SDA</text>
+<rect x="226" y="251" width="14" height="10" rx="2" fill="#c9a24a"/>
+<text x="220" y="261" font-size="12" fill="#d9dfef" text-anchor="end" font-weight="600" font-family="Segoe UI, Arial, sans-serif">SCL</text>
+<rect x="360" y="110" width="130" height="250" rx="10" fill="#26303b"/>
+<rect x="360" y="110" width="130" height="250" rx="10" fill="none" stroke="#0f1318" stroke-width="2"/>
+<rect x="400" y="98" width="50" height="30" rx="5" fill="#cfd4da" stroke="#7a828c" stroke-width="2"/>
+<text x="425" y="148" font-size="11" fill="#e6eaf0" text-anchor="middle" font-weight="600" font-family="Segoe UI, Arial, sans-serif">USB-C</text>
+<rect x="398" y="220" width="54" height="54" rx="4" fill="#111418" stroke="#3a4350"/>
+<text x="425" y="252" font-size="12" fill="#aab4c0" text-anchor="middle" font-weight="600" font-family="Segoe UI, Arial, sans-serif">ESP32-C3</text>
+<text x="425" y="310" font-size="16" fill="#e6eaf0" text-anchor="middle" font-weight="700" font-family="Segoe UI, Arial, sans-serif">XIAO</text>
+<rect x="350" y="144" width="16" height="12" rx="2" fill="#c9a24a"/>
+<rect x="484" y="144" width="16" height="12" rx="2" fill="#c9a24a"/>
+<text x="374" y="154" font-size="11" fill="#8d97a5" text-anchor="start" font-weight="400" font-family="Segoe UI, Arial, sans-serif">D0</text>
+<text x="476" y="154" font-size="11" fill="#8d97a5" text-anchor="end" font-weight="400" font-family="Segoe UI, Arial, sans-serif">5V</text>
+<rect x="350" y="174" width="16" height="12" rx="2" fill="#c9a24a"/>
+<rect x="484" y="174" width="16" height="12" rx="2" fill="#c9a24a"/>
+<text x="374" y="184" font-size="11" fill="#ffffff" text-anchor="start" font-weight="700" font-family="Segoe UI, Arial, sans-serif">D1</text>
+<text x="476" y="184" font-size="11" fill="#ffffff" text-anchor="end" font-weight="700" font-family="Segoe UI, Arial, sans-serif">GND</text>
+<rect x="350" y="204" width="16" height="12" rx="2" fill="#c9a24a"/>
+<rect x="484" y="204" width="16" height="12" rx="2" fill="#c9a24a"/>
+<text x="374" y="214" font-size="11" fill="#8d97a5" text-anchor="start" font-weight="400" font-family="Segoe UI, Arial, sans-serif">D2</text>
+<text x="476" y="214" font-size="11" fill="#ffffff" text-anchor="end" font-weight="700" font-family="Segoe UI, Arial, sans-serif">3V3</text>
+<rect x="350" y="234" width="16" height="12" rx="2" fill="#c9a24a"/>
+<rect x="484" y="234" width="16" height="12" rx="2" fill="#c9a24a"/>
+<text x="374" y="244" font-size="11" fill="#8d97a5" text-anchor="start" font-weight="400" font-family="Segoe UI, Arial, sans-serif">D3</text>
+<text x="476" y="244" font-size="11" fill="#8d97a5" text-anchor="end" font-weight="400" font-family="Segoe UI, Arial, sans-serif">D10</text>
+<rect x="350" y="264" width="16" height="12" rx="2" fill="#c9a24a"/>
+<rect x="484" y="264" width="16" height="12" rx="2" fill="#c9a24a"/>
+<text x="374" y="274" font-size="11" fill="#ffffff" text-anchor="start" font-weight="700" font-family="Segoe UI, Arial, sans-serif">D4</text>
+<text x="476" y="274" font-size="11" fill="#8d97a5" text-anchor="end" font-weight="400" font-family="Segoe UI, Arial, sans-serif">D9</text>
+<rect x="350" y="294" width="16" height="12" rx="2" fill="#c9a24a"/>
+<rect x="484" y="294" width="16" height="12" rx="2" fill="#c9a24a"/>
+<text x="374" y="304" font-size="11" fill="#ffffff" text-anchor="start" font-weight="700" font-family="Segoe UI, Arial, sans-serif">D5</text>
+<text x="476" y="304" font-size="11" fill="#8d97a5" text-anchor="end" font-weight="400" font-family="Segoe UI, Arial, sans-serif">D8</text>
+<rect x="350" y="324" width="16" height="12" rx="2" fill="#c9a24a"/>
+<rect x="484" y="324" width="16" height="12" rx="2" fill="#c9a24a"/>
+<text x="374" y="334" font-size="11" fill="#8d97a5" text-anchor="start" font-weight="400" font-family="Segoe UI, Arial, sans-serif">D6</text>
+<text x="476" y="334" font-size="11" fill="#8d97a5" text-anchor="end" font-weight="400" font-family="Segoe UI, Arial, sans-serif">D7</text>
+<rect x="390" y="366" width="70" height="34" rx="5" fill="none" stroke="#7a828c" stroke-width="2" stroke-dasharray="6 5"/>
+<text x="468" y="387" font-size="11" fill="#5b6573" text-anchor="start" font-weight="400" font-family="Segoe UI, Arial, sans-serif">← pads on the back</text>
+<rect x="398" y="374" width="22" height="18" rx="3" fill="#c9a24a"/><rect x="430" y="374" width="22" height="18" rx="3" fill="#c9a24a"/>
+<text x="409" y="387" font-size="14" fill="#222" text-anchor="middle" font-weight="800" font-family="Segoe UI, Arial, sans-serif">+</text>
+<text x="441" y="387" font-size="14" fill="#222" text-anchor="middle" font-weight="800" font-family="Segoe UI, Arial, sans-serif">−</text>
+<text x="409" y="418" font-size="12" fill="#d62839" text-anchor="middle" font-weight="700" font-family="Segoe UI, Arial, sans-serif">BAT+</text>
+<text x="441" y="418" font-size="12" fill="#1c2230" text-anchor="middle" font-weight="700" font-family="Segoe UI, Arial, sans-serif">BAT−</text>
+<rect x="330" y="500" width="190" height="62" rx="9" fill="#e4e8ee" stroke="#8d97a5" stroke-width="2"/>
+<text x="425" y="528" font-size="15" fill="#1c2230" text-anchor="middle" font-weight="700" font-family="Segoe UI, Arial, sans-serif">LiPo 3.7 V</text>
+<text x="425" y="548" font-size="11" fill="#4a5568" text-anchor="middle" font-weight="400" font-family="Segoe UI, Arial, sans-serif">150–300 mAh · with protection</text>
+<rect x="690" y="250" width="90" height="90" rx="10" fill="#dfe4ea" stroke="#8d97a5" stroke-width="2"/>
+<circle cx="735" cy="295" r="24" fill="#3b4350"/><circle cx="735" cy="295" r="17" fill="#566071"/>
+<text x="735" y="238" font-size="15" fill="#1c2230" text-anchor="middle" font-weight="700" font-family="Segoe UI, Arial, sans-serif">Push button</text>
+<text x="735" y="362" font-size="11" fill="#4a5568" text-anchor="middle" font-weight="400" font-family="Segoe UI, Arial, sans-serif">6 × 6 mm tactile</text>
+<rect x="682" y="270" width="16" height="10" rx="2" fill="#c9a24a"/>
+<rect x="682" y="310" width="16" height="10" rx="2" fill="#c9a24a"/>
+<text x="676" y="279" font-size="10" fill="#1c2230" text-anchor="start" font-weight="400" font-family="Segoe UI, Arial, sans-serif"></text>
+<path d="M240 228 H300 V270 H350" fill="none" stroke="#2563eb" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M240 256 H282 V300 H350" fill="none" stroke="#e69b00" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M240 200 H258 V84 H548 V210 H500" fill="none" stroke="#d62839" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M240 172 H246 V70 H566 V180 H500" fill="none" stroke="#1f2430" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M350 180 H318 V610 H650 V275 H682" fill="none" stroke="#16a34a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M682 315 H620 V180 H500" fill="none" stroke="#1f2430" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="566" cy="180" r="5" fill="#1f2430"/><circle cx="620" cy="180" r="0" fill="#1f2430"/>
+<path d="M370 500 V460 H390 V392 H398" fill="none" stroke="#d62839" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M450 500 V472 H468 V392 H452" fill="none" stroke="#1f2430" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="370" y="576" font-size="16" fill="#d62839" text-anchor="middle" font-weight="800" font-family="Segoe UI, Arial, sans-serif">+</text>
+<text x="450" y="576" font-size="16" fill="#1c2230" text-anchor="middle" font-weight="800" font-family="Segoe UI, Arial, sans-serif">−</text>
+<rect x="40" y="340" width="26" height="6" rx="3" fill="#d62839"/>
+<text x="76" y="348" font-size="13" fill="#1c2230" text-anchor="start" font-weight="400" font-family="Segoe UI, Arial, sans-serif">3V3 → OLED VCC</text>
+<rect x="40" y="366" width="26" height="6" rx="3" fill="#1f2430"/>
+<text x="76" y="374" font-size="13" fill="#1c2230" text-anchor="start" font-weight="400" font-family="Segoe UI, Arial, sans-serif">GND → OLED GND, button, shared</text>
+<rect x="40" y="392" width="26" height="6" rx="3" fill="#2563eb"/>
+<text x="76" y="400" font-size="13" fill="#1c2230" text-anchor="start" font-weight="400" font-family="Segoe UI, Arial, sans-serif">D4 → OLED SDA</text>
+<rect x="40" y="418" width="26" height="6" rx="3" fill="#e69b00"/>
+<text x="76" y="426" font-size="13" fill="#1c2230" text-anchor="start" font-weight="400" font-family="Segoe UI, Arial, sans-serif">D5 → OLED SCL</text>
+<rect x="40" y="444" width="26" height="6" rx="3" fill="#16a34a"/>
+<text x="76" y="452" font-size="13" fill="#1c2230" text-anchor="start" font-weight="400" font-family="Segoe UI, Arial, sans-serif">D1 → button (other leg to GND)</text>
+<rect x="40" y="496" width="262" height="124" rx="10" fill="#fff4e5" stroke="#e69b00" stroke-width="2"/>
+<text x="54" y="520" font-size="14" fill="#7a4a00" text-anchor="start" font-weight="700" font-family="Segoe UI, Arial, sans-serif">Check before you connect</text>
+<text x="54" y="542" font-size="12" fill="#5a3a00" text-anchor="start" font-weight="400" font-family="Segoe UI, Arial, sans-serif">• Battery plugs have no standard</text>
+<text x="54" y="558" font-size="12" fill="#5a3a00" text-anchor="start" font-weight="400" font-family="Segoe UI, Arial, sans-serif">  polarity: match red (+) / black (−)</text>
+<text x="54" y="574" font-size="12" fill="#5a3a00" text-anchor="start" font-weight="400" font-family="Segoe UI, Arial, sans-serif">  with a multimeter first.</text>
+<text x="54" y="596" font-size="12" fill="#5a3a00" text-anchor="start" font-weight="400" font-family="Segoe UI, Arial, sans-serif">• OLED pin order differs: follow the</text>
+<text x="54" y="612" font-size="12" fill="#5a3a00" text-anchor="start" font-weight="400" font-family="Segoe UI, Arial, sans-serif">  labels printed on your module.</text>
+<text x="672" y="420" font-size="12" fill="#4a5568" text-anchor="start" font-weight="400" font-family="Segoe UI, Arial, sans-serif">All grounds meet at the</text>
+<text x="672" y="436" font-size="12" fill="#4a5568" text-anchor="start" font-weight="400" font-family="Segoe UI, Arial, sans-serif">single GND pin.</text>
+<text x="672" y="462" font-size="12" fill="#4a5568" text-anchor="start" font-weight="400" font-family="Segoe UI, Arial, sans-serif">No resistor needed: the</text>
+<text x="672" y="478" font-size="12" fill="#4a5568" text-anchor="start" font-weight="400" font-family="Segoe UI, Arial, sans-serif">button uses the board's</text>
+<text x="672" y="494" font-size="12" fill="#4a5568" text-anchor="start" font-weight="400" font-family="Segoe UI, Arial, sans-serif">internal pull-up.</text>
+</svg>

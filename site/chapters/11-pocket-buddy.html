@@ -148,6 +148,7 @@
 </ul>
 <h2 id="wiring">Wiring<a class="anchor" href="#wiring" aria-label="Link to this section">#</a></h2>
 <p>Test everything on a breadboard first, then solder.</p>
+<p><figure><img src="../assets/pocket-buddy-wiring.svg" alt="Wiring diagram: the OLED&#39;s 3V3, GND, SDA and SCL go to the XIAO&#39;s 3V3, GND, D4 and D5; a push button sits between D1 and GND; the LiPo battery connects to the BAT+ and BAT− pads on the back of the board." loading="lazy" width="880" height="640"><figcaption>Wiring diagram: the OLED&#39;s 3V3, GND, SDA and SCL go to the XIAO&#39;s 3V3, GND, D4 and D5; a push button sits between D1 and GND; the LiPo battery connects to the BAT+ and BAT− pads on the back of the board.</figcaption></figure></p>
 <div class="table-scroll"><table>
 <thead>
 <tr>
@@ -192,7 +193,7 @@
 </div>
 <p>The button uses the board&#39;s internal pull-up, so no resistor is needed. D1 is one of the pins that can wake the ESP32-C3 from deep sleep (GPIO0–5).</p>
 <p>The battery connects to the <strong>BAT+ / BAT−</strong> pads on the back of the XIAO; the board charges it whenever USB-C is plugged in and shows its charging state on an LED.</p>
-<blockquote class="warn"><p><span class="label">Warning</span>the plugs sold on LiPo batteries have <strong>no standard polarity</strong>. Check the red (+) and black (−) wires against the pad markings with a multimeter before you connect anything. Reversed polarity can destroy the board and heat the cell.</p>
+<blockquote class="warn"><p><span class="label">Warning</span>The plugs sold on LiPo batteries have <strong>no standard polarity</strong>. Check the red (+) and black (−) wires against the pad markings with a multimeter before you connect anything. Reversed polarity can destroy the board and heat the cell.</p>
 </blockquote>
 <h2 id="build-steps">Build steps<a class="anchor" href="#build-steps" aria-label="Link to this section">#</a></h2>
 <ol>
@@ -293,7 +294,7 @@ void loop() {
 <li>In deep sleep the chip itself uses microamps, but the regulator and LEDs on a development board add to that. Measure it: standby is typically days rather than hours, not months.</li>
 <li>The display is the biggest consumer. Showing less (and sleeping sooner) is the easiest way to stretch a charge.</li>
 </ul>
-<blockquote class="warn"><p><span class="label">Warning</span>treat the LiPo with respect. Use a cell <strong>with a protection circuit</strong>, never puncture or crush it, do not charge it unattended, keep it away from heat (a car in the sun), and stop using any cell that swells. See also <a href="03-electronics.html">chapter 3</a> and the <a href="01-basics.html">battery notes in chapter 1</a>.</p>
+<blockquote class="warn"><p><span class="label">Warning</span>Treat the LiPo with respect. Use a cell <strong>with a protection circuit</strong>, never puncture or crush it, do not charge it unattended, keep it away from heat (a car in the sun), and stop using any cell that swells. See also <a href="03-electronics.html">chapter 3</a> and the <a href="01-basics.html">battery notes in chapter 1</a>.</p>
 </blockquote>
 <h2 id="case-ideas">Case ideas<a class="anchor" href="#case-ideas" aria-label="Link to this section">#</a></h2>
 <ul>

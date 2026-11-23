@@ -71,6 +71,11 @@ function render(md) {
   renderer.table = function (token) {
     return `<div class="table-scroll">${marked.Renderer.prototype.table.call(this, token)}</div>\n`;
   };
+  // docs/ images are written as ../site/assets/x (works on GitHub); the generated pages sit in site/chapters/
+  renderer.image = function ({ href, text }) {
+    const src = href.startsWith("../site/") ? "../" + href.slice("../site/".length) : href;
+    return `<figure><img src="${esc(src)}" alt="${text}" loading="lazy" width="880" height="640"><figcaption>${text}</figcaption></figure>`;
+  };
   renderer.link = function ({ href, title, tokens }) {
     const text = this.parser.parseInline(tokens);
     const h = rewriteHref(href);
